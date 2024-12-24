@@ -1,8 +1,6 @@
 "use client";
-
 import { useState } from "react";
-import Link from "next/link";
-import withAuth from "../../context/withAuth";
+import withAuth from "../../middleware/withAuth";
 
 interface DashboardMetric {
   label: string;

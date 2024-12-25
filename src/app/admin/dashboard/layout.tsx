@@ -15,6 +15,10 @@ import {
   Briefcase,
   Globe,
   User2,
+  LayoutDashboard,
+  Receipt,
+  ViewIcon,
+  SpeakerIcon,
 } from "lucide-react";
 import { MenuSection } from "@/types/sidebar";
 
@@ -23,17 +27,25 @@ const menuSections: MenuSection[] = [
     name: "User",
 
     links: [
-      { href: "/admin/dashboard/user/overview", icon: User2, text: "Overview" },
+      {
+        href: "/admin/dashboard/user/overview",
+        icon: LayoutDashboard,
+        text: "Overview",
+      },
       { href: "/admin/dashboard/user/users", icon: User2, text: "Users" },
-      { href: "/admin/dashboard/user/visitors", icon: User2, text: "Visitors" },
+      {
+        href: "/admin/dashboard/user/visitors",
+        icon: ViewIcon,
+        text: "Visitors",
+      },
       {
         href: "/admin/dashboard/user/exhibit",
-        icon: PiggyBank,
+        icon: Receipt,
         text: "Exhibit",
       },
       {
         href: "/admin/dashboard/user/delegate",
-        icon: Wallet,
+        icon: SpeakerIcon,
         text: "Delegate",
       },
     ],
@@ -41,24 +53,72 @@ const menuSections: MenuSection[] = [
   {
     name: "Records",
     links: [
-      { href: "#", icon: Settings, text: "Exhibition" },
-      { href: "#", icon: User, text: "Expired Exhibition" },
-      { href: "#", icon: HelpCircle, text: "Conference" },
-      { href: "#", icon: HelpCircle, text: "Expired Conference" },
-      { href: "#", icon: HelpCircle, text: "Venue" },
-      { href: "#", icon: HelpCircle, text: "Association" },
-      { href: "#", icon: HelpCircle, text: "Company" },
-      { href: "#", icon: HelpCircle, text: "Key Contact" },
+      {
+        href: "/admin/dashboard/records/exhibition",
+        icon: Settings,
+        text: "Exhibition",
+      },
+      {
+        href: "/admin/dashboard/records/expexhibition",
+        icon: User,
+        text: "Expired Exhibition",
+      },
+      {
+        href: "/admin/dashboard/records/conference",
+        icon: HelpCircle,
+        text: "Conference",
+      },
+      {
+        href: "/admin/dashboard/records/expconference",
+        icon: HelpCircle,
+        text: "Expired Conference",
+      },
+      {
+        href: "/admin/dashboard/records/venue",
+        icon: HelpCircle,
+        text: "Venue",
+      },
+      {
+        href: "/admin/dashboard/records/association",
+        icon: HelpCircle,
+        text: "Association",
+      },
+      {
+        href: "/admin/dashboard/records/company",
+        icon: HelpCircle,
+        text: "Company",
+      },
+      {
+        href: "/admin/dashboard/records/keycontact",
+        icon: HelpCircle,
+        text: "Key Contact",
+      },
     ],
   },
   {
     name: "Featured",
     links: [
-      { href: "#", icon: BarChart2, text: "Organizer" },
-      { href: "#", icon: FileText, text: "Venue" },
-      { href: "#", icon: Users, text: "Exhibition" },
-      { href: "#", icon: Users, text: "Conference" },
-      { href: "#", icon: Users, text: "Supplier" },
+      {
+        href: "/admin/dashboard/featured/organizer",
+        icon: BarChart2,
+        text: "Organizer",
+      },
+      { href: "/admin/dashboard/records/venue", icon: FileText, text: "Venue" },
+      {
+        href: "/admin/dashboard/records/exhibition",
+        icon: Users,
+        text: "Exhibition",
+      },
+      {
+        href: "/admin/dashboard/records/conference",
+        icon: Users,
+        text: "Conference",
+      },
+      {
+        href: "/admin/dashboard/featured/supplier",
+        icon: Users,
+        text: "Supplier",
+      },
     ],
   },
   {

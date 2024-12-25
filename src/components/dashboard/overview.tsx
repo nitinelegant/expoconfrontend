@@ -10,7 +10,7 @@ import { OverviewProps } from "@/types/sidebar";
 export function Overview({ overviewSection }: OverviewProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {overviewSection.map((item) => (
+      {overviewSection?.map((item) => (
         <Card key={item.name}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-black">

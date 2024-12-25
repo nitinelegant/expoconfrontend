@@ -11,11 +11,13 @@ export function Overview() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Earnings</CardTitle>
+          <CardTitle className="text-sm font-medium text-black">
+            Earnings
+          </CardTitle>
           <Wallet className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">$928.41</div>
+          <div className="text-2xl font-bold text-black">$928.41</div>
           <div className="flex items-center space-x-2">
             <span className="text-xs text-green-600">+12.8%</span>
             <span className="text-xs text-gray-500">
@@ -26,11 +28,13 @@ export function Overview() {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Spendings</CardTitle>
+          <CardTitle className="text-sm font-medium text-black">
+            Spendings
+          </CardTitle>
           <ShoppingCart className="h-4 w-4 text-gray-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">$169.43</div>
+          <div className="text-2xl font-bold text-black">$169.43</div>
           <div className="flex items-center space-x-2">
             <span className="text-xs text-red-600">-3.1%</span>
             <span className="text-xs text-gray-500">-$5.2 than last month</span>
@@ -39,11 +43,13 @@ export function Overview() {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Savings</CardTitle>
+          <CardTitle className="text-sm font-medium text-black">
+            Savings
+          </CardTitle>
           <ArrowUpRight className="h-4 w-4 text-green-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">$406.27</div>
+          <div className="text-2xl font-bold text-black">$406.27</div>
           <div className="flex items-center space-x-2">
             <span className="text-xs text-green-600">+8.2%</span>
             <span className="text-xs text-gray-500">
@@ -54,11 +60,13 @@ export function Overview() {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Investment</CardTitle>
+          <CardTitle className="text-sm font-medium text-black">
+            Investment
+          </CardTitle>
           <ArrowDownRight className="h-4 w-4 text-red-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">$1,854.08</div>
+          <div className="text-2xl font-bold text-black">$1,854.08</div>
           <div className="flex items-center space-x-2">
             <span className="text-xs text-green-600">+9.2%</span>
             <span className="text-xs text-gray-500">

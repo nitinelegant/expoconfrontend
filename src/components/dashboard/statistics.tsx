@@ -30,12 +30,12 @@ export function Statistics() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Statistics</CardTitle>
+        <CardTitle className="text-black">Statistics</CardTitle>
         <Select defaultValue="yearly">
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-[120px] bg-white text-black">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="text-black">
             <SelectItem value="daily">Daily</SelectItem>
             <SelectItem value="weekly">Weekly</SelectItem>
             <SelectItem value="monthly">Monthly</SelectItem>

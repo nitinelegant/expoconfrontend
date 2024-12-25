@@ -14,7 +14,7 @@ export function TransactionsTable() {
   return (
     <Card className="mt-6">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Latest Transaction</CardTitle>
+        <CardTitle className="text-black">Latest Transaction</CardTitle>
         <Button variant="link" className="text-blue-500">
           View all
         </Button>
@@ -22,7 +22,7 @@ export function TransactionsTable() {
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="text-black">
               <TableHead className="w-12">
                 <input
                   type="checkbox"
@@ -38,7 +38,7 @@ export function TransactionsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
+            <TableRow className="text-black">
               <TableCell>
                 <input
                   type="checkbox"

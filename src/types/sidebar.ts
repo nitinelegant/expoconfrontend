@@ -8,6 +8,7 @@ export interface MenuLink {
 
 export interface MenuSection {
   name: string;
+  icon: LucideIcon;
   links: MenuLink[];
 }
 export interface userSection {

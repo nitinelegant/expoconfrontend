@@ -51,14 +51,15 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            {/* <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
               <div className="w-3 h-3 bg-white rounded-full"></div>
-            </div>
-            <span className="text-xl font-semibold text-black">ExpoCon</span>
+            </div> */}
+            <h2 className="text-2xl font-bold text-gray-900">ExpoCon</h2>
+            {/* <span className="text-xl font-semibold text-black">ExpoCon</span> */}
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
+          {/* <h2 className="text-2xl font-bold text-gray-900">Login</h2> */}
           <p className="mt-2 text-sm text-gray-600">
-            Please sign in to your account
+            Please login into your account
           </p>
         </div>
 

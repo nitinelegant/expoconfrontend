@@ -115,7 +115,7 @@ export default function Venue() {
         columns={columns}
         data={transactions}
         title="Venue List"
-        viewAllLink="#"
+        viewAllLink="/admin/dashboard/forms/addvenue"
       />
     </div>
   );

@@ -19,12 +19,19 @@ import {
   Receipt,
   ViewIcon,
   SpeakerIcon,
+  Library,
+  Search,
+  Megaphone,
+  UserSearch,
+  Blocks,
+  ThumbsUp,
 } from "lucide-react";
 import { MenuSection } from "@/types/sidebar";
 
 const menuSections: MenuSection[] = [
   {
     name: "User",
+    icon: User2,
 
     links: [
       {
@@ -32,19 +39,19 @@ const menuSections: MenuSection[] = [
         icon: LayoutDashboard,
         text: "Overview",
       },
-      { href: "/admin/dashboard/user/users", icon: User2, text: "Users" },
+      { href: "#", icon: User2, text: "Users" },
       {
-        href: "/admin/dashboard/user/visitors",
+        href: "#",
         icon: ViewIcon,
         text: "Visitors",
       },
       {
-        href: "/admin/dashboard/user/exhibit",
+        href: "#",
         icon: Receipt,
         text: "Exhibit",
       },
       {
-        href: "/admin/dashboard/user/delegate",
+        href: "#",
         icon: SpeakerIcon,
         text: "Delegate",
       },
@@ -52,6 +59,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Records",
+    icon: Library,
     links: [
       {
         href: "/admin/dashboard/records/exhibition",
@@ -97,6 +105,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Featured",
+    icon: Blocks,
     links: [
       {
         href: "/admin/dashboard/featured/organizer",
@@ -123,6 +132,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Approval",
+    icon: ThumbsUp,
     links: [
       { href: "#", icon: Calendar, text: "Exhibition" },
       { href: "#", icon: Bell, text: "Conference" },
@@ -131,6 +141,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Jobs",
+    icon: UserSearch,
     links: [
       { href: "#", icon: Globe, text: "Openings" },
       { href: "#", icon: Settings, text: "Application" },
@@ -138,10 +149,12 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Advertisement",
+    icon: Megaphone,
     links: [{ href: "#", icon: Globe, text: "Advertisement" }],
   },
   {
     name: "Report an issue",
+    icon: HelpCircle,
     links: [{ href: "#", icon: HelpCircle, text: "Report an issue" }],
   },
 ];

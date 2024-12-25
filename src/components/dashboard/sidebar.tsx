@@ -10,16 +10,20 @@ export function Sidebar({ menuSections }: SidebarProps) {
     <div className="flex flex-col h-screen w-64 border-r bg-white">
       <div className="p-6">
         <div className="flex items-center space-x-2">
-          <div className="h-8 w-8 rounded-full bg-blue-500" />
+          {/* <div className="h-8 w-8 rounded-full bg-blue-500" /> */}
           <span className="text-xl font-bold text-black">ExpoCon</span>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto space-y-6 px-4 pb-4">
         {menuSections.map((section) => (
           <div key={section.name}>
-            <p className="px-2 text-xs font-semibold uppercase text-gray-500">
-              {section.name}
-            </p>
+            <div className="flex  items-center">
+              <section.icon className="h-5 w-5 text-black" />
+              <p className="px-2 text-xs font-semibold uppercase text-gray-500">
+                {section.name}
+              </p>
+            </div>
+
             <div className="mt-2 space-y-1">
               {section.links.map((item) => {
                 const isActive = pathname === item.href;
@@ -29,11 +33,10 @@ export function Sidebar({ menuSections }: SidebarProps) {
                     href={item.href}
                     className={`flex items-center space-x-2 rounded-lg px-2 py-2 ${
                       isActive
-                        ? "bg-blue-50 text-blue-600"
+                        ? "bg-blue-600 text-white-600"
                         : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >
-                    <item.icon className="h-5 w-5" />
                     <span>{item.text}</span>
                     {/* {item.badge && (
                       <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">

@@ -34,9 +34,7 @@ export default function UserOverView() {
             <div className="lg:col-span-2">
               <Statistics />
             </div>
-            <div>
-              <SavingsWidget />
-            </div>
+            <div>{/* <SavingsWidget /> */}</div>
           </div>
           <TransactionsTable />
         </main>

@@ -1,33 +1,50 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // For demo purposes, using basic validation
-    if (email === "demo@example.com" && password === "password") {
-      toast({
-        title: "Success",
-        description: "Logged in successfully",
-      });
-      router.replace("/dashboard");
-    } else {
-      toast({
-        title: "Error",
-        description: "Invalid credentials. Try demo@example.com / password",
-        variant: "destructive",
-      });
-    }
-  };
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        .required("Password is required"),
+    }),
+    onSubmit: (values) => {
+      try {
+        localStorage.setItem("authToken", "12345");
+        localStorage.setItem("userType", "1");
+        router.replace("/admin/dashboard");
+        toast({
+          title: "Success",
+          description: "Logged in successfully",
+          duration: 3000,
+        });
+
+        console.log("submitting form");
+      } catch (error) {
+        console.log("error", error);
+        toast({
+          title: "Error",
+          description: "Invalid credentials. Try demo@example.com / password",
+          variant: "destructive",
+        });
+      }
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -45,7 +62,7 @@ const Login = () => {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="mt-8 space-y-6">
+        <form onSubmit={formik.handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
               <label
@@ -56,13 +73,16 @@ const Login = () => {
               </label>
               <Input
                 id="email"
+                placeholder="Type your email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                className="mt-1 bg-white"
+                {...formik.getFieldProps("email")}
+                className="mt-1 bg-white text-black "
               />
+              {formik.touched.email && formik.errors.email && (
+                <div className="text-sm text-red-600 mt-1">
+                  {formik.errors.email}
+                </div>
+              )}
             </div>
             <div>
               <label
@@ -74,12 +94,15 @@ const Login = () => {
               <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-                className="mt-1 bg-white"
+                placeholder="Type your password"
+                {...formik.getFieldProps("password")}
+                className="mt-1 bg-white text-black"
               />
+              {formik.touched.password && formik.errors.password && (
+                <div className="text-sm text-red-600 mt-1">
+                  {formik.errors.password}
+                </div>
+              )}
             </div>
           </div>
 

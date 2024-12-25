@@ -10,6 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export interface Column<T> {
   header: string;
@@ -41,7 +42,7 @@ export function DataTable<T>({
           <CardTitle className="text-black">{title}</CardTitle>
           {viewAllLink && (
             <Button variant="link" className="text-blue-500">
-              View all
+              <Link href={viewAllLink}>Add New</Link>
             </Button>
           )}
         </CardHeader>

@@ -115,7 +115,7 @@ export default function Company() {
         columns={columns}
         data={transactions}
         title="Company List"
-        viewAllLink="#"
+        viewAllLink="/admin/dashboard/forms/addcompany"
       />
     </div>
   );

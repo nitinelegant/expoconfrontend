@@ -11,6 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Bell, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface Transaction {
   id: string;

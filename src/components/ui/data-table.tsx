@@ -10,8 +10,14 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { PlusIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  PlusIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Search,
+} from "lucide-react";
 
 export interface Column<T> {
   header: string;
@@ -41,9 +47,18 @@ export function DataTable<T>({
   itemsPerPage = 10,
 }: DataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  const paginatedData = data.slice(
+  const filteredData = data.filter((item) =>
+    Object.values(item).some(
+      (value) =>
+        typeof value === "string" &&
+        value.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -57,13 +72,23 @@ export function DataTable<T>({
       {title && (
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-black text-xl">{title}</CardTitle>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                type="search"
+                placeholder="Search here"
+                className="w-[300px] pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
             {viewAllLink && (
               <Button
                 variant="link"
                 className="text-white-600 font-bold bg-primary hover:no-underline"
               >
-                <PlusIcon />
+                <PlusIcon className="mr-2 h-4 w-4" />
                 {addButtonTitle}
               </Button>
             )}
@@ -120,8 +145,8 @@ export function DataTable<T>({
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-700">
             Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-            {Math.min(currentPage * itemsPerPage, data.length)} of {data.length}{" "}
-            entries
+            {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
+            {filteredData.length} entries
           </div>
           <div className="flex items-center space-x-2">
             <Button

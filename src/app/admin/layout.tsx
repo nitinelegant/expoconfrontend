@@ -50,9 +50,9 @@ const menuSections: MenuSection[] = [
     icon: Award,
     links: [
       { href: "/admin/featured/organizer", text: "Organizer" },
-      { href: "/admin/records/venue", text: "Venue" },
+      { href: "/admin/featured/venue", text: "Venue" },
       { href: "/admin/featured/exhibition", text: "Exhibition" },
-      { href: "/admin/records/conference", text: "Conference" },
+      { href: "/admin/featured/conference", text: "Conference" },
       { href: "/admin/featured/supplier", text: "Supplier" },
     ],
   },

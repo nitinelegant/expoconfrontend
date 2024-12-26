@@ -97,7 +97,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm }: any) => (
   </Dialog>
 );
 
-export default function Organizer() {
+export default function Conference() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -165,7 +165,7 @@ export default function Organizer() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Featured Organizer"
+        title="Featured Conference"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

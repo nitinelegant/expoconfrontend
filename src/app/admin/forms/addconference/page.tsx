@@ -1,10 +1,15 @@
 "use client";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -13,10 +18,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { indianStates } from "@/utils/indianStates";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
-const eventTypes = ["Trade Show", "Conference", "Exhibition", "Symposium"];
+const eventTypes = [
+  "Conference",
+  "Exhibition",
+  "Trade Show",
+  "Workshop",
+  "Seminar",
+  "Other",
+];
+
 const months = [
   "January",
   "February",
@@ -31,13 +48,31 @@ const months = [
   "November",
   "December",
 ];
-const years = Array.from({ length: 5 }, (_, i) =>
+
+const years = Array.from({ length: 10 }, (_, i) =>
   (new Date().getFullYear() + i).toString()
 );
-const exhibitionTypes = ["B2B", "B2C", "Both"];
 
-const AddEvent = () => {
-  const [logoPreview, setLogoPreview] = useState(null);
+const states = [
+  "Maharashtra",
+  "Delhi",
+  "Karnataka",
+  "Tamil Nadu",
+  // Add other states as needed
+];
+
+const venues = [
+  "Convention Center",
+  "Exhibition Hall",
+  "Hotel Ballroom",
+  "Trade Center",
+  // Add other venues as needed
+];
+
+const exhibitionTypes = ["B2B", "B2C", "Both B2B & B2C"];
+
+export default function AddConference() {
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -67,11 +102,11 @@ const AddEvent = () => {
       eventShortName: Yup.string().required("Event Short Name is required"),
       startDate: Yup.date().required("Start Date is required"),
       endDate: Yup.date()
-        .min(Yup.ref("startDate"), "End date must be after start date")
+        .min(Yup.ref("startDate"), "End date can't be before start date")
         .required("End Date is required"),
       month: Yup.string().required("Month is required"),
       year: Yup.string().required("Year is required"),
-      entryFees: Yup.number().required("Entry Fees is required"),
+      entryFees: Yup.string().required("Entry Fees is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       venue: Yup.string().required("Venue is required"),
@@ -85,33 +120,37 @@ const AddEvent = () => {
     },
   });
 
-  const handleLogoChange = (event) => {
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
     formik.setFieldValue("logo", file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoPreview(reader.result);
+        setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="max-h-screen bg-gray-50 p-6">
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add Event</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Create Conference
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Event Type */}
               <div className="space-y-2">
                 <Label htmlFor="eventType">Event Type*</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("eventType", value)
                   }
+                  defaultValue={formik.values.eventType}
                 >
                   <SelectTrigger
                     className={
@@ -120,10 +159,7 @@ const AddEvent = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue
-                      placeholder="Select Event Type"
-                      className="text-black"
-                    />
+                    <SelectValue placeholder="Select Event Type" />
                   </SelectTrigger>
                   <SelectContent>
                     {eventTypes.map((type) => (
@@ -140,6 +176,7 @@ const AddEvent = () => {
                 )}
               </div>
 
+              {/* Event Names */}
               <div className="space-y-2">
                 <Label htmlFor="eventFullName">Event Full Name*</Label>
                 <Input
@@ -158,8 +195,9 @@ const AddEvent = () => {
                     </p>
                   )}
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="eventFullName">Event Short Name*</Label>
+                <Label htmlFor="eventShortName">Event Short Name*</Label>
                 <Input
                   id="eventShortName"
                   {...formik.getFieldProps("eventShortName")}
@@ -170,70 +208,86 @@ const AddEvent = () => {
                       : ""
                   }
                 />
-                {formik.touched.eventShortName &&
-                  formik.errors.eventShortName && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.eventShortName}
-                    </p>
-                  )}
+              </div>
+
+              {/* Dates */}
+              <div className="space-y-2">
+                <Label>Start Date*</Label>
+                <Popover>
+                  <PopoverTrigger asChild className="bg-white text-black">
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start text-left font-normal ${
+                        formik.touched.startDate && formik.errors.startDate
+                          ? "border-red-500"
+                          : ""
+                      }`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formik.values.startDate
+                        ? format(new Date(formik.values.startDate), "PP")
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-white text-black">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        formik.values.startDate
+                          ? new Date(formik.values.startDate)
+                          : undefined
+                      }
+                      onSelect={(date) =>
+                        formik.setFieldValue("startDate", date)
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="startDate">Start Date*</Label>
-                <Input
-                  type="date"
-                  id="startDate"
-                  {...formik.getFieldProps("startDate")}
-                  className={
-                    formik.touched.startDate && formik.errors.startDate
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.startDate && formik.errors.startDate && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.startDate}
-                  </p>
-                )}
+                <Label>End Date*</Label>
+                <Popover>
+                  <PopoverTrigger asChild className="bg-white text-black">
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start text-left font-normal ${
+                        formik.touched.endDate && formik.errors.endDate
+                          ? "border-red-500"
+                          : ""
+                      }`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {formik.values.endDate
+                        ? format(new Date(formik.values.endDate), "PP")
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-white text-black">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        formik.values.endDate
+                          ? new Date(formik.values.endDate)
+                          : undefined
+                      }
+                      onSelect={(date) => formik.setFieldValue("endDate", date)}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
+              {/* Month and Year */}
               <div className="space-y-2">
-                <Label htmlFor="endDate">End Date*</Label>
-                <Input
-                  type="date"
-                  id="endDate"
-                  {...formik.getFieldProps("endDate")}
-                  className={
-                    formik.touched.endDate && formik.errors.endDate
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.endDate && formik.errors.endDate && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.endDate}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="month">Month*</Label>
+                <Label>Month*</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("month", value)
                   }
+                  defaultValue={formik.values.month}
                 >
-                  <SelectTrigger
-                    className={
-                      formik.touched.month && formik.errors.month
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue
-                      placeholder="Select Month"
-                      className="text-black"
-                    />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Month" />
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((month) => (
@@ -243,27 +297,16 @@ const AddEvent = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.month && formik.errors.month && (
-                  <p className="text-sm text-red-600">{formik.errors.month}</p>
-                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="year">Year*</Label>
+                <Label>Year*</Label>
                 <Select
                   onValueChange={(value) => formik.setFieldValue("year", value)}
+                  defaultValue={formik.values.year}
                 >
-                  <SelectTrigger
-                    className={
-                      formik.touched.year && formik.errors.year
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue
-                      placeholder="Select Year"
-                      className="text-black"
-                    />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Year" />
                   </SelectTrigger>
                   <SelectContent>
                     {years.map((year) => (
@@ -273,11 +316,9 @@ const AddEvent = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.year && formik.errors.year && (
-                  <p className="text-sm text-red-600">{formik.errors.year}</p>
-                )}
               </div>
 
+              {/* Other Fields */}
               <div className="space-y-2">
                 <Label htmlFor="timings">Timings</Label>
                 <Input id="timings" {...formik.getFieldProps("timings")} />
@@ -286,7 +327,6 @@ const AddEvent = () => {
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees*</Label>
                 <Input
-                  type="number"
                   id="entryFees"
                   {...formik.getFieldProps("entryFees")}
                   className={
@@ -295,13 +335,9 @@ const AddEvent = () => {
                       : ""
                   }
                 />
-                {formik.touched.entryFees && formik.errors.entryFees && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.entryFees}
-                  </p>
-                )}
               </div>
 
+              {/* Location */}
               <div className="space-y-2">
                 <Label htmlFor="city">City*</Label>
                 <Input
@@ -313,63 +349,51 @@ const AddEvent = () => {
                       : ""
                   }
                 />
-                {formik.touched.city && formik.errors.city && (
-                  <p className="text-sm text-red-600">{formik.errors.city}</p>
-                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="state">State*</Label>
+                <Label>State*</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("state", value)
                   }
+                  defaultValue={formik.values.state}
                 >
-                  <SelectTrigger
-                    className={
-                      formik.touched.state && formik.errors.state
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue
-                      placeholder="Select State"
-                      className="text-black"
-                    />
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent>
-                    {indianStates.map((state) => (
-                      <SelectItem
-                        key={state}
-                        value={state}
-                        className="hover:cursor-pointer"
-                      >
+                    {states.map((state) => (
+                      <SelectItem key={state} value={state}>
                         {state}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.state && formik.errors.state && (
-                  <p className="text-sm text-red-600">{formik.errors.state}</p>
-                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="venue">Venue*</Label>
-                <Input
-                  id="venue"
-                  {...formik.getFieldProps("venue")}
-                  className={
-                    formik.touched.venue && formik.errors.venue
-                      ? "border-red-500"
-                      : ""
+                <Label>Venue*</Label>
+                <Select
+                  onValueChange={(value) =>
+                    formik.setFieldValue("venue", value)
                   }
-                />
-                {formik.touched.venue && formik.errors.venue && (
-                  <p className="text-sm text-red-600">{formik.errors.venue}</p>
-                )}
+                  defaultValue={formik.values.venue}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Venue" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {venues.map((venue) => (
+                      <SelectItem key={venue} value={venue}>
+                        {venue}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
+              {/* Website and Logo */}
               <div className="space-y-2">
                 <Label htmlFor="website">Website*</Label>
                 <Input
@@ -382,21 +406,17 @@ const AddEvent = () => {
                       : ""
                   }
                 />
-                {formik.touched.website && formik.errors.website && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.website}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="logo">Upload Event Logo</Label>
                 <Input
                   id="logo"
+                  name="logo"
                   type="file"
                   onChange={handleLogoChange}
-                  accept="image/*"
                   className="cursor-pointer"
+                  accept="image/*"
                 />
                 {logoPreview && (
                   <img
@@ -407,6 +427,7 @@ const AddEvent = () => {
                 )}
               </div>
 
+              {/* Exhibition Details */}
               <div className="space-y-2">
                 <Label htmlFor="frequency">Frequency</Label>
                 <Input id="frequency" {...formik.getFieldProps("frequency")} />
@@ -423,20 +444,14 @@ const AddEvent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="exhibitionType">Exhibition Type*</Label>
+                <Label>Exhibition Type</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("exhibitionType", value)
                   }
+                  defaultValue={formik.values.exhibitionType}
                 >
-                  <SelectTrigger
-                    className={
-                      formik.touched.exhibitionType &&
-                      formik.errors.exhibitionType
-                        ? "border-red-500"
-                        : ""
-                    }
-                  >
+                  <SelectTrigger>
                     <SelectValue placeholder="Select Exhibition Type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -447,15 +462,10 @@ const AddEvent = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.exhibitionType &&
-                  formik.errors.exhibitionType && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.exhibitionType}
-                    </p>
-                  )}
               </div>
             </div>
 
+            {/* Profiles */}
             <div className="space-y-2">
               <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
               <Textarea
@@ -472,7 +482,7 @@ const AddEvent = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full">
               Submit
             </Button>
           </form>
@@ -480,6 +490,4 @@ const AddEvent = () => {
       </Card>
     </div>
   );
-};
-
-export default AddEvent;
+}

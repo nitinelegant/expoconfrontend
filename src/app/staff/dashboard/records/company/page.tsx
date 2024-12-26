@@ -1,114 +1,163 @@
+"use client";
+import React, { useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { Trash2, SquarePen } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Transaction {
   id: string;
-  fromTo: string;
-  date: string;
-  description: string;
-  amount: string;
+  eventName: string;
+  organigerName: string;
+  start: string;
+  end: string;
   status: string;
 }
 
 const transactions: Transaction[] = [
   {
     id: "1",
-    fromTo: "Elevate Agency",
-    date: "2 Oct 2023",
-    description: "Monthly salary",
-    amount: "+$1,500.0",
-    status: "Success",
+    eventName: "Alcazar Events",
+    organigerName: "Nitin Singh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Active",
   },
   {
     id: "2",
-    fromTo: "Amazon",
-    date: "1 Oct 2023",
-    description: "Electronics purchase",
-    amount: "-$299.99",
-    status: "Completed",
+    eventName: "Maruti Events",
+    organigerName: "Rohit Singh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Active",
   },
   {
     id: "3",
-    fromTo: "Freelance Client",
-    date: "30 Sep 2023",
-    description: "Web design project",
-    amount: "+$850.0",
-    status: "Pending",
+    eventName: "Honda Events",
+    organigerName: "Muzzamil Shaikh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Active",
   },
+
+  // Add more transactions to test pagination
+  ...Array.from({ length: 20 }, (_, i) => ({
+    id: `${i + 4}`,
+    eventName: `Event ${i + 4}`,
+    organigerName: `Organizer ${i + 4}`,
+    start: `Start ${i + 4}`,
+    end: `End ${i + 4}`,
+    status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
+  })),
 ];
 
-const columns: Column<Transaction>[] = [
-  { header: "Title", accessorKey: "fromTo" },
-  { header: "Organizer Name", accessorKey: "date" },
-  { header: "Start Date", accessorKey: "date" },
-  { header: "End Date", accessorKey: "date" },
-  {
-    header: "Status",
-    accessorKey: "status",
-    cell: (transaction) => (
-      <span
-        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-          transaction.status === "Success"
-            ? "bg-green-50 text-green-600"
-            : transaction.status === "Pending"
-            ? "bg-yellow-50 text-yellow-600"
-            : "bg-gray-50 text-gray-600"
-        }`}
-      >
-        {transaction.status}
-      </span>
-    ),
-  },
-  {
-    header: "Action",
-    accessorKey: "id",
-    cell: () => (
-      <div className="flex items-center space-x-2">
-        {/* <Button variant="ghost" size="icon">
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-          </svg>
-        </Button> */}
-        {/* <Button variant="ghost" size="icon">
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            height="24"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-            <polyline points="16 6 12 2 8 6" />
-            <line x1="12" x2="12" y1="2" y2="15" />
-          </svg>
-        </Button> */}
-        <Button variant="ghost" size="icon">
-          <DotsHorizontalIcon className="h-4 w-4" />
+const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm }: any) => (
+  <Dialog open={isOpen} onOpenChange={onClose}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogDescription>
+          Are you sure you want to delete this exhibition? This action cannot be
+          undone.
+        </DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+        <Button
+          variant="destructive"
+          onClick={onClose}
+          className=" text-background"
+        >
+          Cancel
         </Button>
-      </div>
-    ),
-  },
-];
+        {/* <Button
+          variant="destructive"
+          onClick={onConfirm}
+          className="outline outline-red-500 text-red-500"
+        >
+          Delete
+        </Button> */}
+        <Button
+          variant="default"
+          onClick={onConfirm}
+          className=" text-white bg-[#FF0000]"
+        >
+          Delete
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+);
 
 export default function Company() {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
+    string | null
+  >(null);
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedExhibitionId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    // Implement the delete logic here
+    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
+    setIsDeleteDialogOpen(false);
+    setSelectedExhibitionId(null);
+  };
+  const columns: Column<Transaction>[] = [
+    { header: "Event Name", accessorKey: "eventName" },
+    { header: "Organizer Name", accessorKey: "organigerName" },
+    { header: "Start Date", accessorKey: "start" },
+    { header: "End Date", accessorKey: "end" },
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: (transaction) => (
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            transaction.status === "Active"
+              ? "bg-green-100 text-green-600"
+              : transaction.status === "Expired"
+              ? "bg-red-50 text-red-600"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {transaction.status}
+        </span>
+      ),
+    },
+    {
+      header: "Action",
+      accessorKey: "id",
+      cell: (cellItem) => {
+        return (
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon">
+              <SquarePen />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem.id)}
+            >
+              <Trash2 className="text-red-600" />
+            </Button>
+            {/* <Button variant="ghost" size="icon">
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button> */}
+          </div>
+        );
+      },
+    },
+  ];
   return (
     <div className="space-y-8 p-6">
       <DataTable
@@ -116,6 +165,13 @@ export default function Company() {
         data={transactions}
         title="Company List"
         viewAllLink="#"
+        addButtonTitle="Add Company"
+        itemsPerPage={5}
+      />
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteConfirm}
       />
     </div>
   );

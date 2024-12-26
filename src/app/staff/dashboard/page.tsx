@@ -1,45 +1,6 @@
-import { Header } from "@/components/dashboard/header";
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { Overview } from "@/components/dashboard/overview";
 import { Statistics } from "@/components/dashboard/statistics";
 import { SavingsWidget } from "@/components/dashboard/savingsWidget";
 import { TransactionsTable } from "@/components/dashboard/transactionsTable";
-import {
-  BarChart2,
-  HelpCircle,
-  Layout,
-  PiggyBank,
-  Settings,
-  User,
-  Wallet,
-  FileText,
-  Calendar,
-  Users,
-  Bell,
-  Briefcase,
-  Globe,
-} from "lucide-react";
-import { MenuSection } from "@/types/sidebar";
-
-const menuSections: MenuSection[] = [
-  {
-    name: "Records",
-    links: [
-      { href: "#", icon: Settings, text: "Exhibition" },
-      { href: "#", icon: User, text: "Expired Exhibition" },
-      { href: "#", icon: HelpCircle, text: "Conference" },
-      { href: "#", icon: HelpCircle, text: "Expired Conference" },
-      { href: "#", icon: HelpCircle, text: "Venue" },
-      { href: "#", icon: HelpCircle, text: "Association" },
-      { href: "#", icon: HelpCircle, text: "Company" },
-      { href: "#", icon: HelpCircle, text: "Key Contact" },
-    ],
-  },
-  {
-    name: "Report an issue",
-    links: [{ href: "#", icon: Settings, text: "Report" }],
-  },
-];
 
 export default function DashboardPage() {
   return (
@@ -52,9 +13,7 @@ export default function DashboardPage() {
             <div className="lg:col-span-2">
               <Statistics />
             </div>
-            <div>
-              <SavingsWidget />
-            </div>
+            <div>{/* <SavingsWidget /> */}</div>
           </div>
           <TransactionsTable />
         </main>

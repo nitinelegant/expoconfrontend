@@ -59,15 +59,3 @@ export function Sidebar({ menuSections }: SidebarProps) {
     </div>
   );
 }
-
-function SidebarLink({ href, icon: Icon, text }: MenuLink) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center space-x-2 rounded-lg px-2 py-2 text-gray-600 hover:bg-gray-50"
-    >
-      <Icon className="h-5 w-5" />
-      <span>{text}</span>
-    </Link>
-  );
-}

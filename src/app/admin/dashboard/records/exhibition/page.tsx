@@ -14,45 +14,46 @@ import {
 
 interface Transaction {
   id: string;
-  fromTo: string;
-  date: string;
-  description: string;
-  amount: string;
+  eventName: string;
+  organigerName: string;
+  start: string;
+  end: string;
   status: string;
 }
 
 const transactions: Transaction[] = [
   {
     id: "1",
-    fromTo: "Alcazar Events",
-    date: "Nitin Singh",
-    description: "Monthly salary",
-    amount: "+$1,500.0",
+    eventName: "Alcazar Events",
+    organigerName: "Nitin Singh",
+    start: "23 Oct",
+    end: "24 Oct",
     status: "Active",
   },
   {
     id: "2",
-    fromTo: "Amazon",
-    date: "1 Oct 2023",
-    description: "Electronics purchase",
-    amount: "-$299.99",
-    status: "Expired",
+    eventName: "Maruti Events",
+    organigerName: "Rohit Singh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Active",
   },
   {
     id: "3",
-    fromTo: "Freelance Client",
-    date: "30 Sep 2023",
-    description: "Web design project",
-    amount: "+$850.0",
-    status: "Pending",
+    eventName: "Honda Events",
+    organigerName: "Muzzamil Shaikh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Active",
   },
+
   // Add more transactions to test pagination
   ...Array.from({ length: 20 }, (_, i) => ({
     id: `${i + 4}`,
-    fromTo: `Event ${i + 4}`,
-    date: `Organizer ${i + 4}`,
-    description: `Description ${i + 4}`,
-    amount: `$${(Math.random() * 1000).toFixed(2)}`,
+    eventName: `Event ${i + 4}`,
+    organigerName: `Organizer ${i + 4}`,
+    start: `Start ${i + 4}`,
+    end: `End ${i + 4}`,
     status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
   })),
 ];
@@ -101,10 +102,10 @@ export default function Exhibition() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Event Name", accessorKey: "fromTo" },
-    { header: "Organizer Name", accessorKey: "date" },
-    { header: "Start Date", accessorKey: "date" },
-    { header: "End Date", accessorKey: "date" },
+    { header: "Event Name", accessorKey: "eventName" },
+    { header: "Organizer Name", accessorKey: "organigerName" },
+    { header: "Start Date", accessorKey: "start" },
+    { header: "End Date", accessorKey: "end" },
     {
       header: "Status",
       accessorKey: "status",

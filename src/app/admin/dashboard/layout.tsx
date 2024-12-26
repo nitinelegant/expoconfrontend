@@ -4,10 +4,8 @@ import { Header } from "@/components/dashboard/header";
 import {
   BarChart2,
   HelpCircle,
-  PiggyBank,
   Settings,
   User,
-  Wallet,
   FileText,
   Calendar,
   Users,
@@ -19,17 +17,13 @@ import {
   Receipt,
   ViewIcon,
   SpeakerIcon,
-  Library,
-  Search,
   Megaphone,
-  UserSearch,
-  Blocks,
-  ThumbsUp,
   Award,
   UserRound,
   FileTextIcon,
   SquareCheckBig,
   BriefcaseIcon,
+  UserPlus,
 } from "lucide-react";
 import { MenuSection } from "@/types/sidebar";
 
@@ -59,6 +53,18 @@ const menuSections: MenuSection[] = [
         href: "#",
         icon: SpeakerIcon,
         text: "Delegate",
+      },
+    ],
+  },
+  {
+    name: "Staff",
+    icon: UserPlus,
+
+    links: [
+      {
+        href: "/admin/dashboard/staff",
+        icon: LayoutDashboard,
+        text: "Staff Sign Up",
       },
     ],
   },

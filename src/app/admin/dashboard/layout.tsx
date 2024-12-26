@@ -25,13 +25,18 @@ import {
   UserSearch,
   Blocks,
   ThumbsUp,
+  Award,
+  UserRound,
+  FileTextIcon,
+  SquareCheckBig,
+  BriefcaseIcon,
 } from "lucide-react";
 import { MenuSection } from "@/types/sidebar";
 
 const menuSections: MenuSection[] = [
   {
     name: "User",
-    icon: User2,
+    icon: UserRound,
 
     links: [
       {
@@ -59,7 +64,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Records",
-    icon: Library,
+    icon: FileTextIcon,
     links: [
       {
         href: "/admin/dashboard/records/exhibition",
@@ -105,7 +110,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Featured",
-    icon: Blocks,
+    icon: Award,
     links: [
       {
         href: "/admin/dashboard/featured/organizer",
@@ -132,7 +137,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Approval",
-    icon: ThumbsUp,
+    icon: SquareCheckBig,
     links: [
       { href: "#", icon: Calendar, text: "Exhibition" },
       { href: "#", icon: Bell, text: "Conference" },
@@ -141,7 +146,7 @@ const menuSections: MenuSection[] = [
   },
   {
     name: "Jobs",
-    icon: UserSearch,
+    icon: BriefcaseIcon,
     links: [
       { href: "#", icon: Globe, text: "Openings" },
       { href: "#", icon: Settings, text: "Application" },

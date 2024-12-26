@@ -14,8 +14,8 @@ export function TransactionsTable() {
   return (
     <Card className="mt-6">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-black">Latest Transaction</CardTitle>
-        <Button variant="link" className="text-blue-500">
+        <CardTitle>Latest Transaction</CardTitle>
+        <Button variant="link" className="text-white-500 font-bold bg-blue-600">
           View all
         </Button>
       </CardHeader>
@@ -23,12 +23,6 @@ export function TransactionsTable() {
         <Table>
           <TableHeader>
             <TableRow className="text-black">
-              {/* <TableHead className="w-12">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-              </TableHead> */}
               <TableHead>To/From</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Description</TableHead>
@@ -38,13 +32,7 @@ export function TransactionsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow className="text-black">
-              {/* <TableCell>
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-              </TableCell> */}
+            <TableRow className="text-black ">
               <TableCell>
                 <div className="flex items-center space-x-2">
                   <div className="h-8 w-8 rounded bg-gray-200" />
@@ -61,7 +49,7 @@ export function TransactionsTable() {
               </TableCell>
               <TableCell>
                 <div className="flex items-center space-x-2">
-                  {/* <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon">
                     <svg
                       className=" h-4 w-4"
                       fill="none"
@@ -95,7 +83,7 @@ export function TransactionsTable() {
                       <polyline points="16 6 12 2 8 6" />
                       <line x1="12" x2="12" y1="2" y2="15" />
                     </svg>
-                  </Button> */}
+                  </Button>
                   <Button variant="ghost" size="icon">
                     <DotsHorizontalIcon className="h-4 w-4" />
                   </Button>

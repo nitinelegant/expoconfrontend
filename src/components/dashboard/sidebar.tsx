@@ -31,7 +31,7 @@ export function Sidebar({ menuSections }: SidebarProps) {
                   <Link
                     key={item.text}
                     href={item.href}
-                    className={`flex items-center space-x-2 rounded-lg px-2 py-2 ${
+                    className={`flex items-center space-x-2 rounded-lg px-7 py-2 ${
                       isActive
                         ? "bg-blue-600 text-white-600"
                         : "text-gray-600 hover:bg-gray-50"

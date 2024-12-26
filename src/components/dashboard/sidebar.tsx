@@ -2,19 +2,27 @@ import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { SidebarProps, MenuLink } from "../../types/sidebar";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export function Sidebar({ menuSections }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <div className="flex flex-col h-screen w-64 border-r bg-white">
-      <div className="p-6">
+      <div className="p-3">
         <div className="flex items-center space-x-2">
           {/* <div className="h-8 w-8 rounded-full bg-blue-500" /> */}
-          <span className="text-xl font-bold text-black">ExpoCon</span>
+          <Image
+            src={require("../../public/assets/images/logo.png")} // Path to the image file
+            alt="Description of the image"
+            width={150} // Desired width
+            height={100} // Desired height
+          />
+
+          {/* <span className="text-xl font-bold text-black">ExpoCon</span> */}
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto space-y-6 px-4 pb-4">
+      <nav className="flex-1 overflow-y-auto space-y-6 px-4 pb-4 mt-4">
         {menuSections.map((section) => (
           <div key={section.name}>
             <div className="flex  items-center">
@@ -33,7 +41,7 @@ export function Sidebar({ menuSections }: SidebarProps) {
                     href={item.href}
                     className={`flex items-center space-x-2 rounded-lg px-7 py-2 ${
                       isActive
-                        ? "bg-blue-600 text-white-600"
+                        ? "bg-primary text-white-600"
                         : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >

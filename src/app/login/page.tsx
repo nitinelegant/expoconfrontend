@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Image from "next/image";
 
 const Login = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const Login = () => {
       try {
         localStorage.setItem("authToken", "12345");
         localStorage.setItem("userType", "1");
-        router.replace("/admin/dashboard");
+        router.replace("/admin/");
         toast({
           title: "Success",
           description: "Logged in successfully",
@@ -50,15 +51,20 @@ const Login = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
         <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="flex items-center justify-center gap-2 mb-2">
             {/* <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
               <div className="w-3 h-3 bg-white rounded-full"></div>
             </div> */}
-            <h2 className="text-2xl font-bold text-gray-900">ExpoCon</h2>
+            <Image
+              src={require("../../public/assets/images/logo.png")} // Path to the image file
+              alt="Description of the image"
+              width={150} // Desired width
+              height={100} // Desired height
+            />
             {/* <span className="text-xl font-semibold text-black">ExpoCon</span> */}
           </div>
           {/* <h2 className="text-2xl font-bold text-gray-900">Login</h2> */}
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-gray-600">
             Please login into your account
           </p>
         </div>

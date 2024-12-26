@@ -367,7 +367,7 @@ const CompanyRegistrationForm = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-blue-600">
+            <Button type="submit" className="w-full bg-primary">
               Submit
             </Button>
           </form>

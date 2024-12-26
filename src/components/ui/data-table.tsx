@@ -61,7 +61,7 @@ export function DataTable<T>({
             {viewAllLink && (
               <Button
                 variant="link"
-                className="text-white-600 font-bold bg-blue-600 hover:no-underline"
+                className="text-white-600 font-bold bg-primary hover:no-underline"
               >
                 <PlusIcon />
                 {addButtonTitle}

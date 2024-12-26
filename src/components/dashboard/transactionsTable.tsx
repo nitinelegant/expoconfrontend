@@ -15,7 +15,7 @@ export function TransactionsTable() {
     <Card className="mt-6">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Latest Transaction</CardTitle>
-        <Button variant="link" className="text-white-500 font-bold bg-blue-600">
+        <Button variant="link" className="text-white-500 font-bold bg-primary">
           View all
         </Button>
       </CardHeader>

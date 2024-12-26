@@ -2,7 +2,7 @@ import { type LucideIcon } from "lucide-react";
 
 export interface MenuLink {
   href: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   text: string;
 }
 

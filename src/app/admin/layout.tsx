@@ -2,21 +2,7 @@
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
 import {
-  BarChart2,
   HelpCircle,
-  Settings,
-  User,
-  FileText,
-  Calendar,
-  Users,
-  Bell,
-  Briefcase,
-  Globe,
-  User2,
-  LayoutDashboard,
-  Receipt,
-  ViewIcon,
-  SpeakerIcon,
   Megaphone,
   Award,
   UserRound,
@@ -34,24 +20,21 @@ const menuSections: MenuSection[] = [
 
     links: [
       {
-        href: "/admin/dashboard/user/overview",
-        icon: LayoutDashboard,
+        href: "/admin/user/overview",
         text: "Overview",
       },
-      { href: "#", icon: User2, text: "Users" },
+      { href: "#", text: "Users" },
       {
         href: "#",
-        icon: ViewIcon,
+
         text: "Visitors",
       },
       {
         href: "#",
-        icon: Receipt,
         text: "Exhibit",
       },
       {
         href: "#",
-        icon: SpeakerIcon,
         text: "Delegate",
       },
     ],
@@ -62,13 +45,11 @@ const menuSections: MenuSection[] = [
 
     links: [
       {
-        href: "/admin/dashboard/staff",
-        icon: LayoutDashboard,
+        href: "/admin/staff",
         text: "Staff Registration",
       },
       {
-        href: "/admin/dashboard/staff/stafflist",
-        icon: LayoutDashboard,
+        href: "/admin/staff/stafflist",
         text: "Staff List",
       },
     ],
@@ -78,43 +59,41 @@ const menuSections: MenuSection[] = [
     icon: FileTextIcon,
     links: [
       {
-        href: "/admin/dashboard/records/exhibition",
-        icon: Settings,
+        href: "/admin/records/exhibition",
+
         text: "Exhibition",
       },
       {
-        href: "/admin/dashboard/records/expexhibition",
-        icon: User,
+        href: "/admin/records/expexhibition",
+
         text: "Expired Exhibition",
       },
       {
-        href: "/admin/dashboard/records/conference",
-        icon: HelpCircle,
+        href: "/admin/records/conference",
+
         text: "Conference",
       },
       {
-        href: "/admin/dashboard/records/expconference",
-        icon: HelpCircle,
+        href: "/admin/records/expconference",
+
         text: "Expired Conference",
       },
       {
-        href: "/admin/dashboard/records/venue",
-        icon: HelpCircle,
+        href: "/admin/records/venue",
+
         text: "Venue",
       },
       {
-        href: "/admin/dashboard/records/association",
-        icon: HelpCircle,
+        href: "/admin/records/association",
+
         text: "Association",
       },
       {
-        href: "/admin/dashboard/records/company",
-        icon: HelpCircle,
+        href: "/admin/records/company",
         text: "Company",
       },
       {
-        href: "/admin/dashboard/records/keycontact",
-        icon: HelpCircle,
+        href: "/admin/records/keycontact",
         text: "Key Contact",
       },
     ],
@@ -124,24 +103,20 @@ const menuSections: MenuSection[] = [
     icon: Award,
     links: [
       {
-        href: "/admin/dashboard/featured/organizer",
-        icon: BarChart2,
+        href: "/admin/featured/organizer",
         text: "Organizer",
       },
-      { href: "/admin/dashboard/records/venue", icon: FileText, text: "Venue" },
+      { href: "/admin/records/venue", text: "Venue" },
       {
-        href: "/admin/dashboard/records/exhibition",
-        icon: Users,
+        href: "/admin/records/exhibition",
         text: "Exhibition",
       },
       {
-        href: "/admin/dashboard/records/conference",
-        icon: Users,
+        href: "/admin/records/conference",
         text: "Conference",
       },
       {
-        href: "/admin/dashboard/featured/supplier",
-        icon: Users,
+        href: "/admin/featured/supplier",
         text: "Supplier",
       },
     ],
@@ -150,28 +125,28 @@ const menuSections: MenuSection[] = [
     name: "Approval",
     icon: SquareCheckBig,
     links: [
-      { href: "#", icon: Calendar, text: "Exhibition" },
-      { href: "#", icon: Bell, text: "Conference" },
-      { href: "#", icon: Briefcase, text: "Job" },
+      { href: "#", text: "Exhibition" },
+      { href: "#", text: "Conference" },
+      { href: "#", text: "Job" },
     ],
   },
   {
     name: "Jobs",
     icon: BriefcaseIcon,
     links: [
-      { href: "#", icon: Globe, text: "Openings" },
-      { href: "#", icon: Settings, text: "Application" },
+      { href: "#", text: "Openings" },
+      { href: "#", text: "Application" },
     ],
   },
   {
     name: "Advertisement",
     icon: Megaphone,
-    links: [{ href: "#", icon: Globe, text: "Advertisement" }],
+    links: [{ href: "#", text: "Advertisement" }],
   },
   {
     name: "Report an issue",
     icon: HelpCircle,
-    links: [{ href: "#", icon: HelpCircle, text: "Report an issue" }],
+    links: [{ href: "#", text: "Report an issue" }],
   },
 ];
 

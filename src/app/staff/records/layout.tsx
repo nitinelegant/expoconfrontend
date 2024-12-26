@@ -10,43 +10,35 @@ const menuSections: MenuSection[] = [
     icon: LayoutDashboard,
     links: [
       {
-        href: "/staff/dashboard/records/exhibition",
-        icon: Settings,
+        href: "/staff/records/exhibition",
         text: "Exhibition",
       },
       {
-        href: "/staff/dashboard/records/expexhibition",
-        icon: User,
+        href: "/staff/records/expexhibition",
         text: "Expired Exhibition",
       },
       {
-        href: "/staff/dashboard/records/conference",
-        icon: HelpCircle,
+        href: "/staff/records/conference",
         text: "Conference",
       },
       {
-        href: "/staff/dashboard/records/expconference",
-        icon: HelpCircle,
+        href: "/staff/records/expconference",
         text: "Expired Conference",
       },
       {
-        href: "/staff/dashboard/records/venue",
-        icon: HelpCircle,
+        href: "/staff/records/venue",
         text: "Venue",
       },
       {
-        href: "/staff/dashboard/records/association",
-        icon: HelpCircle,
+        href: "/staff/records/association",
         text: "Association",
       },
       {
-        href: "/staff/dashboard/records/company",
-        icon: HelpCircle,
+        href: "/staff/records/company",
         text: "Company",
       },
       {
-        href: "/staff/dashboard/records/keycontact",
-        icon: HelpCircle,
+        href: "/staff/records/keycontact",
         text: "Key Contact",
       },
     ],

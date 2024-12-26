@@ -76,7 +76,7 @@ const AddVenue = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <Card className="mx-auto max-w-3xl">
+      <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">
             Add Venue

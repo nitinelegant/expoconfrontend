@@ -95,7 +95,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm }: any) => (
   </Dialog>
 );
 
-export default function Exhibition() {
+export default function StaffList() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -163,9 +163,9 @@ export default function Exhibition() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Exhibition List"
+        title="Staff List"
         viewAllLink="#"
-        addButtonTitle="Add Exhibition"
+        addButtonTitle="Add Staff"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

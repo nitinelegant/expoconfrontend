@@ -64,7 +64,12 @@ const menuSections: MenuSection[] = [
       {
         href: "/admin/dashboard/staff",
         icon: LayoutDashboard,
-        text: "Staff Sign Up",
+        text: "Staff Registration",
+      },
+      {
+        href: "/admin/dashboard/staff/stafflist",
+        icon: LayoutDashboard,
+        text: "Staff List",
       },
     ],
   },

@@ -30,10 +30,10 @@ export default function SignupForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle>Staff Registration</CardTitle>
-          <CardDescription>Create account to get started</CardDescription>
+          <CardDescription>Add staff details to create account</CardDescription>
         </CardHeader>
         <CardContent>
           <Formik

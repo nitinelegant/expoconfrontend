@@ -52,13 +52,13 @@ export function Statistics() {
             <Bar
               dataKey="earnings"
               name="Earnings"
-              fill="#3b82f6"
+              fill="#395b99"
               radius={[4, 4, 0, 0]}
             />
             <Bar
               dataKey="spendings"
               name="Spendings"
-              fill="#93c5fd"
+              fill="#0083bc"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

@@ -51,7 +51,7 @@ const menuSections: MenuSection[] = [
     links: [
       { href: "/admin/featured/organizer", text: "Organizer" },
       { href: "/admin/records/venue", text: "Venue" },
-      { href: "/admin/records/exhibition", text: "Exhibition" },
+      { href: "/admin/featured/exhibition", text: "Exhibition" },
       { href: "/admin/records/conference", text: "Conference" },
       { href: "/admin/featured/supplier", text: "Supplier" },
     ],
@@ -60,7 +60,7 @@ const menuSections: MenuSection[] = [
     name: "Approval",
     icon: SquareCheckBig,
     links: [
-      { href: "#", text: "Exhibition" },
+      { href: "/admin/approval", text: "Exhibition" },
       { href: "#", text: "Conference" },
       { href: "#", text: "Job" },
     ],
@@ -73,14 +73,7 @@ const menuSections: MenuSection[] = [
       { href: "#", text: "Application" },
     ],
   },
-  {
-    name: "Staff",
-    icon: UserPlus,
-    links: [
-      { href: "/admin/staff", text: "Staff Registration" },
-      { href: "/admin/staff/stafflist", text: "Staff List" },
-    ],
-  },
+
   {
     name: "Advertisement",
     icon: Megaphone,
@@ -92,6 +85,14 @@ const menuSections: MenuSection[] = [
     icon: HelpCircle,
     mainLink: "#",
     links: [],
+  },
+  {
+    name: "Staff",
+    icon: UserPlus,
+    links: [
+      { href: "/admin/staff", text: "Staff Registration" },
+      { href: "/admin/staff/stafflist", text: "Staff List" },
+    ],
   },
 ];
 

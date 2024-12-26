@@ -30,7 +30,7 @@ const transactions: Transaction[] = [
     organigerName: "Nitin Singh",
     start: "23 Oct",
     end: "24 Oct",
-    status: "Inactive",
+    status: "Pending",
   },
   {
     id: "2",
@@ -38,7 +38,7 @@ const transactions: Transaction[] = [
     organigerName: "Rohit Singh",
     start: "23 Oct",
     end: "24 Oct",
-    status: "Inactive",
+    status: "Pending",
   },
   {
     id: "3",
@@ -46,7 +46,7 @@ const transactions: Transaction[] = [
     organigerName: "Muzzamil Shaikh",
     start: "23 Oct",
     end: "24 Oct",
-    status: "Inactive",
+    status: "Pending",
   },
 
   // Add more transactions to test pagination
@@ -56,7 +56,7 @@ const transactions: Transaction[] = [
     organigerName: `Organizer ${i + 4}`,
     start: `Start ${i + 4}`,
     end: `End ${i + 4}`,
-    status: ["Inactive", "Inactive", "Inactive"][Math.floor(Math.random() * 3)],
+    status: ["Pending", "Pending", "Pending"][Math.floor(Math.random() * 3)],
   })),
 ];
 
@@ -97,7 +97,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm }: any) => (
   </Dialog>
 );
 
-export default function ExpExhibition() {
+export default function Exhibition() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -127,8 +127,8 @@ export default function ExpExhibition() {
           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
             transaction.status === "Active"
               ? "bg-green-100 text-green-600"
-              : transaction.status === "Expired"
-              ? "bg-red-50 text-red-600"
+              : transaction.status === "Pending"
+              ? "bg-yellow-50 text-yellow-600"
               : "bg-gray-100 text-gray-600"
           }`}
         >
@@ -153,8 +153,46 @@ export default function ExpExhibition() {
               <Trash2 className="text-red-600" />
             </Button>
             {/* <Button variant="ghost" size="icon">
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button> */}
+              Approve
+            </Button>
+            <Button variant="ghost" size="icon">
+              Reject
+            </Button> */}
+          </div>
+        );
+      },
+    },
+    {
+      header: "",
+      accessorKey: "id",
+      cell: (cellItem) => {
+        return (
+          <div className="flex items-center space-x-2">
+            {/* <Button variant="ghost" size="icon">
+              <SquarePen />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem.id)}
+            >
+              <Trash2 className="text-red-600" />
+            </Button> */}
+            <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+            >
+              <h1>Approve</h1>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-primary text-primary"
+            >
+              Reject
+            </Button>
           </div>
         );
       },
@@ -165,7 +203,7 @@ export default function ExpExhibition() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Expired Exhibition"
+        title="Exhibition Approval"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

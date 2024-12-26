@@ -165,7 +165,7 @@ export default function Exhibition() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Exhibition List"
+        title="Exhibition"
         viewAllLink="/admin/forms/addexhibition"
         addButtonTitle="Add Exhibition"
         itemsPerPage={5}

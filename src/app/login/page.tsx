@@ -80,7 +80,7 @@ const Login = () => {
               </label>
               <Input
                 id="email"
-                placeholder="Type your email"
+                placeholder="Enter your email"
                 type="email"
                 {...formik.getFieldProps("email")}
                 className="mt-1 bg-white text-black "
@@ -101,7 +101,7 @@ const Login = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="Type your password"
+                placeholder="Enter your password"
                 {...formik.getFieldProps("password")}
                 className="mt-1 bg-white text-black"
               />

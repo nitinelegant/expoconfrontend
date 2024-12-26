@@ -78,7 +78,7 @@ export function DataTable<T>({
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
               <Input
                 type="search"
-                placeholder="Search here"
+                placeholder="Search"
                 className="w-[300px] pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}

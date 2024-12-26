@@ -30,7 +30,7 @@ const transactions: Transaction[] = [
     organigerName: "Nitin Singh",
     start: "23 Oct",
     end: "24 Oct",
-    status: "Inactive",
+    status: "Active",
   },
   {
     id: "2",
@@ -38,7 +38,7 @@ const transactions: Transaction[] = [
     organigerName: "Rohit Singh",
     start: "23 Oct",
     end: "24 Oct",
-    status: "Inactive",
+    status: "Active",
   },
   {
     id: "3",
@@ -46,7 +46,7 @@ const transactions: Transaction[] = [
     organigerName: "Muzzamil Shaikh",
     start: "23 Oct",
     end: "24 Oct",
-    status: "Inactive",
+    status: "Active",
   },
 
   // Add more transactions to test pagination
@@ -56,7 +56,7 @@ const transactions: Transaction[] = [
     organigerName: `Organizer ${i + 4}`,
     start: `Start ${i + 4}`,
     end: `End ${i + 4}`,
-    status: ["Inactive", "Inactive", "Inactive"][Math.floor(Math.random() * 3)],
+    status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
   })),
 ];
 
@@ -97,7 +97,7 @@ const DeleteConfirmationDialog = ({ isOpen, onClose, onConfirm }: any) => (
   </Dialog>
 );
 
-export default function ExpExhibition() {
+export default function Exhibition() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -165,7 +165,7 @@ export default function ExpExhibition() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Expired Exhibition"
+        title="Featured Exhibition"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

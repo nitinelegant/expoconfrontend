@@ -56,7 +56,7 @@ export default function SignupForm() {
                     id="name"
                     name="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Enter staff name"
                   />
                   {errors.name && touched.name && (
                     <p className="text-sm text-red-500 mt-1">{errors.name}</p>
@@ -70,7 +70,7 @@ export default function SignupForm() {
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="Enter staff email"
                   />
                   {errors.email && touched.email && (
                     <p className="text-sm text-red-500 mt-1">{errors.email}</p>
@@ -84,7 +84,7 @@ export default function SignupForm() {
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="********"
+                    placeholder="Enter staff password"
                   />
                   {errors.password && touched.password && (
                     <p className="text-sm text-red-500 mt-1">

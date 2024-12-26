@@ -10,6 +10,7 @@ export interface MenuSection {
   name: string;
   icon: LucideIcon;
   links: MenuLink[];
+  mainLink?: string;
 }
 export interface userSection {
   name: string;

@@ -166,7 +166,7 @@ export default function Exhibition() {
         columns={columns}
         data={transactions}
         title="Exhibition List"
-        viewAllLink="#"
+        viewAllLink="/admin/forms/addexhibition"
         addButtonTitle="Add Exhibition"
         itemsPerPage={5}
       />

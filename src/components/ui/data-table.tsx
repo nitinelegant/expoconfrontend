@@ -18,6 +18,7 @@ import {
   ChevronRightIcon,
   Search,
 } from "lucide-react";
+import Link from "next/link";
 
 export interface Column<T> {
   header: string;
@@ -84,13 +85,15 @@ export function DataTable<T>({
               />
             </div>
             {viewAllLink && (
-              <Button
-                variant="link"
-                className="text-white-600 font-bold bg-primary hover:no-underline"
-              >
-                <PlusIcon className="mr-2 h-4 w-4" />
-                {addButtonTitle}
-              </Button>
+              <Link href={viewAllLink}>
+                <Button
+                  variant="link"
+                  className="text-white-600 font-bold bg-primary hover:no-underline"
+                >
+                  <PlusIcon className="mr-2 h-4 w-4" />
+                  {addButtonTitle}
+                </Button>
+              </Link>
             )}
           </div>
         </CardHeader>

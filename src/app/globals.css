@@ -33,7 +33,7 @@ input[type="file"] {
 
 input[type="file"]::-webkit-file-upload-button {
   color: #fff; /* Text color of the button */
-  background-color: #007bff; /* Button background color */
+  background-color: #395b99; /* Button background color */
   border: none;
   padding: 5px 10px;
   border-radius: 4px;
@@ -42,5 +42,5 @@ input[type="file"]::-webkit-file-upload-button {
 }
 
 input[type="file"]::-webkit-file-upload-button:hover {
-  background-color: #0056b3; /* Darker shade on hover */
+  background-color: #395b99; /* Darker shade on hover */
 }

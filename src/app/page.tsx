@@ -1,27 +1,150 @@
 "use client";
-
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import Image from "next/image";
+import Logo from "@/public/assets/images/logo.png";
 
-export default function Home() {
+const Login = () => {
   const router = useRouter();
-  useEffect(() => {
-    // Ensure localStorage is accessed only on the client side
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("authToken");
-      console.log("token", token);
-      if (token) {
-        router.replace("/admin/dashboard");
-      } else {
-        router.push("/login");
+  const { toast } = useToast();
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        .required("Password is required"),
+    }),
+    onSubmit: (values) => {
+      try {
+        console.log("values", values);
+        if (
+          values.email === "admin@gmail.com" &&
+          values.password === "123456"
+        ) {
+          router.replace("/admin/");
+          return;
+        }
+        if (
+          values.email === "staff@gmail.com" &&
+          values.password === "123456"
+        ) {
+          router.replace("/staff/records");
+          return;
+        }
+        alert("Plese use valid credentials");
+        // localStorage.setItem("authToken", "12345");
+        // localStorage.setItem("userType", "1");
+        // router.replace("/admin/");
+        // toast({
+        //   title: "Success",
+        //   description: "Logged in successfully",
+        //   duration: 3000,
+        // });
+
+        // console.log("submitting form");
+      } catch (error) {
+        console.log("error", error);
+        toast({
+          title: "Error",
+          description: "Invalid credentials. Try demo@example.com / password",
+          variant: "destructive",
+        });
       }
-    }
-    router.push("/login");
+    },
   });
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <h1>Welcome to expocon</h1>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            {/* <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-3 h-3 bg-white rounded-full"></div>
+            </div> */}
+            <Image
+              src={Logo}
+              alt="Description of the image"
+              width={150} // Desired width
+              height={100} // Desired height
+            />
+            {/* <span className="text-xl font-semibold text-black">ExpoCon</span> */}
+          </div>
+          {/* <h2 className="text-2xl font-bold text-gray-900">Login</h2> */}
+          <p className="mt-1 text-sm text-gray-600">
+            Please login into your account
+          </p>
+        </div>
+
+        <form onSubmit={formik.handleSubmit} className="mt-8 space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email address
+              </label>
+              <Input
+                id="email"
+                placeholder="Enter your email"
+                type="email"
+                {...formik.getFieldProps("email")}
+                className="mt-1 bg-white text-black "
+              />
+              {formik.touched.email && formik.errors.email && (
+                <div className="text-sm text-red-600 mt-1">
+                  {formik.errors.email}
+                </div>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                {...formik.getFieldProps("password")}
+                className="mt-1 bg-white text-black"
+              />
+              {formik.touched.password && formik.errors.password && (
+                <div className="text-sm text-red-600 mt-1">
+                  {formik.errors.password}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <Button type="submit" className="w-full bg-primary">
+              Sign in
+            </Button>
+          </div>
+          <div className="text-black">
+            Please use credentials:- <br />
+            for Admin email:- admin@gmail.com <br />
+            password:- 123456 for staff email:- staff@gmail.com <br />
+            password:- 123456
+          </div>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default Login;

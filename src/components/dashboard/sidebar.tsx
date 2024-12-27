@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Link from "next/link";
 import { LogOut, ChevronDown, ChevronUp } from "lucide-react";
 import { SidebarProps, MenuLink, MenuSection } from "../../types/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import Logo from "@/public/assets/images/logo.png";
 
 export function Sidebar({ menuSections }: SidebarProps) {
   const pathname = usePathname();
@@ -43,11 +43,11 @@ export function Sidebar({ menuSections }: SidebarProps) {
             ) : (
               <ChevronDown className="h-4 w-4" />
             ))}
-          {item.badge && (
+          {/* {item.badge && (
             <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">
               {item.badge}
             </span>
-          )}
+          )} */}
         </div>
         {hasSubItems && isOpen && (
           <div className="ml-4">
@@ -107,12 +107,7 @@ export function Sidebar({ menuSections }: SidebarProps) {
     <div className="flex flex-col h-screen w-64 border-r bg-white">
       <div className="p-3">
         <div className="flex items-center space-x-2">
-          <Image
-            src={require("../../public/assets/images/logo.png")}
-            alt="Logo"
-            width={150}
-            height={100}
-          />
+          <Image src={Logo} alt="Logo" width={150} height={100} />
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto space-y-6 px-4 pb-4 mt-4">

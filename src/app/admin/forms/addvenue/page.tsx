@@ -19,14 +19,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { indianStates } from "@/utils/indianStates";
 
-const companyTypes = [
-  "Corporation",
-  "LLC",
-  "Partnership",
-  "Sole Proprietorship",
-  "Other",
-];
-
 const AddVenue = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 

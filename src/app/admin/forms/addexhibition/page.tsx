@@ -1,7 +1,7 @@
 "use client";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+// import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +37,7 @@ const years = Array.from({ length: 5 }, (_, i) =>
 const exhibitionTypes = ["B2B", "B2C", "Both"];
 
 const AddEvent = () => {
-  const [logoPreview, setLogoPreview] = useState(null);
+  // const [logoPreview, setLogoPreview] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -85,17 +85,17 @@ const AddEvent = () => {
     },
   });
 
-  const handleLogoChange = (event) => {
-    const file = event.currentTarget.files?.[0];
-    formik.setFieldValue("logo", file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleLogoChange = (event) => {
+  //   const file = event.currentTarget.files?.[0];
+  //   formik.setFieldValue("logo", file);
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setLogoPreview(reader.result);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -394,17 +394,17 @@ const AddEvent = () => {
                 <Input
                   id="logo"
                   type="file"
-                  onChange={handleLogoChange}
+                  // onChange={handleLogoChange}
                   accept="image/*"
                   className="cursor-pointer"
                 />
-                {logoPreview && (
+                {/* {logoPreview && (
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
                     className="mt-2 h-20 w-auto rounded-md"
                   />
-                )}
+                )} */}
               </div>
 
               <div className="space-y-2">
@@ -433,8 +433,8 @@ const AddEvent = () => {
                     className={
                       formik.touched.exhibitionType &&
                       formik.errors.exhibitionType
-                        ? "border-red-500"
-                        : ""
+                        ? "border-red-500 text-black"
+                        : "text-black"
                     }
                   >
                     <SelectValue placeholder="Select Exhibition Type" />
@@ -461,6 +461,7 @@ const AddEvent = () => {
               <Textarea
                 id="exhibitorProfile"
                 {...formik.getFieldProps("exhibitorProfile")}
+                className="text-black"
               />
             </div>
 
@@ -469,6 +470,7 @@ const AddEvent = () => {
               <Textarea
                 id="visitorProfile"
                 {...formik.getFieldProps("visitorProfile")}
+                className="text-black"
               />
             </div>
 

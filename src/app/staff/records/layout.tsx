@@ -1,7 +1,7 @@
 "use client";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Header } from "@/components/dashboard/header";
-import { HelpCircle, Settings, User, LayoutDashboard } from "lucide-react";
+import { HelpCircle, LayoutDashboard } from "lucide-react";
 import { MenuSection } from "@/types/sidebar";
 
 const menuSections: MenuSection[] = [

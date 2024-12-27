@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ const SignupSchema = Yup.object().shape({
 });
 
 export default function SignupForm() {
-  const [signupSuccess, setSignupSuccess] = useState(false);
+  // const [signupSuccess, setSignupSuccess] = useState(false);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -42,7 +41,7 @@ export default function SignupForm() {
             onSubmit={(values, { setSubmitting }) => {
               setTimeout(() => {
                 console.log(values);
-                setSignupSuccess(true);
+                // setSignupSuccess(true);
                 setSubmitting(false);
               }, 400);
             }}

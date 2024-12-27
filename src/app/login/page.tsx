@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
+import Logo from "@/public/assets/images/logo.png";
 
 const Login = () => {
   const router = useRouter();
@@ -25,25 +26,36 @@ const Login = () => {
         .required("Password is required"),
     }),
     onSubmit: (values) => {
-      try {
-        localStorage.setItem("authToken", "12345");
-        localStorage.setItem("userType", "1");
+      console.log("values", values);
+      if (values.email === "admin@gmail.com" && values.password === "123456") {
         router.replace("/admin/");
-        toast({
-          title: "Success",
-          description: "Logged in successfully",
-          duration: 3000,
-        });
-
-        console.log("submitting form");
-      } catch (error) {
-        console.log("error", error);
-        toast({
-          title: "Error",
-          description: "Invalid credentials. Try demo@example.com / password",
-          variant: "destructive",
-        });
+        return;
       }
+      if (values.email === "staff@gmail.com" && values.password === "123456") {
+        router.replace("/admin/");
+        return;
+      }
+      alert("Plese use valid credentials");
+
+      // try {
+      //   localStorage.setItem("authToken", "12345");
+      //   localStorage.setItem("userType", "1");
+      //   router.replace("/admin/");
+      //   toast({
+      //     title: "Success",
+      //     description: "Logged in successfully",
+      //     duration: 3000,
+      //   });
+
+      //   console.log("submitting form");
+      // } catch (error) {
+      //   console.log("error", error);
+      //   toast({
+      //     title: "Error",
+      //     description: "Invalid credentials. Try demo@example.com / password",
+      //     variant: "destructive",
+      //   });
+      // }
     },
   });
 
@@ -56,7 +68,7 @@ const Login = () => {
               <div className="w-3 h-3 bg-white rounded-full"></div>
             </div> */}
             <Image
-              src={require("../../public/assets/images/logo.png")} // Path to the image file
+              src={Logo}
               alt="Description of the image"
               width={150} // Desired width
               height={100} // Desired height

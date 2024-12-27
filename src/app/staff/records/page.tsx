@@ -1,6 +1,4 @@
 import { Statistics } from "@/components/dashboard/statistics";
-import { SavingsWidget } from "@/components/dashboard/savingsWidget";
-import { TransactionsTable } from "@/components/dashboard/transactionsTable";
 
 export default function DashboardPage() {
   return (
@@ -15,7 +13,6 @@ export default function DashboardPage() {
             </div>
             <div>{/* <SavingsWidget /> */}</div>
           </div>
-          <TransactionsTable />
         </main>
       </div>
     </div>

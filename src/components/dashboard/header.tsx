@@ -1,6 +1,4 @@
-import { Bell, Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 interface HeaderProps {
   title: string;
 }

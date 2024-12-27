@@ -1,9 +1,4 @@
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  ShoppingCart,
-  Wallet,
-} from "lucide-react";
+import { Wallet } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OverviewProps } from "@/types/sidebar";
 

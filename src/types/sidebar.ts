@@ -4,6 +4,7 @@ export interface MenuLink {
   href: string;
   icon?: LucideIcon;
   text: string;
+  subItems?: [];
 }
 
 export interface MenuSection {
@@ -22,4 +23,9 @@ export interface OverviewProps {
 
 export interface SidebarProps {
   menuSections: MenuSection[];
+}
+export interface DeleteConfirmationDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
 }

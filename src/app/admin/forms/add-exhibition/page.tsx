@@ -189,7 +189,7 @@ const AddEvent = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add Event</CardTitle>
+          <CardTitle className="text-2xl font-bold">Add Exhibition</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">

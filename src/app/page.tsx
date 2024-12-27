@@ -131,7 +131,7 @@ const Login = () => {
           </div>
 
           <div>
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full bg-primary text-white">
               Sign in
             </Button>
           </div>

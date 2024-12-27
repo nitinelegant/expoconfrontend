@@ -173,7 +173,7 @@ export default function Exhibition() {
         columns={columns}
         data={transactions}
         title="Exhibition"
-        viewAllLink="/admin/forms/addexhibition"
+        viewAllLink="/admin/forms/add-exhibition"
         addButtonTitle="Add Exhibition"
         itemsPerPage={5}
       />

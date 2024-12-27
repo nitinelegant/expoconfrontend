@@ -20,8 +20,17 @@ import {
   statesAndUnionTerritories,
   years,
 } from "@/constants/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Clock } from "lucide-react";
 
 const AddEvent = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   // const [logoPreview, setLogoPreview] = useState(null);
 
   const formik = useFormik({
@@ -50,12 +59,89 @@ const AddEvent = () => {
       eventType: Yup.string().required("Event Type is required"),
       eventFullName: Yup.string().required("Event Full Name is required"),
       eventShortName: Yup.string().required("Event Short Name is required"),
-      startDate: Yup.date().required("Start Date is required"),
+      year: Yup.string()
+        .required("Year is required")
+        .test("future-year", "Cannot select past year", (value) => {
+          if (!value) return true;
+          return parseInt(value) >= today.getFullYear();
+        }),
+      month: Yup.string()
+        .required("Month is required")
+        .test("future-month", "Cannot select past month", function (value) {
+          if (!value || !this.parent.year) return true;
+          const selectedYear = parseInt(this.parent.year);
+          const currentYear = today.getFullYear();
+          const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          const selectedMonthIndex = months.indexOf(value);
+
+          if (selectedYear > currentYear) return true;
+          if (selectedYear === currentYear) {
+            return selectedMonthIndex >= today.getMonth();
+          }
+          return false;
+        }),
+      startDate: Yup.date()
+        .required("Start Date is required")
+        .min(today, "Cannot select past date")
+        .test(
+          "year-match",
+          "Start date must be in selected year",
+          function (value) {
+            if (!value || !this.parent.year) return true;
+            return (
+              new Date(value).getFullYear().toString() === this.parent.year
+            );
+          }
+        ),
       endDate: Yup.date()
+        .required("End Date is required")
         .min(Yup.ref("startDate"), "End date must be after start date")
-        .required("End Date is required"),
-      month: Yup.string().required("Month is required"),
-      year: Yup.string().required("Year is required"),
+        .min(today, "Cannot select past date")
+        .test(
+          "year-match",
+          "End date must be in selected year",
+          function (value) {
+            if (!value || !this.parent.year) return true;
+            return (
+              new Date(value).getFullYear().toString() === this.parent.year
+            );
+          }
+        )
+        .test(
+          "month-match",
+          "End date must be in selected month",
+          function (value) {
+            if (!value || !this.parent.month) return true;
+            const months = [
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+            ];
+            return months[new Date(value).getMonth()] === this.parent.month;
+          }
+        ),
       entryFees: Yup.number().required("Entry Fees is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
@@ -81,6 +167,22 @@ const AddEvent = () => {
   //     reader.readAsDataURL(file);
   //   }
   // };
+
+  // Generate time options for the time picker
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hours = 0; hours < 24; hours++) {
+      for (let minutes = 0; minutes < 60; minutes += 30) {
+        const hour = hours.toString().padStart(2, "0");
+        const minute = minutes.toString().padStart(2, "0");
+        times.push(`${hour}:${minute}`);
+      }
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+  const todayStr = today.toISOString().split("T")[0];
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -168,91 +270,23 @@ const AddEvent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="startDate">Start Date*</Label>
-                <Input
-                  type="date"
-                  id="startDate"
-                  {...formik.getFieldProps("startDate")}
-                  className={
-                    formik.touched.startDate && formik.errors.startDate
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.startDate && formik.errors.startDate && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.startDate}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="endDate">End Date*</Label>
-                <Input
-                  type="date"
-                  id="endDate"
-                  {...formik.getFieldProps("endDate")}
-                  className={
-                    formik.touched.endDate && formik.errors.endDate
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.endDate && formik.errors.endDate && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.endDate}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="month">Month*</Label>
-                <Select
-                  onValueChange={(value) =>
-                    formik.setFieldValue("month", value)
-                  }
-                >
-                  <SelectTrigger
-                    className={
-                      formik.touched.month && formik.errors.month
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue
-                      placeholder="Select Month"
-                      className="text-black"
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month} value={month}>
-                        {month}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.month && formik.errors.month && (
-                  <p className="text-sm text-red-600">{formik.errors.month}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="year">Year*</Label>
                 <Select
-                  onValueChange={(value) => formik.setFieldValue("year", value)}
+                  onValueChange={(value) => {
+                    formik.setFieldValue("year", value);
+                    formik.setFieldValue("startDate", "");
+                    formik.setFieldValue("endDate", "");
+                  }}
                 >
                   <SelectTrigger
-                    className={
-                      formik.touched.year && formik.errors.year
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
+                    className={cn(
+                      "text-black",
+                      formik.touched.year &&
+                        formik.errors.year &&
+                        "border-red-500"
+                    )}
                   >
-                    <SelectValue
-                      placeholder="Select Year"
-                      className="text-black"
-                    />
+                    <SelectValue placeholder="Select Year" />
                   </SelectTrigger>
                   <SelectContent>
                     {years.map((year) => (
@@ -270,14 +304,154 @@ const AddEvent = () => {
                   <p className="text-sm text-red-600">{formik.errors.year}</p>
                 )}
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="timings">Timings</Label>
-                <Input id="timings" {...formik.getFieldProps("timings")} />
+                <Label htmlFor="month">Month*</Label>
+                <Select
+                  onValueChange={(value) => {
+                    formik.setFieldValue("month", value);
+                    formik.setFieldValue("startDate", "");
+                    formik.setFieldValue("endDate", "");
+                  }}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      "text-black",
+                      formik.touched.month &&
+                        formik.errors.month &&
+                        "border-red-500"
+                    )}
+                  >
+                    <SelectValue placeholder="Select Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem
+                        key={month}
+                        value={month}
+                        disabled={
+                          formik.values.year ===
+                            today.getFullYear().toString() &&
+                          months.indexOf(month) < today.getMonth()
+                        }
+                        className="hover:cursor-pointer"
+                      >
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.month && formik.errors.month && (
+                  <p className="text-sm text-red-600">{formik.errors.month}</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="entryFees">Entry Fees*</Label>
+                <Label htmlFor="startDate">Start Date*</Label>
+                <Input
+                  type="date"
+                  id="startDate"
+                  {...formik.getFieldProps("startDate")}
+                  className={cn(
+                    formik.touched.startDate &&
+                      formik.errors.startDate &&
+                      "border-red-500"
+                  )}
+                  min={todayStr}
+                  max={
+                    formik.values.year && formik.values.month
+                      ? `${formik.values.year}-${String(
+                          months.indexOf(formik.values.month) + 1
+                        ).padStart(2, "0")}-${new Date(
+                          formik.values.year,
+                          months.indexOf(formik.values.month) + 1,
+                          0
+                        ).getDate()}`
+                      : undefined
+                  }
+                />
+                {formik.touched.startDate && formik.errors.startDate && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.startDate}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="endDate">End Date*</Label>
+                <Input
+                  type="date"
+                  id="endDate"
+                  {...formik.getFieldProps("endDate")}
+                  className={cn(
+                    formik.touched.endDate &&
+                      formik.errors.endDate &&
+                      "border-red-500"
+                  )}
+                  min={formik.values.startDate || todayStr}
+                  max={
+                    formik.values.year && formik.values.month
+                      ? `${formik.values.year}-${String(
+                          months.indexOf(formik.values.month) + 1
+                        ).padStart(2, "0")}-${new Date(
+                          formik.values.year,
+                          months.indexOf(formik.values.month) + 1,
+                          0
+                        ).getDate()}`
+                      : undefined
+                  }
+                />
+                {formik.touched.endDate && formik.errors.endDate && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.endDate}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="time">Timings*</Label>
+                <Popover>
+                  <PopoverTrigger asChild className="bg-white text-black">
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal text-black",
+                        !formik.values.timings && "text-black",
+                        formik.touched.timings &&
+                          formik.errors.timings &&
+                          "border-red-500"
+                      )}
+                    >
+                      <Clock className="mr-2 h-4 w-4 text-black" />
+                      {formik.values.timings || "Select time"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="max-w-40 p-0 bg-white">
+                    <div className="h-64 overflow-y-auto p-2">
+                      {timeOptions.map((time) => (
+                        <Button
+                          key={time}
+                          variant="ghost"
+                          className="w-full justify-start text-black bg-white"
+                          onClick={() => {
+                            formik.setFieldValue("timings", time);
+                            formik.setFieldTouched("timings", true);
+                          }}
+                        >
+                          {time}
+                        </Button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                {formik.touched.timings && formik.errors.timings && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.timings}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="entryFees">Entry Fees* (₹)</Label>
                 <Input
                   type="number"
                   id="entryFees"
@@ -434,7 +608,11 @@ const AddEvent = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {exhibitionTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
+                      <SelectItem
+                        key={type}
+                        value={type}
+                        className="hover:cursor-pointer"
+                      >
                         {type}
                       </SelectItem>
                     ))}

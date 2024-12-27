@@ -86,9 +86,6 @@ export const months: string[] = [
 ];
 
 export const years: string[] = [
-  "2021",
-  "2022",
-  "2023",
   "2024",
   "2025",
   "2026",
@@ -97,6 +94,9 @@ export const years: string[] = [
   "2029",
   "2030",
   "2031",
+  "2032",
+  "2033",
+  "2034",
 ];
 
 export const eventTypes = ["Exhibition"];

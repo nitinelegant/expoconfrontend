@@ -3,7 +3,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,15 +16,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { indianStates } from "@/utils/indianStates";
-
-const companyTypes = [
-  "Corporation",
-  "LLC",
-  "Partnership",
-  "Sole Proprietorship",
-  "Other",
-];
+import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
 
 const CompanyRegistrationForm = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -51,19 +42,20 @@ const CompanyRegistrationForm = () => {
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       address: Yup.string().required("Address is required"),
-      phone: Yup.string().matches(/^[0-9]+$/, "Must be only digits"),
+      phone: Yup.string().matches(
+        /^\d{10}$/,
+        "Phone number must be exactly 10 digits"
+      ),
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
       googleMapLink: Yup.string().url("Must be a valid URL"),
       logo: Yup.mixed(),
-      featured: Yup.boolean(),
+      featured: Yup.boolean().required("Featured is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
-      password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
-        .required("Password is required"),
+      password: Yup.string().min(6, "Password must be at least 6 characters"),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -192,7 +184,7 @@ const CompanyRegistrationForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {indianStates.map((state) => (
+                    {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state}
                         value={state}
@@ -302,13 +294,13 @@ const CompanyRegistrationForm = () => {
                   className="cursor-pointer bg-white text-black"
                   accept="image/*"
                 />
-                {logoPreview && (
+                {/* {logoPreview && (
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
                     className="mt-2 h-20 w-auto rounded-md"
                   />
-                )}
+                )} */}
               </div>
             </div>
 
@@ -319,11 +311,20 @@ const CompanyRegistrationForm = () => {
                 onCheckedChange={(checked) =>
                   formik.setFieldValue("featured", checked)
                 }
+                {...formik.getFieldProps("featured")}
+                className={
+                  formik.touched.featured && formik.errors.featured
+                    ? "border-red-500"
+                    : ""
+                }
               />
               <Label htmlFor="featured" className="text-gray-900">
                 Featured*
               </Label>
             </div>
+            {formik.touched.featured && formik.errors.featured && (
+              <p className="text-sm text-red-600">{formik.errors.featured}</p>
+            )}
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
@@ -347,23 +348,13 @@ const CompanyRegistrationForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-gray-900">
-                  Password*
+                  Password
                 </Label>
                 <Input
                   id="password"
                   type="password"
                   {...formik.getFieldProps("password")}
-                  className={
-                    formik.touched.password && formik.errors.password
-                      ? "border-red-500"
-                      : ""
-                  }
                 />
-                {formik.touched.password && formik.errors.password && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.password}
-                  </p>
-                )}
               </div>
             </div>
 

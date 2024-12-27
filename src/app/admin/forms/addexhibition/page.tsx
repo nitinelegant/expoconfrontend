@@ -1,7 +1,6 @@
 "use client";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-// import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,27 +13,13 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { indianStates } from "@/utils/indianStates";
-
-const eventTypes = ["Trade Show", "Conference", "Exhibition", "Symposium"];
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-const years = Array.from({ length: 5 }, (_, i) =>
-  (new Date().getFullYear() + i).toString()
-);
-const exhibitionTypes = ["B2B", "B2C", "Both"];
+import {
+  eventTypes,
+  exhibitionTypes,
+  months,
+  statesAndUnionTerritories,
+  years,
+} from "@/constants/form";
 
 const AddEvent = () => {
   // const [logoPreview, setLogoPreview] = useState(null);
@@ -127,7 +112,11 @@ const AddEvent = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {eventTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
+                      <SelectItem
+                        key={type}
+                        value={type}
+                        className="hover:cursor-pointer"
+                      >
                         {type}
                       </SelectItem>
                     ))}
@@ -267,7 +256,11 @@ const AddEvent = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {years.map((year) => (
-                      <SelectItem key={year} value={year}>
+                      <SelectItem
+                        key={year}
+                        value={year}
+                        className="hover:cursor-pointer"
+                      >
                         {year}
                       </SelectItem>
                     ))}
@@ -338,7 +331,7 @@ const AddEvent = () => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {indianStates.map((state) => (
+                    {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state}
                         value={state}

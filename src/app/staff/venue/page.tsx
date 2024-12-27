@@ -168,7 +168,7 @@ export default function Venue() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Venue List"
+        title="Venue"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

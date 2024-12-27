@@ -173,7 +173,7 @@ export default function KeyContact() {
         columns={columns}
         data={transactions}
         title="Key Contacts"
-        viewAllLink="/admin/forms/addexhibition"
+        viewAllLink="/admin/forms/add-key-contact"
         addButtonTitle="Add Key Contact"
         itemsPerPage={5}
       />

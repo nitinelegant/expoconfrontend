@@ -168,7 +168,7 @@ export default function Company() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Company List"
+        title="Company"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

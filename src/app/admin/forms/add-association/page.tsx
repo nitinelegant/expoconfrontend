@@ -15,6 +15,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { associationTypes, statesAndUnionTerritories } from "@/constants/form";
+import BackButton from "@/components/BackButton";
 
 const AssociationForm = () => {
   const formik = useFormik({
@@ -43,6 +44,7 @@ const AssociationForm = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">

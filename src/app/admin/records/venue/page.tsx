@@ -173,7 +173,7 @@ export default function Venue() {
         columns={columns}
         data={transactions}
         title="Venue"
-        viewAllLink="/admin/forms/addexhibition"
+        viewAllLink="/admin/forms/add-venue"
         addButtonTitle="Add Venue"
         itemsPerPage={5}
       />

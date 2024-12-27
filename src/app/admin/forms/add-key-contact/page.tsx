@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
+import BackButton from "@/components/BackButton";
 
 const KeyContactForm = () => {
   const formik = useFormik({
@@ -45,6 +46,7 @@ const KeyContactForm = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">

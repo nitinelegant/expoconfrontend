@@ -168,7 +168,7 @@ export default function KeyContact() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Key Contact List"
+        title="Key Contact"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

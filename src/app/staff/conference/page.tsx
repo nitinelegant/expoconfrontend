@@ -168,7 +168,7 @@ export default function Conference() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Conference List"
+        title="Conference"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

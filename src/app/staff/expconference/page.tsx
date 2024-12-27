@@ -168,7 +168,7 @@ export default function ExpConference() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Expired Conference List"
+        title="Expired Conference"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

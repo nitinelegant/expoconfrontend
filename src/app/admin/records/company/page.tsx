@@ -173,7 +173,7 @@ export default function Company() {
         columns={columns}
         data={transactions}
         title="Companies"
-        viewAllLink="/admin/forms/addexhibition"
+        viewAllLink="/admin/forms/add-company"
         addButtonTitle="Add Company"
         itemsPerPage={5}
       />

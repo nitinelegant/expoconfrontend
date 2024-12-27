@@ -16,15 +16,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
+import { statesAndUnionTerritories } from "@/constants/form";
+import BackButton from "@/components/BackButton";
 
-const CompanyRegistrationForm = () => {
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+const AddVenue = () => {
+  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
       companyName: "",
-      companyType: "",
       city: "",
       state: "",
       address: "",
@@ -32,13 +32,13 @@ const CompanyRegistrationForm = () => {
       website: "",
       googleMapLink: "",
       logo: null,
+      layout: null,
       featured: false,
       email: "",
       password: "",
     },
     validationSchema: Yup.object({
       companyName: Yup.string().required("Company Name is required"),
-      companyType: Yup.string().required("Company Type is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       address: Yup.string().required("Address is required"),
@@ -49,13 +49,12 @@ const CompanyRegistrationForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      googleMapLink: Yup.string().url("Must be a valid URL"),
-      logo: Yup.mixed(),
-      featured: Yup.boolean().required("Featured is required"),
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      password: Yup.string().min(6, "Password must be at least 6 characters"),
+      googleMapLink: Yup.string()
+        .required("Google Map link is required")
+        .url("Must be a valid URL"),
+      logo: Yup.mixed().required("Venue photo is required"),
+      layout: Yup.mixed(),
+      featured: Yup.boolean(),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -68,7 +67,7 @@ const CompanyRegistrationForm = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
+        // setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -76,10 +75,11 @@ const CompanyRegistrationForm = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <Card className="mx-auto max-w-3xl">
+      <BackButton />
+      <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">
-            Add Company
+            Add Venue
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -87,7 +87,7 @@ const CompanyRegistrationForm = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="companyName" className="text-gray-900">
-                  Company Name*
+                  Venue Name*
                 </Label>
                 <Input
                   id="companyName"
@@ -101,47 +101,6 @@ const CompanyRegistrationForm = () => {
                 {formik.touched.companyName && formik.errors.companyName && (
                   <p className="text-sm text-red-600">
                     {formik.errors.companyName}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="companyType" className="text-gray-900">
-                  Company Type*
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    formik.setFieldValue("companyType", value)
-                  }
-                  defaultValue={formik.values.companyType}
-                >
-                  <SelectTrigger
-                    className={
-                      formik.touched.companyType && formik.errors.companyType
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue
-                      placeholder="Select Company Type"
-                      className="text-black"
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {companyTypes.map((type) => (
-                      <SelectItem
-                        key={type}
-                        value={type}
-                        className="text-black hover:cursor-pointer"
-                      >
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.companyType && formik.errors.companyType && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.companyType}
                   </p>
                 )}
               </div>
@@ -199,6 +158,24 @@ const CompanyRegistrationForm = () => {
                   <p className="text-sm text-red-600">{formik.errors.state}</p>
                 )}
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-gray-900">
+                  Phone (Landline)
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...formik.getFieldProps("phone")}
+                  className={
+                    formik.touched.phone && formik.errors.phone
+                      ? "border-red-500"
+                      : ""
+                  }
+                />
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="text-sm text-red-600">{formik.errors.phone}</p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -220,25 +197,6 @@ const CompanyRegistrationForm = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-gray-900">
-                  Phone (Landline)
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  {...formik.getFieldProps("phone")}
-                  className={
-                    formik.touched.phone && formik.errors.phone
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.phone && formik.errors.phone && (
-                  <p className="text-sm text-red-600">{formik.errors.phone}</p>
-                )}
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">
                   Website*
@@ -262,7 +220,7 @@ const CompanyRegistrationForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="googleMapLink" className="text-gray-900">
-                  Google Map Link
+                  Google Map Link*
                 </Label>
                 <Input
                   id="googleMapLink"
@@ -284,14 +242,19 @@ const CompanyRegistrationForm = () => {
 
               <div className="space-y-2 text-black">
                 <Label htmlFor="logo" className="text-gray-900">
-                  Upload Logo
+                  Upload Venue Photo*
                 </Label>
                 <Input
                   id="logo"
                   name="logo"
                   type="file"
                   onChange={handleLogoChange}
-                  className="cursor-pointer bg-white text-black"
+                  className={
+                    formik.touched.logo && formik.errors.logo
+                      ? "border-red-500"
+                      : ""
+                  }
+                  // className="cursor-pointer bg-white text-black"
                   accept="image/*"
                 />
                 {/* {logoPreview && (
@@ -301,6 +264,26 @@ const CompanyRegistrationForm = () => {
                     className="mt-2 h-20 w-auto rounded-md"
                   />
                 )} */}
+                {formik.touched.logo && formik.errors.logo && (
+                  <p className="text-sm text-red-600">{formik.errors.logo}</p>
+                )}
+              </div>
+
+              <div className="space-y-2 text-black">
+                <Label htmlFor="logo" className="text-gray-900">
+                  Upload Venue Layout
+                </Label>
+                <Input
+                  id="layout"
+                  name="layout"
+                  type="file"
+                  onChange={handleLogoChange}
+                  className="cursor-pointer bg-white text-black"
+                  accept="image/*"
+                />
+                {formik.touched.layout && formik.errors.layout && (
+                  <p className="text-sm text-red-600">{formik.errors.layout}</p>
+                )}
               </div>
             </div>
 
@@ -311,51 +294,10 @@ const CompanyRegistrationForm = () => {
                 onCheckedChange={(checked) =>
                   formik.setFieldValue("featured", checked)
                 }
-                {...formik.getFieldProps("featured")}
-                className={
-                  formik.touched.featured && formik.errors.featured
-                    ? "border-red-500"
-                    : ""
-                }
               />
               <Label htmlFor="featured" className="text-gray-900">
                 Featured*
               </Label>
-            </div>
-            {formik.touched.featured && formik.errors.featured && (
-              <p className="text-sm text-red-600">{formik.errors.featured}</p>
-            )}
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-900">
-                  Email Id*
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...formik.getFieldProps("email")}
-                  className={
-                    formik.touched.email && formik.errors.email
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.email && formik.errors.email && (
-                  <p className="text-sm text-red-600">{formik.errors.email}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-900">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  {...formik.getFieldProps("password")}
-                />
-              </div>
             </div>
 
             <Button type="submit" className="w-full bg-primary">
@@ -368,4 +310,4 @@ const CompanyRegistrationForm = () => {
   );
 };
 
-export default CompanyRegistrationForm;
+export default AddVenue;

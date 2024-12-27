@@ -174,7 +174,7 @@ export default function Conference() {
         columns={columns}
         data={transactions}
         title="Conference"
-        viewAllLink="/admin/forms/addexhibition"
+        viewAllLink="/admin/forms/add-conference"
         addButtonTitle="Add Conference"
         itemsPerPage={5}
       />

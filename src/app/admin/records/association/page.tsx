@@ -173,7 +173,7 @@ export default function Association() {
         columns={columns}
         data={transactions}
         title="Association"
-        viewAllLink="/admin/forms/addexhibition"
+        viewAllLink="/admin/forms/add-association"
         addButtonTitle="Add Association"
         itemsPerPage={5}
       />

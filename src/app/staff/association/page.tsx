@@ -168,7 +168,7 @@ export default function Association() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Association List"
+        title="Association"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

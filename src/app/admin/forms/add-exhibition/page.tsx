@@ -28,6 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
+import BackButton from "@/components/BackButton";
 
 const AddEvent = () => {
   const today = new Date();
@@ -187,6 +188,7 @@ const AddEvent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Add Exhibition</CardTitle>

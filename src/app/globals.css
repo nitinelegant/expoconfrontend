@@ -21,3 +21,26 @@ body {
   background: var(--background);
   font-family: var(--font-inter), sans-serif;
 }
+/* input file text css  */
+input[type="file"] {
+  color: #000; /* Sets the text color to black for better visibility */
+  background-color: #f0f0f0; /* Light background for contrast */
+  border: 1px solid #ccc; /* Add a border for better definition */
+  padding: 5px;
+  border-radius: 4px;
+  font-family: Arial, sans-serif; /* Ensure readable font */
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  color: #fff; /* Text color of the button */
+  background-color: #007bff; /* Button background color */
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}

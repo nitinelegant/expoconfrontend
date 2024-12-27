@@ -29,6 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
+import BackButton from "@/components/BackButton";
 
 const AddEvent = () => {
   const today = new Date();
@@ -188,6 +189,7 @@ const AddEvent = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Add Conference</CardTitle>
@@ -574,7 +576,7 @@ const AddEvent = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="exhibitionOrganizer">
-                  Confrence Organizer PCO
+                  Conference Organizer PCO
                 </Label>
                 <Input
                   id="exhibitionOrganizer"
@@ -583,7 +585,7 @@ const AddEvent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="segment">Confrence Segment</Label>
+                <Label htmlFor="segment">Conference Segment</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("segment", value)
@@ -596,7 +598,7 @@ const AddEvent = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select confrence segment" />
+                    <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((type) => (
@@ -630,7 +632,7 @@ const AddEvent = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select confrence segment" />
+                    <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((type) => (
@@ -664,7 +666,7 @@ const AddEvent = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select confrence segment" />
+                    <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((type) => (

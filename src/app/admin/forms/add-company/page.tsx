@@ -92,6 +92,7 @@ const CompanyRegistrationForm = () => {
                 </Label>
                 <Input
                   id="companyName"
+                  tabIndex={1}
                   {...formik.getFieldProps("companyName")}
                   className={
                     formik.touched.companyName && formik.errors.companyName
@@ -117,6 +118,7 @@ const CompanyRegistrationForm = () => {
                   defaultValue={formik.values.companyType}
                 >
                   <SelectTrigger
+                    tabIndex={2}
                     className={
                       formik.touched.companyType && formik.errors.companyType
                         ? "border-red-500 text-black"
@@ -153,6 +155,7 @@ const CompanyRegistrationForm = () => {
                 </Label>
                 <Input
                   id="city"
+                  tabIndex={3}
                   {...formik.getFieldProps("city")}
                   className={
                     formik.touched.city && formik.errors.city
@@ -176,6 +179,7 @@ const CompanyRegistrationForm = () => {
                   defaultValue={formik.values.state}
                 >
                   <SelectTrigger
+                    tabIndex={4}
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black"
@@ -208,6 +212,7 @@ const CompanyRegistrationForm = () => {
               </Label>
               <Textarea
                 id="address"
+                tabIndex={5}
                 {...formik.getFieldProps("address")}
                 className={
                   formik.touched.address && formik.errors.address
@@ -228,6 +233,7 @@ const CompanyRegistrationForm = () => {
                 <Input
                   id="phone"
                   type="tel"
+                  tabIndex={6}
                   {...formik.getFieldProps("phone")}
                   className={
                     formik.touched.phone && formik.errors.phone
@@ -247,6 +253,7 @@ const CompanyRegistrationForm = () => {
                 <Input
                   id="website"
                   type="url"
+                  tabIndex={7}
                   {...formik.getFieldProps("website")}
                   className={
                     formik.touched.website && formik.errors.website
@@ -268,6 +275,7 @@ const CompanyRegistrationForm = () => {
                 <Input
                   id="googleMapLink"
                   type="url"
+                  tabIndex={8}
                   {...formik.getFieldProps("googleMapLink")}
                   className={
                     formik.touched.googleMapLink && formik.errors.googleMapLink
@@ -291,6 +299,7 @@ const CompanyRegistrationForm = () => {
                   id="logo"
                   name="logo"
                   type="file"
+                  tabIndex={9}
                   onChange={handleLogoChange}
                   className="cursor-pointer bg-white text-black"
                   accept="image/*"
@@ -308,6 +317,7 @@ const CompanyRegistrationForm = () => {
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="featured"
+                tabIndex={10}
                 checked={formik.values.featured}
                 onCheckedChange={(checked) =>
                   formik.setFieldValue("featured", checked)
@@ -335,6 +345,7 @@ const CompanyRegistrationForm = () => {
                 <Input
                   id="email"
                   type="email"
+                  tabIndex={11}
                   {...formik.getFieldProps("email")}
                   className={
                     formik.touched.email && formik.errors.email
@@ -354,12 +365,13 @@ const CompanyRegistrationForm = () => {
                 <Input
                   id="password"
                   type="password"
+                  tabIndex={12}
                   {...formik.getFieldProps("password")}
                 />
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full bg-primary" tabIndex={13}>
               Submit
             </Button>
           </form>

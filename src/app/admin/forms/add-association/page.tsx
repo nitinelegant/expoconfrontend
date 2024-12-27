@@ -61,6 +61,7 @@ const AssociationForm = () => {
                 </Label>
                 <Input
                   id="website"
+                  tabIndex={1}
                   {...formik.getFieldProps("website")}
                   className={
                     formik.touched.website && formik.errors.website
@@ -82,6 +83,7 @@ const AssociationForm = () => {
                 </Label>
                 <Input
                   id="associationName"
+                  tabIndex={2}
                   {...formik.getFieldProps("associationName")}
                   className={
                     formik.touched.associationName &&
@@ -107,6 +109,7 @@ const AssociationForm = () => {
                 </Label>
                 <Input
                   id="city"
+                  tabIndex={3}
                   {...formik.getFieldProps("city")}
                   className={
                     formik.touched.city && formik.errors.city
@@ -130,6 +133,7 @@ const AssociationForm = () => {
                   defaultValue={formik.values.state}
                 >
                   <SelectTrigger
+                    tabIndex={4}
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black"
@@ -163,6 +167,7 @@ const AssociationForm = () => {
               </Label>
               <Textarea
                 id="address"
+                tabIndex={5}
                 {...formik.getFieldProps("address")}
                 className={
                   formik.touched.address && formik.errors.address
@@ -185,6 +190,7 @@ const AssociationForm = () => {
                 defaultValue={formik.values.type}
               >
                 <SelectTrigger
+                  tabIndex={6}
                   className={
                     formik.touched.type && formik.errors.type
                       ? "border-red-500 text-black"
@@ -211,7 +217,7 @@ const AssociationForm = () => {
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full bg-primary">
+            <Button type="submit" className="w-full bg-primary" tabIndex={7}>
               Submit
             </Button>
           </form>

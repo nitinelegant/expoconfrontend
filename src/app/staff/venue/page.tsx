@@ -158,6 +158,8 @@ export default function Venue() {
         data={transactions}
         title="Venue"
         itemsPerPage={5}
+        viewAllLink="/staff/forms/add-venue"
+        addButtonTitle="Add Venue"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

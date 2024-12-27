@@ -159,6 +159,8 @@ export default function KeyContact() {
         data={transactions}
         title="Key Contacts"
         itemsPerPage={5}
+        viewAllLink="/staff/forms/add-key-contact"
+        addButtonTitle="Add Key Contact"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

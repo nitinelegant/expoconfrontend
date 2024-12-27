@@ -15,8 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   eventTypes,
-  exhibitionTypes,
   months,
+  segmentTypes,
   statesAndUnionTerritories,
   years,
 } from "@/constants/form";
@@ -53,7 +53,7 @@ const AddEvent = () => {
       logo: null,
       frequency: "",
       exhibitionOrganizer: "",
-      exhibitionType: "",
+      segment: "",
       exhibitorProfile: "",
       visitorProfile: "",
     },
@@ -151,7 +151,7 @@ const AddEvent = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      exhibitionType: Yup.string().required("Exhibition Type is required"),
+      segment: Yup.string().required("Exhibition Type is required"),
     }),
     onSubmit: (values) => {
       console.log(values);
@@ -191,7 +191,7 @@ const AddEvent = () => {
       <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add Exhibition</CardTitle>
+          <CardTitle className="text-2xl font-bold">Add Conference</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
@@ -411,7 +411,7 @@ const AddEvent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="time">Timings*</Label>
+                <Label htmlFor="time">Timings</Label>
                 <Popover>
                   <PopoverTrigger asChild className="bg-white text-black">
                     <Button
@@ -525,10 +525,7 @@ const AddEvent = () => {
               </div>
               <VenueSearch
                 value={formik.values.venue}
-                onChange={(value) => {
-                  formik.setFieldValue("venue", value);
-                  formik.setFieldTouched("venue", true, false); // Set touched without validation
-                }}
+                onChange={(value) => formik.setFieldValue("venue", value)}
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
@@ -578,7 +575,7 @@ const AddEvent = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="exhibitionOrganizer">
-                  Exhibition Organizer
+                  Conference Organizer PCO
                 </Label>
                 <Input
                   id="exhibitionOrganizer"
@@ -587,24 +584,23 @@ const AddEvent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="exhibitionType">Exhibition Type*</Label>
+                <Label htmlFor="segment">Conference Segment</Label>
                 <Select
                   onValueChange={(value) =>
-                    formik.setFieldValue("exhibitionType", value)
+                    formik.setFieldValue("segment", value)
                   }
                 >
                   <SelectTrigger
                     className={
-                      formik.touched.exhibitionType &&
-                      formik.errors.exhibitionType
+                      formik.touched.segment && formik.errors.segment
                         ? "border-red-500 text-black"
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select Exhibition Type" />
+                    <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
-                    {exhibitionTypes.map((type) => (
+                    {segmentTypes.map((type) => (
                       <SelectItem
                         key={type}
                         value={type}
@@ -615,12 +611,79 @@ const AddEvent = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.exhibitionType &&
-                  formik.errors.exhibitionType && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.exhibitionType}
-                    </p>
-                  )}
+                {formik.touched.segment && formik.errors.segment && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.segment}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="segment">National Association</Label>
+                <Select
+                  onValueChange={(value) =>
+                    formik.setFieldValue("segment", value)
+                  }
+                >
+                  <SelectTrigger
+                    className={
+                      formik.touched.segment && formik.errors.segment
+                        ? "border-red-500 text-black"
+                        : "text-black"
+                    }
+                  >
+                    <SelectValue placeholder="Select conference segment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {segmentTypes.map((type) => (
+                      <SelectItem
+                        key={type}
+                        value={type}
+                        className="hover:cursor-pointer"
+                      >
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.segment && formik.errors.segment && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.segment}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="segment">Hosting Chapter</Label>
+                <Select
+                  onValueChange={(value) =>
+                    formik.setFieldValue("segment", value)
+                  }
+                >
+                  <SelectTrigger
+                    className={
+                      formik.touched.segment && formik.errors.segment
+                        ? "border-red-500 text-black"
+                        : "text-black"
+                    }
+                  >
+                    <SelectValue placeholder="Select conference segment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {segmentTypes.map((type) => (
+                      <SelectItem
+                        key={type}
+                        value={type}
+                        className="hover:cursor-pointer"
+                      >
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.segment && formik.errors.segment && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.segment}
+                  </p>
+                )}
               </div>
             </div>
 

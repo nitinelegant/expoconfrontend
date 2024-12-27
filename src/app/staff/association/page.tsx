@@ -158,6 +158,8 @@ export default function Association() {
         data={transactions}
         title="Association"
         itemsPerPage={5}
+        viewAllLink="/staff/forms/add-association"
+        addButtonTitle="Add Association"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

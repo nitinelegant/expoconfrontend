@@ -2,6 +2,7 @@
 import React, { FC, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
+import { Trash2, SquarePen } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DeleteConfirmationDialogProps } from "@/types/sidebar";
+
+interface DeleteConfirmationDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}
 
 interface Transaction {
   id: string;
@@ -105,6 +111,11 @@ export default function Conference() {
     string | null
   >(null);
 
+  const handleDeleteClick = (id: string) => {
+    setSelectedExhibitionId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
   const handleDeleteConfirm = () => {
     // Implement the delete logic here
     console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
@@ -133,29 +144,29 @@ export default function Conference() {
         </span>
       ),
     },
-    // {
-    //   header: "Action",
-    //   accessorKey: "id",
-    //   cell: (cellItem) => {
-    //     return (
-    //       <div className="flex items-center space-x-2">
-    //         <Button variant="ghost" size="icon">
-    //           <SquarePen />
-    //         </Button>
-    //         <Button
-    //           variant="ghost"
-    //           size="icon"
-    //           onClick={() => handleDeleteClick(cellItem.id)}
-    //         >
-    //           <Trash2 className="text-red-600" />
-    //         </Button>
-    //         {/* <Button variant="ghost" size="icon">
-    //             <DotsHorizontalIcon className="h-4 w-4" />
-    //           </Button> */}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      header: "Action",
+      accessorKey: "id",
+      cell: (cellItem) => {
+        return (
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon">
+              <SquarePen />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem.id)}
+            >
+              <Trash2 className="text-red-600" />
+            </Button>
+            {/* <Button variant="ghost" size="icon">
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button> */}
+          </div>
+        );
+      },
+    },
   ];
   return (
     <div className="space-y-8 p-6">
@@ -163,6 +174,8 @@ export default function Conference() {
         columns={columns}
         data={transactions}
         title="Conference"
+        viewAllLink="/staff/forms/add-conference"
+        addButtonTitle="Add Conference"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

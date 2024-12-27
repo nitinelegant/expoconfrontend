@@ -125,3 +125,27 @@ export const associationTypes: string[] = [
   "State Chapter / Branch",
   "State Association",
 ];
+
+export const segmentTypes: string[] = [
+  "Anaesthesiology",
+  "Orthopedics",
+  "Dermatology",
+  "Cardiology",
+  "Psychiatrist",
+  "Gastroenterology",
+  "ENT",
+  "Obstetrics & Gynecology",
+  "Neurology",
+  "Urology",
+  "Dentist",
+  "Diabetes Endocrinology",
+  "Ophthalmology",
+  "General Surgery",
+  "Infectious Diseases",
+  "Internal Medicine",
+  "Nutrition",
+  "Nephrology",
+  "Paediatrica & Neonatology",
+  "Pathology",
+  "Radiology",
+];

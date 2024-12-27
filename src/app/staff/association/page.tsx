@@ -100,7 +100,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Conference() {
+export default function Association() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -139,38 +139,36 @@ export default function Conference() {
         </span>
       ),
     },
-    {
-      header: "Action",
-      accessorKey: "id",
-      cell: (cellItem) => {
-        return (
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <SquarePen />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem.id)}
-            >
-              <Trash2 className="text-red-600" />
-            </Button>
-            {/* <Button variant="ghost" size="icon">
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button> */}
-          </div>
-        );
-      },
-    },
+    // {
+    //   header: "Action",
+    //   accessorKey: "id",
+    //   cell: (cellItem) => {
+    //     return (
+    //       <div className="flex items-center space-x-2">
+    //         <Button variant="ghost" size="icon">
+    //           <SquarePen />
+    //         </Button>
+    //         <Button
+    //           variant="ghost"
+    //           size="icon"
+    //           onClick={() => handleDeleteClick(cellItem.id)}
+    //         >
+    //           <Trash2 className="text-red-600" />
+    //         </Button>
+    //         {/* <Button variant="ghost" size="icon">
+    //             <DotsHorizontalIcon className="h-4 w-4" />
+    //           </Button> */}
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
         data={transactions}
-        title="Conference List"
-        viewAllLink="#"
-        addButtonTitle="Add Conference"
+        title="Association List"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

@@ -2,7 +2,6 @@
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +19,7 @@ import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 
 const CompanyRegistrationForm = () => {
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -69,7 +68,7 @@ const CompanyRegistrationForm = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
+        // setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }

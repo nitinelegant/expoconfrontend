@@ -29,36 +29,20 @@ interface DeleteConfirmationDialogProps {
 const transactions: Transaction[] = [
   {
     id: "1",
-    eventName: "Alcazar Events",
-    organigerName: "Nitin Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
-  },
-  {
-    id: "2",
-    eventName: "Maruti Events",
-    organigerName: "Rohit Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
-  },
-  {
-    id: "3",
-    eventName: "Honda Events",
-    organigerName: "Muzzamil Shaikh",
-    start: "23 Oct",
-    end: "24 Oct",
+    eventName: "Alex Evans ",
+    organigerName: "9999009999",
+    start: "admin@expcon.com",
+    end: "Maharashtra",
     status: "Active",
   },
 
   // Add more transactions to test pagination
   ...Array.from({ length: 20 }, (_, i) => ({
     id: `${i + 4}`,
-    eventName: `Event ${i + 4}`,
-    organigerName: `Organizer ${i + 4}`,
-    start: `Start ${i + 4}`,
-    end: `End ${i + 4}`,
+    eventName: `Full Name ${i + 4}`,
+    organigerName: `99778877${i + 29}0`,
+    start: `user${i + 4}@expcon.com`,
+    end: `Example ${i + 4}`,
     status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
   })),
 ];
@@ -122,27 +106,28 @@ export default function KeyContact() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Event Name", accessorKey: "eventName" },
-    { header: "Organizer Name", accessorKey: "organigerName" },
-    { header: "Start Date", accessorKey: "start" },
-    { header: "End Date", accessorKey: "end" },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: (transaction) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            transaction.status === "Active"
-              ? "bg-green-100 text-green-600"
-              : transaction.status === "Expired"
-              ? "bg-red-50 text-red-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          {transaction.status}
-        </span>
-      ),
-    },
+    { header: "Full Name", accessorKey: "eventName" },
+    { header: "Mobile Number", accessorKey: "organigerName" },
+    { header: "Email", accessorKey: "start" },
+    { header: "State", accessorKey: "end" },
+    { header: "Company", accessorKey: "end" },
+    // {
+    //   header: "Company",
+    //   accessorKey: "status",
+    //   cell: (transaction) => (
+    //     <span
+    //       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+    //         transaction.status === "Active"
+    //           ? "bg-green-100 text-green-600"
+    //           : transaction.status === "Expired"
+    //           ? "bg-red-50 text-red-600"
+    //           : "bg-gray-100 text-gray-600"
+    //       }`}
+    //     >
+    //       {transaction.status}
+    //     </span>
+    //   ),
+    // },
     {
       header: "Action",
       accessorKey: "id",

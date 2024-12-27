@@ -2,7 +2,7 @@
 import React, { FC, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -105,11 +105,6 @@ export default function ExpConference() {
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
   >(null);
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
-    setIsDeleteDialogOpen(true);
-  };
 
   const handleDeleteConfirm = () => {
     // Implement the delete logic here

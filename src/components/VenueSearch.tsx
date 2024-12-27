@@ -26,7 +26,7 @@ interface Venue {
 interface VenueSearchProps {
   value: string;
   onChange: (value: string) => void;
-  onBlur: (e: React.FocusEvent<any>) => void;
+  onBlur: (e: React.FocusEvent<string>) => void;
   error?: string;
   touched?: boolean;
 }

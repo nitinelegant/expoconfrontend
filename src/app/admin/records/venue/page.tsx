@@ -29,36 +29,20 @@ interface DeleteConfirmationDialogProps {
 const transactions: Transaction[] = [
   {
     id: "1",
-    eventName: "Alcazar Events",
-    organigerName: "Nitin Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
-  },
-  {
-    id: "2",
-    eventName: "Maruti Events",
-    organigerName: "Rohit Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
-  },
-  {
-    id: "3",
-    eventName: "Honda Events",
-    organigerName: "Muzzamil Shaikh",
-    start: "23 Oct",
-    end: "24 Oct",
+    eventName: "Alcazar",
+    organigerName: "Nagpur",
+    start: "Maharashtra",
+    end: "staff1@gmail.com",
     status: "Active",
   },
 
   // Add more transactions to test pagination
   ...Array.from({ length: 20 }, (_, i) => ({
-    id: `${i + 4}`,
-    eventName: `Event ${i + 4}`,
-    organigerName: `Organizer ${i + 4}`,
-    start: `Start ${i + 4}`,
-    end: `End ${i + 4}`,
+    id: `${i + 1}`,
+    eventName: `Company ${i + 1}`,
+    organigerName: `City ${i + 1}`,
+    start: `State ${i + 1}`,
+    end: `100${i + 1} ghatkopar near school`,
     status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
   })),
 ];
@@ -122,12 +106,12 @@ export default function Venue() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Event Name", accessorKey: "eventName" },
-    { header: "Organizer Name", accessorKey: "organigerName" },
-    { header: "Start Date", accessorKey: "start" },
-    { header: "End Date", accessorKey: "end" },
+    { header: "Venue Name", accessorKey: "eventName" },
+    { header: "City", accessorKey: "organigerName" },
+    { header: "State", accessorKey: "start" },
+    { header: "Address", accessorKey: "end" },
     {
-      header: "Status",
+      header: "Featured",
       accessorKey: "status",
       cell: (transaction) => (
         <span

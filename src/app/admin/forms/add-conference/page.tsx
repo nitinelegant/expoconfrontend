@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   eventTypes,
-  exhibitionTypes,
   months,
   segmentTypes,
   statesAndUnionTerritories,

@@ -119,3 +119,9 @@ export const companyTypes: string[] = [
   "Filming & Photography",
   "Event Manager",
 ];
+
+export const associationTypes: string[] = [
+  "National Association",
+  "State Chapter / Branch",
+  "State Association",
+];

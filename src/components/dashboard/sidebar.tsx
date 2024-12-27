@@ -10,8 +10,18 @@ export function Sidebar({ menuSections }: SidebarProps) {
   const router = useRouter();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
-  const toggleMenu = (itemText: string) => {
+  const toggleMenu = (itemText: string, event: React.MouseEvent) => {
+    // Prevent the event from bubbling up
+    event.stopPropagation();
     setOpenMenus((prev) => ({ ...prev, [itemText]: !prev[itemText] }));
+  };
+
+  const handleNavigation = (href: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    // Add a small delay to prevent the glitch during navigation
+    setTimeout(() => {
+      router.push(href);
+    }, 50);
   };
 
   const renderMenuItem = (item: MenuLink, depth: number = 0) => {
@@ -20,42 +30,43 @@ export function Sidebar({ menuSections }: SidebarProps) {
     const isOpen = openMenus[item.text];
 
     return (
-      <div key={item.text}>
+      <div key={item.text} className="transition-all duration-200 ease-in-out">
         <div
-          className={`flex items-center justify-between rounded-lg px-7 py-2 cursor-pointer ${
+          className={`flex items-center justify-between rounded-lg px-7 py-2 cursor-pointer transition-colors duration-200 ${
             isActive
               ? "bg-primary text-white"
               : "text-gray-600 hover:bg-gray-50"
           }`}
           style={{ paddingLeft: `${depth * 12 + 28}px` }}
-          onClick={() => {
+          onClick={(e) => {
             if (hasSubItems) {
-              toggleMenu(item.text);
+              toggleMenu(item.text, e);
             } else if (item.href) {
-              router.push(item.href);
+              handleNavigation(item.href, e);
             }
           }}
         >
           <span>{item.text}</span>
-          {hasSubItems &&
-            (isOpen ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            ))}
-          {/* {item.badge && (
-            <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">
-              {item.badge}
+          {hasSubItems && (
+            <span className="transition-transform duration-200">
+              {isOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </span>
-          )} */}
+          )}
         </div>
-        {hasSubItems && isOpen && (
-          <div className="ml-4">
-            {item.subItems!.map((subItem) =>
-              renderMenuItem(subItem, depth + 1)
-            )}
-          </div>
-        )}
+        <div
+          className={`ml-4 overflow-hidden transition-all duration-200 ease-in-out ${
+            hasSubItems && isOpen
+              ? "max-h-screen opacity-100"
+              : "max-h-0 opacity-0"
+          }`}
+        >
+          {hasSubItems &&
+            item.subItems!.map((subItem) => renderMenuItem(subItem, depth + 1))}
+        </div>
       </div>
     );
   };
@@ -65,18 +76,21 @@ export function Sidebar({ menuSections }: SidebarProps) {
     const hasLinks = section.links && section.links.length > 0;
 
     return (
-      <div key={section.name}>
+      <div
+        key={section.name}
+        className="transition-all duration-200 ease-in-out"
+      >
         <div
-          className={`flex items-center justify-between cursor-pointer rounded-lg px-4 py-2 ${
+          className={`flex items-center justify-between cursor-pointer rounded-lg px-4 py-2 transition-colors duration-200 ${
             isActive
               ? "bg-primary text-white"
               : "text-gray-600 hover:bg-gray-50"
           }`}
-          onClick={() => {
+          onClick={(e) => {
             if (section.mainLink) {
-              router.push(section.mainLink);
+              handleNavigation(section.mainLink, e);
             } else if (hasLinks) {
-              toggleMenu(section.name);
+              toggleMenu(section.name, e);
             }
           }}
         >
@@ -86,19 +100,25 @@ export function Sidebar({ menuSections }: SidebarProps) {
               {section.name}
             </p>
           </div>
-          {!section.mainLink &&
-            hasLinks &&
-            (openMenus[section.name] ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            ))}
+          {!section.mainLink && hasLinks && (
+            <span className="transition-transform duration-200">
+              {openMenus[section.name] ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </span>
+          )}
         </div>
-        {!section.mainLink && hasLinks && openMenus[section.name] && (
-          <div className="mt-2 space-y-1">
-            {section.links.map((item) => renderMenuItem(item))}
-          </div>
-        )}
+        <div
+          className={`mt-2 space-y-1 overflow-hidden transition-all duration-200 ease-in-out ${
+            !section.mainLink && hasLinks && openMenus[section.name]
+              ? "max-h-screen opacity-100"
+              : "max-h-0 opacity-0"
+          }`}
+        >
+          {section.links?.map((item) => renderMenuItem(item))}
+        </div>
       </div>
     );
   };
@@ -114,7 +134,7 @@ export function Sidebar({ menuSections }: SidebarProps) {
         {menuSections.map(renderSection)}
       </nav>
       <div className="p-4 border-t">
-        <button className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-600 hover:bg-gray-50">
+        <button className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-600 hover:bg-gray-50 transition-colors duration-200">
           <LogOut className="h-5 w-5" />
           <span>Log Out</span>
         </button>

@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
@@ -10,7 +9,6 @@ import Logo from "@/public/assets/images/logo.png";
 
 const Login = () => {
   const router = useRouter();
-  const { toast } = useToast();
 
   const formik = useFormik({
     initialValues: {

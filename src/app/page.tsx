@@ -135,12 +135,6 @@ const Login = () => {
               Sign in
             </Button>
           </div>
-          <div className="text-black">
-            Please use credentials:- <br />
-            for Admin email:- admin@gmail.com <br />
-            password:- 123456 for staff email:- staff@gmail.com <br />
-            password:- 123456
-          </div>
         </form>
       </div>
     </div>

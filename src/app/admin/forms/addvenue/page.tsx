@@ -3,7 +3,6 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +16,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { indianStates } from "@/utils/indianStates";
+import { statesAndUnionTerritories } from "@/constants/form";
 
 const AddVenue = () => {
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -32,6 +31,7 @@ const AddVenue = () => {
       website: "",
       googleMapLink: "",
       logo: null,
+      layout: null,
       featured: false,
       email: "",
       password: "",
@@ -41,12 +41,18 @@ const AddVenue = () => {
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       address: Yup.string().required("Address is required"),
-      phone: Yup.string().matches(/^[0-9]+$/, "Must be only digits"),
+      phone: Yup.string().matches(
+        /^\d{10}$/,
+        "Phone number must be exactly 10 digits"
+      ),
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      googleMapLink: Yup.string().url("Must be a valid URL"),
-      logo: Yup.mixed(),
+      googleMapLink: Yup.string()
+        .required("Google Map link is required")
+        .url("Must be a valid URL"),
+      logo: Yup.mixed().required("Venue photo is required"),
+      layout: Yup.mixed(),
       featured: Yup.boolean(),
     }),
     onSubmit: (values) => {
@@ -60,7 +66,7 @@ const AddVenue = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
+        // setLogoPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -135,7 +141,7 @@ const AddVenue = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {indianStates.map((state) => (
+                    {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state}
                         value={state}
@@ -148,6 +154,24 @@ const AddVenue = () => {
                 </Select>
                 {formik.touched.state && formik.errors.state && (
                   <p className="text-sm text-red-600">{formik.errors.state}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-gray-900">
+                  Phone (Landline)
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...formik.getFieldProps("phone")}
+                  className={
+                    formik.touched.phone && formik.errors.phone
+                      ? "border-red-500"
+                      : ""
+                  }
+                />
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="text-sm text-red-600">{formik.errors.phone}</p>
                 )}
               </div>
             </div>
@@ -172,25 +196,6 @@ const AddVenue = () => {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-gray-900">
-                  Phone (Landline)
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  {...formik.getFieldProps("phone")}
-                  className={
-                    formik.touched.phone && formik.errors.phone
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.phone && formik.errors.phone && (
-                  <p className="text-sm text-red-600">{formik.errors.phone}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">
                   Website*
                 </Label>
@@ -213,7 +218,7 @@ const AddVenue = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="googleMapLink" className="text-gray-900">
-                  Google Map Link
+                  Google Map Link*
                 </Label>
                 <Input
                   id="googleMapLink"
@@ -235,22 +240,47 @@ const AddVenue = () => {
 
               <div className="space-y-2 text-black">
                 <Label htmlFor="logo" className="text-gray-900">
-                  Upload Venue Photo
+                  Upload Venue Photo*
                 </Label>
                 <Input
                   id="logo"
                   name="logo"
                   type="file"
                   onChange={handleLogoChange}
-                  className="cursor-pointer bg-white text-black"
+                  className={
+                    formik.touched.logo && formik.errors.logo
+                      ? "border-red-500"
+                      : ""
+                  }
+                  // className="cursor-pointer bg-white text-black"
                   accept="image/*"
                 />
-                {logoPreview && (
+                {/* {logoPreview && (
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
                     className="mt-2 h-20 w-auto rounded-md"
                   />
+                )} */}
+                {formik.touched.logo && formik.errors.logo && (
+                  <p className="text-sm text-red-600">{formik.errors.logo}</p>
+                )}
+              </div>
+
+              <div className="space-y-2 text-black">
+                <Label htmlFor="logo" className="text-gray-900">
+                  Upload Venue Layout
+                </Label>
+                <Input
+                  id="layout"
+                  name="layout"
+                  type="file"
+                  onChange={handleLogoChange}
+                  className="cursor-pointer bg-white text-black"
+                  accept="image/*"
+                />
+                {formik.touched.layout && formik.errors.layout && (
+                  <p className="text-sm text-red-600">{formik.errors.layout}</p>
                 )}
               </div>
             </div>

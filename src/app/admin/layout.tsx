@@ -60,8 +60,8 @@ const menuSections: MenuSection[] = [
     name: "Approval",
     icon: SquareCheckBig,
     links: [
-      { href: "/admin/approval", text: "Exhibition" },
-      { href: "#", text: "Conference" },
+      { href: "/admin/approval/exhibition", text: "Exhibition" },
+      { href: "/admin/approval/conference", text: "Conference" },
       { href: "#", text: "Job" },
     ],
   },

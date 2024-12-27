@@ -33,17 +33,19 @@ const transactions: Transaction[] = [
     organigerName: "Nagpur",
     start: "Maharashtra",
     end: "staff1@gmail.com",
-    status: "Active",
+    status: "main@expocon.com",
   },
 
   // Add more transactions to test pagination
-  ...Array.from({ length: 20 }, (_, i) => ({
+  ...Array.from({ length: 10 }, (_, i) => ({
     id: `${i + 1}`,
     eventName: `Company ${i + 1}`,
     organigerName: `City ${i + 1}`,
     start: `State ${i + 1}`,
     end: `100${i + 1} ghatkopar near school`,
-    status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
+    status: ["www.expocon.com", "www.expocon1.com", "www.expocon2.com"][
+      Math.floor(Math.random() * 3)
+    ],
   })),
 ];
 
@@ -110,23 +112,8 @@ export default function Venue() {
     { header: "City", accessorKey: "organigerName" },
     { header: "State", accessorKey: "start" },
     { header: "Address", accessorKey: "end" },
-    {
-      header: "Featured",
-      accessorKey: "status",
-      cell: (transaction) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            transaction.status === "Active"
-              ? "bg-green-100 text-green-600"
-              : transaction.status === "Expired"
-              ? "bg-red-50 text-red-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          {transaction.status}
-        </span>
-      ),
-    },
+    { header: "Website", accessorKey: "status" },
+
     {
       header: "Action",
       accessorKey: "id",
@@ -157,9 +144,9 @@ export default function Venue() {
         columns={columns}
         data={transactions}
         title="Venue"
-        itemsPerPage={5}
         viewAllLink="/staff/forms/add-venue"
         addButtonTitle="Add Venue"
+        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

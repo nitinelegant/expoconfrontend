@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 interface HeaderProps {
   title: string;
 }
@@ -31,8 +32,8 @@ export function Header({ title }: HeaderProps) {
               <AvatarFallback>GA</AvatarFallback>
             </Avatar>
             <div className="text-sm">
-              <p className="font-medium">Graham Alexander</p>
-              <p className="text-gray-500">graham.a@email.com</p>
+              <p className="font-medium">Admin</p>
+              <p className="text-gray-500">ecpocon@gmail.com</p>
             </div>
           </div>
         </div>

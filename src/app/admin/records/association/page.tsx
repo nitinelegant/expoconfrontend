@@ -32,18 +32,22 @@ const transactions: Transaction[] = [
     eventName: "Alcazar",
     organigerName: "Www.expocon.com",
     start: "Maharashtra",
-    end: "staff1@gmail.com",
-    status: "Active",
+    end: "Maharashtra",
+    status: "H.No 10 Main Road Nagpur Maharashtra",
   },
 
   // Add more transactions to test pagination
-  ...Array.from({ length: 20 }, (_, i) => ({
+  ...Array.from({ length: 10 }, (_, i) => ({
     id: `${i + 1}`,
     eventName: `Company ${i + 1}`,
     organigerName: `Www.expocon${i + 1}.com`,
     start: `City${i + 1}`,
-    end: `State${i + 1}`,
-    status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
+    end: `Karnataka`,
+    status: [
+      "H.No 1096 Main Road Nagpur Maharashtra",
+      "H.No 1097 Main Road Nagpur Maharashtra",
+      "H.No 1091 Main Road Nagpur Maharashtra",
+    ][Math.floor(Math.random() * 3)],
   })),
 ];
 
@@ -110,23 +114,8 @@ export default function Association() {
     { header: "Website", accessorKey: "organigerName" },
     { header: "City", accessorKey: "start" },
     { header: "State", accessorKey: "end" },
-    {
-      header: "Type",
-      accessorKey: "status",
-      cell: (transaction) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            transaction.status === "Active"
-              ? "bg-green-100 text-green-600"
-              : transaction.status === "Expired"
-              ? "bg-red-50 text-red-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          {transaction.status}
-        </span>
-      ),
-    },
+    { header: "Address", accessorKey: "status" },
+
     {
       header: "Action",
       accessorKey: "id",
@@ -157,9 +146,9 @@ export default function Association() {
         columns={columns}
         data={transactions}
         title="Association"
+        itemsPerPage={5}
         viewAllLink="/admin/forms/add-association"
         addButtonTitle="Add Association"
-        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

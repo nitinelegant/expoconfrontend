@@ -29,25 +29,37 @@ interface DeleteConfirmationDialogProps {
 const transactions: Transaction[] = [
   {
     id: "1",
-    eventName: "Alcazar",
-    organigerName: "Www.expocon.com",
-    start: "Maharashtra",
-    end: "Maharashtra",
-    status: "H.No 10 Main Road Nagpur Maharashtra",
+    eventName: "Alcazar Events",
+    organigerName: "Nitin Singh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Pending",
+  },
+  {
+    id: "2",
+    eventName: "Maruti Events",
+    organigerName: "Rohit Singh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Pending",
+  },
+  {
+    id: "3",
+    eventName: "Honda Events",
+    organigerName: "Muzzamil Shaikh",
+    start: "23 Oct",
+    end: "24 Oct",
+    status: "Pending",
   },
 
   // Add more transactions to test pagination
-  ...Array.from({ length: 10 }, (_, i) => ({
-    id: `${i + 1}`,
-    eventName: `Company ${i + 1}`,
-    organigerName: `Www.expocon${i + 1}.com`,
-    start: `City${i + 1}`,
-    end: `Karnataka`,
-    status: [
-      "H.No 1096 Main Road Nagpur Maharashtra",
-      "H.No 1097 Main Road Nagpur Maharashtra",
-      "H.No 1091 Main Road Nagpur Maharashtra",
-    ][Math.floor(Math.random() * 3)],
+  ...Array.from({ length: 20 }, (_, i) => ({
+    id: `${i + 4}`,
+    eventName: `Event ${i + 4}`,
+    organigerName: `Organizer ${i + 4}`,
+    start: `Start ${i + 4}`,
+    end: `End ${i + 4}`,
+    status: ["Pending", "Pending", "Pending"][Math.floor(Math.random() * 3)],
   })),
 ];
 
@@ -92,7 +104,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Association() {
+export default function Exhibition() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -110,12 +122,27 @@ export default function Association() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Association Name", accessorKey: "eventName" },
-    { header: "Website", accessorKey: "organigerName" },
-    { header: "City", accessorKey: "start" },
-    { header: "State", accessorKey: "end" },
-    { header: "Address", accessorKey: "status" },
-
+    { header: "Event Name", accessorKey: "eventName" },
+    { header: "Organizer Name", accessorKey: "organigerName" },
+    { header: "Start Date", accessorKey: "start" },
+    { header: "End Date", accessorKey: "end" },
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: (transaction) => (
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            transaction.status === "Active"
+              ? "bg-green-100 text-green-600"
+              : transaction.status === "Pending"
+              ? "bg-yellow-50 text-yellow-600"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {transaction.status}
+        </span>
+      ),
+    },
     {
       header: "Action",
       accessorKey: "id",
@@ -133,8 +160,46 @@ export default function Association() {
               <Trash2 className="text-red-600" />
             </Button>
             {/* <Button variant="ghost" size="icon">
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button> */}
+              Approve
+            </Button>
+            <Button variant="ghost" size="icon">
+              Reject
+            </Button> */}
+          </div>
+        );
+      },
+    },
+    {
+      header: "",
+      accessorKey: "id",
+      cell: () => {
+        return (
+          <div className="flex items-center space-x-2">
+            {/* <Button variant="ghost" size="icon">
+              <SquarePen />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem.id)}
+            >
+              <Trash2 className="text-red-600" />
+            </Button> */}
+            <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+            >
+              <h1>Approve</h1>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-primary text-primary"
+            >
+              Reject
+            </Button>
           </div>
         );
       },
@@ -145,10 +210,8 @@ export default function Association() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Association"
+        title="Conference Approval"
         itemsPerPage={5}
-        viewAllLink="/staff/forms/add-association"
-        addButtonTitle="Add Association"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

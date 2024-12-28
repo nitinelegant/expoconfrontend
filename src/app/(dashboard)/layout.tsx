@@ -22,9 +22,16 @@ export default function DashboardLayout({
     {
       name: "Dashboard",
       icon: LayoutDashboard,
-      mainLink: "/",
+      mainLink: "/admin",
       links: [],
-      visible: ["admin", "staff"],
+      visible: ["admin"],
+    },
+    {
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      mainLink: "/staff",
+      links: [],
+      visible: ["staff"],
     },
     {
       name: "User",

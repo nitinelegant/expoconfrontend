@@ -5,6 +5,7 @@ import { TransactionsTable } from "@/components/dashboard/transactionsTable";
 import { Loader } from "@/components/ui/loader";
 import { useAuth } from "@/context/AuthContext";
 import { userSection } from "@/types/sidebar";
+import { withAuth } from "@/utils/withAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -27,7 +28,7 @@ const overviewSection: userSection[] = [
   },
 ];
 
-export default function Dashboard() {
+const Dashboard = () => {
   const router = useRouter();
   const { user, isAuthenticated, loading } = useAuth();
   console.log("user", user);
@@ -58,4 +59,6 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default withAuth(Dashboard, { requiredRole: ["admin"] });

@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { withAuth } from "@/utils/withAuth";
 
 const KeyContactForm = () => {
   const formik = useFormik({
@@ -227,4 +228,4 @@ const KeyContactForm = () => {
   );
 };
 
-export default KeyContactForm;
+export default withAuth(KeyContactForm, { requiredRole: ["admin", "staff"] });

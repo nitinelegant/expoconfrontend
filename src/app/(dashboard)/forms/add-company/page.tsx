@@ -17,8 +17,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { withAuth } from "@/utils/withAuth";
 
-const CompanyRegistrationForm = () => {
+const CompanyForm = () => {
   // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
@@ -381,4 +382,4 @@ const CompanyRegistrationForm = () => {
   );
 };
 
-export default CompanyRegistrationForm;
+export default withAuth(CompanyForm, { requiredRole: ["admin", "staff"] });

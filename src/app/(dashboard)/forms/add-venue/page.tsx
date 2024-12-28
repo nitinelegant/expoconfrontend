@@ -17,8 +17,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { withAuth } from "@/utils/withAuth";
 
-const AddVenue = () => {
+const VenueForm = () => {
   // const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
@@ -323,4 +324,4 @@ const AddVenue = () => {
   );
 };
 
-export default AddVenue;
+export default withAuth(VenueForm, { requiredRole: ["admin", "staff"] });

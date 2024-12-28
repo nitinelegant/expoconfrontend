@@ -29,8 +29,9 @@ import { cn } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
+import { withAuth } from "@/utils/withAuth";
 
-const AddEvent = () => {
+const ExhibitionForm = () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   // const [logoPreview, setLogoPreview] = useState(null);
@@ -741,4 +742,4 @@ const AddEvent = () => {
   );
 };
 
-export default AddEvent;
+export default withAuth(ExhibitionForm, { requiredRole: ["admin", "staff"] });

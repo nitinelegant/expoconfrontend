@@ -1,5 +1,4 @@
 "use client";
-
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { withAuth } from "@/utils/withAuth";
 
 const SignupSchema = Yup.object().shape({
   name: Yup.string()
@@ -24,7 +24,7 @@ const SignupSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function SignupForm() {
+const StaffOnBoardForm = () => {
   // const [signupSuccess, setSignupSuccess] = useState(false);
 
   return (
@@ -105,4 +105,6 @@ export default function SignupForm() {
       </Card>
     </div>
   );
-}
+};
+
+export default withAuth(StaffOnBoardForm, { requiredRole: ["admin"] });

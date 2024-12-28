@@ -14,7 +14,7 @@ const Loader: React.FC<LoaderProps> = ({
 }) => {
   const sizeClasses = {
     small: "w-4 h-4 border-2",
-    medium: "w-8 h-8 border-3",
+    medium: "w-8 h-8 border-4",
     large: "w-12 h-12 border-4",
   };
 
@@ -25,19 +25,21 @@ const Loader: React.FC<LoaderProps> = ({
   };
 
   return (
-    <div
-      className={cn(
-        "inline-block rounded-full animate-spin",
-        sizeClasses[size],
-        colorClasses[color],
-        "border-t-transparent",
-        className
-      )}
-      role="status"
-      aria-label="Loading"
-      {...props}
-    >
-      <span className="sr-only">Loading...</span>
+    <div className="h-screen flex  justify-center items-center">
+      <div
+        className={cn(
+          "inline-block rounded-full animate-spin ",
+          sizeClasses[size],
+          colorClasses[color],
+          "border-t-transparent",
+          className
+        )}
+        role="status"
+        aria-label="Loading"
+        {...props}
+      >
+        <span className="sr-only">Loading...</span>
+      </div>
     </div>
   );
 };

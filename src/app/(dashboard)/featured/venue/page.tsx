@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { withAuth } from "@/utils/withAuth";
 
 interface Transaction {
   id: string;
@@ -90,7 +91,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Venue() {
+const Venue = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -153,4 +154,6 @@ export default function Venue() {
       />
     </div>
   );
-}
+};
+
+export default withAuth(Venue, { requiredRole: ["admin"] });

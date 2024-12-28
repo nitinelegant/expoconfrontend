@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { associationTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
+import { withAuth } from "@/utils/withAuth";
 
 const AssociationForm = () => {
   const formik = useFormik({
@@ -227,4 +228,4 @@ const AssociationForm = () => {
   );
 };
 
-export default AssociationForm;
+export default withAuth(AssociationForm, { requiredRole: ["admin", "staff"] });

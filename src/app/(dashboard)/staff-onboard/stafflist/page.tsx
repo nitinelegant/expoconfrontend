@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DeleteConfirmationDialogProps } from "@/types/sidebar";
+import { withAuth } from "@/utils/withAuth";
 
 interface Transaction {
   id: string;
@@ -100,7 +101,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function StaffList() {
+const StaffList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -180,4 +181,5 @@ export default function StaffList() {
       />
     </div>
   );
-}
+};
+export default withAuth(StaffList, { requiredRole: ["admin"] });

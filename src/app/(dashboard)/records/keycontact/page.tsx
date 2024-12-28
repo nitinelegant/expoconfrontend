@@ -29,20 +29,20 @@ interface DeleteConfirmationDialogProps {
 const transactions: Transaction[] = [
   {
     id: "1",
-    eventName: "Alcazar",
-    organigerName: "Nagpur",
-    start: "Maharashtra",
-    end: "staff1@gmail.com",
+    eventName: "Alex Evans ",
+    organigerName: "9999009999",
+    start: "admin@expcon.com",
+    end: "Maharashtra",
     status: "Active",
   },
 
   // Add more transactions to test pagination
   ...Array.from({ length: 20 }, (_, i) => ({
-    id: `${i + 1}`,
-    eventName: `Company ${i + 1}`,
-    organigerName: `City ${i + 1}`,
-    start: `State ${i + 1}`,
-    end: `user${i + 1}@gmail.com`,
+    id: `${i + 4}`,
+    eventName: `Full Name ${i + 4}`,
+    organigerName: `99778877${i + 29}0`,
+    start: `user${i + 4}@expcon.com`,
+    end: `Example ${i + 4}`,
     status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
   })),
 ];
@@ -88,7 +88,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Company() {
+export default function KeyContact() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -106,27 +106,28 @@ export default function Company() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Compnay Name", accessorKey: "eventName" },
-    { header: "City", accessorKey: "organigerName" },
-    { header: "State", accessorKey: "start" },
-    { header: "Email Id", accessorKey: "end" },
-    {
-      header: "Featured",
-      accessorKey: "status",
-      cell: (transaction) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            transaction.status === "Active"
-              ? "bg-green-100 text-green-600"
-              : transaction.status === "Expired"
-              ? "bg-red-50 text-red-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          {transaction.status}
-        </span>
-      ),
-    },
+    { header: "Full Name", accessorKey: "eventName" },
+    { header: "Mobile Number", accessorKey: "organigerName" },
+    { header: "Email", accessorKey: "start" },
+    { header: "State", accessorKey: "end" },
+    { header: "Company", accessorKey: "end" },
+    // {
+    //   header: "Company",
+    //   accessorKey: "status",
+    //   cell: (transaction) => (
+    //     <span
+    //       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+    //         transaction.status === "Active"
+    //           ? "bg-green-100 text-green-600"
+    //           : transaction.status === "Expired"
+    //           ? "bg-red-50 text-red-600"
+    //           : "bg-gray-100 text-gray-600"
+    //       }`}
+    //     >
+    //       {transaction.status}
+    //     </span>
+    //   ),
+    // },
     {
       header: "Action",
       accessorKey: "id",
@@ -156,9 +157,9 @@ export default function Company() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Companies"
-        viewAllLink="/admin/forms/add-company"
-        addButtonTitle="Add Company"
+        title="Key Contacts"
+        viewAllLink="/forms/add-key-contact"
+        addButtonTitle="Add Key Contact"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

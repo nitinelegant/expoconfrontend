@@ -30,22 +30,24 @@ const transactions: Transaction[] = [
   {
     id: "1",
     eventName: "Alcazar",
-    organigerName: "Nagpur",
+    organigerName: "Www.expocon.com",
     start: "Maharashtra",
-    end: "staff1@gmail.com",
-    status: "main@expocon.com",
+    end: "Maharashtra",
+    status: "H.No 10 Main Road Nagpur Maharashtra",
   },
 
   // Add more transactions to test pagination
   ...Array.from({ length: 10 }, (_, i) => ({
     id: `${i + 1}`,
     eventName: `Company ${i + 1}`,
-    organigerName: `City ${i + 1}`,
-    start: `State ${i + 1}`,
-    end: `100${i + 1} ghatkopar near school`,
-    status: ["www.expocon.com", "www.expocon1.com", "www.expocon2.com"][
-      Math.floor(Math.random() * 3)
-    ],
+    organigerName: `Www.expocon${i + 1}.com`,
+    start: `City${i + 1}`,
+    end: `Karnataka`,
+    status: [
+      "H.No 1096 Main Road Nagpur Maharashtra",
+      "H.No 1097 Main Road Nagpur Maharashtra",
+      "H.No 1091 Main Road Nagpur Maharashtra",
+    ][Math.floor(Math.random() * 3)],
   })),
 ];
 
@@ -90,7 +92,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Venue() {
+export default function Association() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -108,11 +110,11 @@ export default function Venue() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Venue Name", accessorKey: "eventName" },
-    { header: "City", accessorKey: "organigerName" },
-    { header: "State", accessorKey: "start" },
-    { header: "Address", accessorKey: "end" },
-    { header: "Website", accessorKey: "status" },
+    { header: "Association Name", accessorKey: "eventName" },
+    { header: "Website", accessorKey: "organigerName" },
+    { header: "City", accessorKey: "start" },
+    { header: "State", accessorKey: "end" },
+    { header: "Address", accessorKey: "status" },
 
     {
       header: "Action",
@@ -143,10 +145,10 @@ export default function Venue() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Venue"
-        viewAllLink="/admin/forms/add-venue"
-        addButtonTitle="Add Venue"
+        title="Association"
         itemsPerPage={5}
+        viewAllLink="/forms/add-association"
+        addButtonTitle="Add Association"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

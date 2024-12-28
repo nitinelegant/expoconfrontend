@@ -12,12 +12,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface DeleteConfirmationDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-}
-
 interface Transaction {
   id: string;
   eventName: string;
@@ -25,6 +19,11 @@ interface Transaction {
   start: string;
   end: string;
   status: string;
+}
+interface DeleteConfirmationDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
 }
 
 const transactions: Transaction[] = [
@@ -105,7 +104,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Conference() {
+export default function Exhibition() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -173,9 +172,9 @@ export default function Conference() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Conference"
-        viewAllLink="/admin/forms/add-conference"
-        addButtonTitle="Add Conference"
+        title="Exhibition"
+        viewAllLink="/forms/add-exhibition"
+        addButtonTitle="Add Exhibition"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

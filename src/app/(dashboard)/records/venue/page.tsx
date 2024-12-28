@@ -2,7 +2,7 @@
 import React, { FC, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-
+import { Trash2, SquarePen } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DeleteConfirmationDialogProps } from "@/types/sidebar";
 
 interface Transaction {
   id: string;
@@ -21,41 +20,32 @@ interface Transaction {
   end: string;
   status: string;
 }
+interface DeleteConfirmationDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}
 
 const transactions: Transaction[] = [
   {
     id: "1",
-    eventName: "Alcazar Events",
-    organigerName: "Nitin Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
-  },
-  {
-    id: "2",
-    eventName: "Maruti Events",
-    organigerName: "Rohit Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
-  },
-  {
-    id: "3",
-    eventName: "Honda Events",
-    organigerName: "Muzzamil Shaikh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Active",
+    eventName: "Alcazar",
+    organigerName: "Nagpur",
+    start: "Maharashtra",
+    end: "staff1@gmail.com",
+    status: "main@expocon.com",
   },
 
   // Add more transactions to test pagination
-  ...Array.from({ length: 20 }, (_, i) => ({
-    id: `${i + 4}`,
-    eventName: `Event ${i + 4}`,
-    organigerName: `Organizer ${i + 4}`,
-    start: `Start ${i + 4}`,
-    end: `End ${i + 4}`,
-    status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
+  ...Array.from({ length: 10 }, (_, i) => ({
+    id: `${i + 1}`,
+    eventName: `Company ${i + 1}`,
+    organigerName: `City ${i + 1}`,
+    start: `State ${i + 1}`,
+    end: `100${i + 1} ghatkopar near school`,
+    status: ["www.expocon.com", "www.expocon1.com", "www.expocon2.com"][
+      Math.floor(Math.random() * 3)
+    ],
   })),
 ];
 
@@ -100,11 +90,16 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function ExpExhibition() {
+export default function Venue() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
   >(null);
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedExhibitionId(id);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleDeleteConfirm = () => {
     // Implement the delete logic here
@@ -113,57 +108,44 @@ export default function ExpExhibition() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Event Name", accessorKey: "eventName" },
-    { header: "Organizer Name", accessorKey: "organigerName" },
-    { header: "Start Date", accessorKey: "start" },
-    { header: "End Date", accessorKey: "end" },
+    { header: "Venue Name", accessorKey: "eventName" },
+    { header: "City", accessorKey: "organigerName" },
+    { header: "State", accessorKey: "start" },
+    { header: "Address", accessorKey: "end" },
+    { header: "Website", accessorKey: "status" },
+
     {
-      header: "Status",
-      accessorKey: "status",
-      cell: (transaction) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            transaction.status === "Active"
-              ? "bg-green-100 text-green-600"
-              : transaction.status === "Expired"
-              ? "bg-red-50 text-red-600"
-              : "bg-gray-100 text-gray-600"
-          }`}
-        >
-          {transaction.status}
-        </span>
-      ),
+      header: "Action",
+      accessorKey: "id",
+      cell: (cellItem) => {
+        return (
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon">
+              <SquarePen />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem.id)}
+            >
+              <Trash2 className="text-red-600" />
+            </Button>
+            {/* <Button variant="ghost" size="icon">
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button> */}
+          </div>
+        );
+      },
     },
-    // {
-    //   header: "Action",
-    //   accessorKey: "id",
-    //   cell: (cellItem) => {
-    //     return (
-    //       <div className="flex items-center space-x-2">
-    //         <Button variant="ghost" size="icon">
-    //           <SquarePen />
-    //         </Button>
-    //         <Button
-    //           variant="ghost"
-    //           size="icon"
-    //           onClick={() => handleDeleteClick(cellItem.id)}
-    //         >
-    //           <Trash2 className="text-red-600" />
-    //         </Button>
-    //         {/* <Button variant="ghost" size="icon">
-    //             <DotsHorizontalIcon className="h-4 w-4" />
-    //           </Button> */}
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
         data={transactions}
-        title="Expired Exhibition"
+        title="Venue"
+        viewAllLink="/forms/add-venue"
+        addButtonTitle="Add Venue"
         itemsPerPage={5}
       />
       <DeleteConfirmationDialog

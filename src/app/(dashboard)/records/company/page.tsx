@@ -30,24 +30,20 @@ const transactions: Transaction[] = [
   {
     id: "1",
     eventName: "Alcazar",
-    organigerName: "Www.expocon.com",
+    organigerName: "Nagpur",
     start: "Maharashtra",
-    end: "Maharashtra",
-    status: "H.No 10 Main Road Nagpur Maharashtra",
+    end: "staff1@gmail.com",
+    status: "Active",
   },
 
   // Add more transactions to test pagination
-  ...Array.from({ length: 10 }, (_, i) => ({
+  ...Array.from({ length: 20 }, (_, i) => ({
     id: `${i + 1}`,
     eventName: `Company ${i + 1}`,
-    organigerName: `Www.expocon${i + 1}.com`,
-    start: `City${i + 1}`,
-    end: `Karnataka`,
-    status: [
-      "H.No 1096 Main Road Nagpur Maharashtra",
-      "H.No 1097 Main Road Nagpur Maharashtra",
-      "H.No 1091 Main Road Nagpur Maharashtra",
-    ][Math.floor(Math.random() * 3)],
+    organigerName: `City ${i + 1}`,
+    start: `State ${i + 1}`,
+    end: `user${i + 1}@gmail.com`,
+    status: ["Active", "InActive", "Completed"][Math.floor(Math.random() * 3)],
   })),
 ];
 
@@ -92,7 +88,7 @@ const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
   </Dialog>
 );
 
-export default function Association() {
+export default function Company() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -110,12 +106,27 @@ export default function Association() {
     setSelectedExhibitionId(null);
   };
   const columns: Column<Transaction>[] = [
-    { header: "Association Name", accessorKey: "eventName" },
-    { header: "Website", accessorKey: "organigerName" },
-    { header: "City", accessorKey: "start" },
-    { header: "State", accessorKey: "end" },
-    { header: "Address", accessorKey: "status" },
-
+    { header: "Compnay Name", accessorKey: "eventName" },
+    { header: "City", accessorKey: "organigerName" },
+    { header: "State", accessorKey: "start" },
+    { header: "Email Id", accessorKey: "end" },
+    {
+      header: "Featured",
+      accessorKey: "status",
+      cell: (transaction) => (
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            transaction.status === "Active"
+              ? "bg-green-100 text-green-600"
+              : transaction.status === "Expired"
+              ? "bg-red-50 text-red-600"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {transaction.status}
+        </span>
+      ),
+    },
     {
       header: "Action",
       accessorKey: "id",
@@ -145,10 +156,10 @@ export default function Association() {
       <DataTable
         columns={columns}
         data={transactions}
-        title="Association"
+        title="Companies"
+        viewAllLink="/forms/add-company"
+        addButtonTitle="Add Company"
         itemsPerPage={5}
-        viewAllLink="/staff/forms/add-association"
-        addButtonTitle="Add Association"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

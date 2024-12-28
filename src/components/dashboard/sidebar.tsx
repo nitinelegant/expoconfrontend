@@ -4,6 +4,7 @@ import { SidebarProps, MenuLink, MenuSection } from "../../types/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/images/logo.png";
+import { role } from "@/lib/data";
 
 export function Sidebar({ menuSections }: SidebarProps) {
   const pathname = usePathname();
@@ -28,99 +29,109 @@ export function Sidebar({ menuSections }: SidebarProps) {
     const isActive = pathname === item.href;
     const hasSubItems = item.subItems && item.subItems.length > 0;
     const isOpen = openMenus[item.text];
+    console.log("renderMenuItem", item);
 
-    return (
-      <div key={item.text} className="transition-all duration-200 ease-in-out">
+    if (item.visible.includes(role)) {
+      return (
         <div
-          className={`flex items-center justify-between rounded-lg px-7 py-2 cursor-pointer transition-colors duration-200 ${
-            isActive
-              ? "bg-primary text-white"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
-          style={{ paddingLeft: `${depth * 12 + 28}px` }}
-          onClick={(e) => {
-            if (hasSubItems) {
-              toggleMenu(item.text, e);
-            } else if (item.href) {
-              handleNavigation(item.href, e);
-            }
-          }}
+          key={item.text}
+          className="transition-all duration-200 ease-in-out"
         >
-          <span>{item.text}</span>
-          {hasSubItems && (
-            <span className="transition-transform duration-200">
-              {isOpen ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
+          <div
+            className={`flex items-center justify-between rounded-lg px-7 py-2 cursor-pointer transition-colors duration-200 ${
+              isActive
+                ? "bg-primary text-white"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+            style={{ paddingLeft: `${depth * 12 + 28}px` }}
+            onClick={(e) => {
+              if (hasSubItems) {
+                toggleMenu(item.text, e);
+              } else if (item.href) {
+                handleNavigation(item.href, e);
+              }
+            }}
+          >
+            <span>{item.text}</span>
+            {hasSubItems && (
+              <span className="transition-transform duration-200">
+                {isOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </span>
+            )}
+          </div>
+          <div
+            className={`ml-4 overflow-hidden transition-all duration-200 ease-in-out ${
+              hasSubItems && isOpen
+                ? "max-h-screen opacity-100"
+                : "max-h-0 opacity-0"
+            }`}
+          >
+            {hasSubItems &&
+              item.subItems!.map((subItem) =>
+                renderMenuItem(subItem, depth + 1)
               )}
-            </span>
-          )}
+          </div>
         </div>
-        <div
-          className={`ml-4 overflow-hidden transition-all duration-200 ease-in-out ${
-            hasSubItems && isOpen
-              ? "max-h-screen opacity-100"
-              : "max-h-0 opacity-0"
-          }`}
-        >
-          {hasSubItems &&
-            item.subItems!.map((subItem) => renderMenuItem(subItem, depth + 1))}
-        </div>
-      </div>
-    );
+      );
+    }
   };
 
   const renderSection = (section: MenuSection) => {
     const isActive = section.mainLink && pathname === section.mainLink;
     const hasLinks = section.links && section.links.length > 0;
-
-    return (
-      <div
-        key={section.name}
-        className="transition-all duration-200 ease-in-out"
-      >
+    console.log("renderSection", section);
+    if (section.visible.includes(role)) {
+      return (
         <div
-          className={`flex items-center justify-between cursor-pointer rounded-lg px-4 py-2 transition-colors duration-200 ${
-            isActive
-              ? "bg-primary text-white"
-              : "text-gray-600 hover:bg-gray-50"
-          }`}
-          onClick={(e) => {
-            if (section.mainLink) {
-              handleNavigation(section.mainLink, e);
-            } else if (hasLinks) {
-              toggleMenu(section.name, e);
-            }
-          }}
+          key={section.name}
+          className="transition-all duration-200 ease-in-out"
         >
-          <div className="flex items-center">
-            <section.icon className="h-5 w-5" />
-            <p className="px-2 text-xs font-semibold uppercase">
-              {section.name}
-            </p>
+          <div
+            className={`flex items-center justify-between cursor-pointer rounded-lg px-4 py-2 transition-colors duration-200 ${
+              isActive
+                ? "bg-primary text-white"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+            onClick={(e) => {
+              if (section.mainLink) {
+                handleNavigation(section.mainLink, e);
+              } else if (hasLinks) {
+                toggleMenu(section.name, e);
+              }
+            }}
+          >
+            <div className="flex items-center">
+              <section.icon className="h-5 w-5" />
+              <p className="px-2 text-xs font-semibold uppercase">
+                {section.name}
+              </p>
+            </div>
+            {!section.mainLink && hasLinks && (
+              <span className="transition-transform duration-200">
+                {openMenus[section.name] ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </span>
+            )}
           </div>
-          {!section.mainLink && hasLinks && (
-            <span className="transition-transform duration-200">
-              {openMenus[section.name] ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
-            </span>
-          )}
+          <div
+            className={`mt-2 space-y-1 overflow-hidden transition-all duration-200 ease-in-out ${
+              !section.mainLink && hasLinks && openMenus[section.name]
+                ? "max-h-screen opacity-100"
+                : "max-h-0 opacity-0"
+            }`}
+          >
+            {section.links?.map((item) => renderMenuItem(item))}
+          </div>
         </div>
-        <div
-          className={`mt-2 space-y-1 overflow-hidden transition-all duration-200 ease-in-out ${
-            !section.mainLink && hasLinks && openMenus[section.name]
-              ? "max-h-screen opacity-100"
-              : "max-h-0 opacity-0"
-          }`}
-        >
-          {section.links?.map((item) => renderMenuItem(item))}
-        </div>
-      </div>
-    );
+      );
+    }
   };
 
   return (

@@ -18,7 +18,7 @@ import {
   ChevronRightIcon,
   Search,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export interface Column<T> {
   header: string;
@@ -47,6 +47,7 @@ export function DataTable<T>({
   addButtonTitle,
   itemsPerPage = 10,
 }: DataTableProps<T>) {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -67,6 +68,13 @@ export function DataTable<T>({
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleNavigation = (href: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    // Add a small delay to prevent the glitch during navigation
+    setTimeout(() => {
+      router.push(href);
+    }, 50);
+  };
 
   return (
     <Card className={cn("mt-6", className)}>
@@ -85,15 +93,14 @@ export function DataTable<T>({
               />
             </div>
             {viewAllLink && (
-              <Link href={viewAllLink}>
-                <Button
-                  variant="link"
-                  className="text-white-600 font-bold bg-primary hover:no-underline"
-                >
-                  <PlusIcon className="mr-2 h-4 w-4" />
-                  {addButtonTitle}
-                </Button>
-              </Link>
+              <Button
+                variant="link"
+                className="text-white-600 font-bold bg-primary hover:no-underline"
+                onClick={(e) => handleNavigation(viewAllLink, e)}
+              >
+                <PlusIcon className="mr-2 h-4 w-4" />
+                {addButtonTitle}
+              </Button>
             )}
           </div>
         </CardHeader>

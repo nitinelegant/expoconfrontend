@@ -24,7 +24,6 @@ const Login = () => {
         .required("Password is required"),
     }),
     onSubmit: (values) => {
-      console.log("values", values);
       if (values.email === "admin@gmail.com" && values.password === "123456") {
         router.replace("/admin/");
         return;
@@ -34,26 +33,6 @@ const Login = () => {
         return;
       }
       alert("Plese use valid credentials");
-
-      // try {
-      //   localStorage.setItem("authToken", "12345");
-      //   localStorage.setItem("userType", "1");
-      //   router.replace("/admin/");
-      //   toast({
-      //     title: "Success",
-      //     description: "Logged in successfully",
-      //     duration: 3000,
-      //   });
-
-      //   console.log("submitting form");
-      // } catch (error) {
-      //   console.log("error", error);
-      //   toast({
-      //     title: "Error",
-      //     description: "Invalid credentials. Try demo@example.com / password",
-      //     variant: "destructive",
-      //   });
-      // }
     },
   });
 

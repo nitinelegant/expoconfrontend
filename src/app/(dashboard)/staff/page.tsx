@@ -1,6 +1,23 @@
+"use client";
 import { Statistics } from "@/components/dashboard/statistics";
+import { Loader } from "@/components/ui/loader";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { user, isAuthenticated, loading } = useAuth();
+  console.log("user", user);
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace("/");
+    }
+  }, [loading, isAuthenticated, router]);
+
+  if (loading) return <Loader size="medium" />;
+  if (!isAuthenticated) return null;
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col">

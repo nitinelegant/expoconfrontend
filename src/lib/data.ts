@@ -1,1 +1,1 @@
-export let role = "staff";
+export let role = "admin";

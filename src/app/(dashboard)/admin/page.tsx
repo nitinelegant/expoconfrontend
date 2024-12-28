@@ -1,7 +1,12 @@
+"use client";
 import { Overview } from "@/components/dashboard/overview";
 import { Statistics } from "@/components/dashboard/statistics";
 import { TransactionsTable } from "@/components/dashboard/transactionsTable";
+import { Loader } from "@/components/ui/loader";
+import { useAuth } from "@/context/AuthContext";
 import { userSection } from "@/types/sidebar";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const overviewSection: userSection[] = [
   {
@@ -23,6 +28,19 @@ const overviewSection: userSection[] = [
 ];
 
 export default function Dashboard() {
+  const router = useRouter();
+  const { user, isAuthenticated, loading } = useAuth();
+  console.log("user", user);
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.replace("/");
+    }
+  }, [loading, isAuthenticated, router]);
+
+  if (loading) return <Loader size="medium" />;
+  if (!isAuthenticated) return null;
+
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col">

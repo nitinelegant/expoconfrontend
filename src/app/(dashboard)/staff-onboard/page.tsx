@@ -40,7 +40,6 @@ export default function SignupForm() {
             validationSchema={SignupSchema}
             onSubmit={(values, { setSubmitting }) => {
               setTimeout(() => {
-                console.log(values);
                 // setSignupSuccess(true);
                 setSubmitting(false);
               }, 400);

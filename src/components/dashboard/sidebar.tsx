@@ -5,8 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/images/logo.png";
 import { role } from "@/lib/data";
+import { useAuth } from "@/context/AuthContext";
 
 export function Sidebar({ menuSections }: SidebarProps) {
+  const { logout, user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
@@ -29,9 +31,8 @@ export function Sidebar({ menuSections }: SidebarProps) {
     const isActive = pathname === item.href;
     const hasSubItems = item.subItems && item.subItems.length > 0;
     const isOpen = openMenus[item.text];
-    console.log("renderMenuItem", item);
 
-    if (item.visible.includes(role)) {
+    if (item.visible.includes(user)) {
       return (
         <div
           key={item.text}
@@ -83,8 +84,8 @@ export function Sidebar({ menuSections }: SidebarProps) {
   const renderSection = (section: MenuSection) => {
     const isActive = section.mainLink && pathname === section.mainLink;
     const hasLinks = section.links && section.links.length > 0;
-    console.log("renderSection", section);
-    if (section.visible.includes(role)) {
+
+    if (section.visible.includes(user)) {
       return (
         <div
           key={section.name}
@@ -145,7 +146,10 @@ export function Sidebar({ menuSections }: SidebarProps) {
         {menuSections.map(renderSection)}
       </nav>
       <div className="p-4 border-t">
-        <button className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-600 hover:bg-gray-50 transition-colors duration-200">
+        <button
+          className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+          onClick={() => logout()}
+        >
           <LogOut className="h-5 w-5" />
           <span>Log Out</span>
         </button>

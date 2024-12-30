@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CompanyListResponse, CompanyProps } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { statesAndUnionTerritories } from "@/constants/form";
 
 const Company = () => {
   const { toast } = useToast();
@@ -54,9 +55,19 @@ const Company = () => {
   const columns: Column<CompanyProps>[] = [
     { header: "Company Name", accessorKey: "company_name" },
     { header: "City", accessorKey: "company_city" },
-    { header: "State", accessorKey: "state_id" },
     { header: "Address", accessorKey: "company_address" },
     { header: "Website", accessorKey: "company_website" },
+    {
+      header: "State",
+      accessorKey: "state_id",
+      cell: (state) => {
+        return (
+          <span className="capitalize">
+            {statesAndUnionTerritories[state.state_id]?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Status",
       accessorKey: "status",

@@ -9,12 +9,15 @@ import Logo from "@/public/assets/images/logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const router = useRouter();
   const { user, isAuthenticated, loading, login } = useAuth();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -34,6 +37,11 @@ const Login = () => {
         setSubmitError(null);
         const { email, password } = values;
         await login(email, password);
+        toast({
+          title: "Login Successful",
+          description: "You have successfully logged in",
+          duration: 1500,
+        });
       } catch (error) {
         console.log("error", error);
         setSubmitError(

@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { withAuth } from "@/utils/withAuth";
+import { listApi } from "@/api/listApi";
 
 interface Transaction {
   id: string;
@@ -110,6 +111,14 @@ const Exhibition = () => {
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
   >(null);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const { data } = await listApi.getExhibitions();
+  //     console.log("getting data", data);
+  //   };
+  //   fetchData();
+  // }, []);
 
   const handleDeleteClick = (id: string) => {
     setSelectedExhibitionId(id);

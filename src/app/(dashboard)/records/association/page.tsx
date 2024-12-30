@@ -1,125 +1,85 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { withAuth } from "@/utils/withAuth";
-
-interface Transaction {
-  id: string;
-  eventName: string;
-  organigerName: string;
-  start: string;
-  end: string;
-  status: string;
-}
-interface DeleteConfirmationDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-}
-
-const transactions: Transaction[] = [
-  {
-    id: "1",
-    eventName: "Alcazar",
-    organigerName: "Www.expocon.com",
-    start: "Maharashtra",
-    end: "Maharashtra",
-    status: "H.No 10 Main Road Nagpur Maharashtra",
-  },
-
-  // Add more transactions to test pagination
-  ...Array.from({ length: 10 }, (_, i) => ({
-    id: `${i + 1}`,
-    eventName: `Company ${i + 1}`,
-    organigerName: `Www.expocon${i + 1}.com`,
-    start: `City${i + 1}`,
-    end: `Karnataka`,
-    status: [
-      "H.No 1096 Main Road Nagpur Maharashtra",
-      "H.No 1097 Main Road Nagpur Maharashtra",
-      "H.No 1091 Main Road Nagpur Maharashtra",
-    ][Math.floor(Math.random() * 3)],
-  })),
-];
-
-const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-}) => (
-  <Dialog open={isOpen} onOpenChange={onClose}>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogDescription>
-          Are you sure you want to delete this exhibition? This action cannot be
-          undone.
-        </DialogDescription>
-      </DialogHeader>
-      <DialogFooter>
-        <Button
-          variant="destructive"
-          onClick={onClose}
-          className=" text-background"
-        >
-          Cancel
-        </Button>
-        {/* <Button
-          variant="destructive"
-          onClick={onConfirm}
-          className="outline outline-red-500 text-red-500"
-        >
-          Delete
-        </Button> */}
-        <Button
-          variant="default"
-          onClick={onConfirm}
-          className=" text-white bg-[#FF0000]"
-        >
-          Delete
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
-);
+import { listApi } from "@/api/listApi";
+import { useToast } from "@/hooks/use-toast";
+import { VenueProps, VenueListResponse } from "@/types/listTypes";
+import { Loader } from "@/components/ui/loader";
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 
 const Association = () => {
+  const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [venues, setVenues] = useState<VenueProps[]>([]);
+  // const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
   >(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response: VenueListResponse = await listApi.getAssociation();
+        setVenues(response.venues);
+        // setCurrentPage(response.currentPage);
+        setTotalPages(response.totalPages);
+        console.log("getting venue data", response);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Error while fetching data",
+          duration: 1000,
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (isLoading) {
+    return <Loader size="medium" />;
+  }
 
   const handleDeleteClick = (id: string) => {
     setSelectedExhibitionId(id);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
-  };
-  const columns: Column<Transaction>[] = [
-    { header: "Association Name", accessorKey: "eventName" },
-    { header: "Website", accessorKey: "organigerName" },
-    { header: "City", accessorKey: "start" },
-    { header: "State", accessorKey: "end" },
-    { header: "Address", accessorKey: "status" },
-
+  const columns: Column<VenueProps>[] = [
+    { header: "Venue Name", accessorKey: "venue_name" },
+    { header: "City", accessorKey: "venue_city" },
+    { header: "State", accessorKey: "state_id" },
+    { header: "Address", accessorKey: "venue_address" },
+    { header: "Website", accessorKey: "venue_website" },
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: (venue) => (
+        <span
+          className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            venue.status === "approved"
+              ? "bg-green-100 text-green-600"
+              : venue.status === "rejected"
+              ? "bg-red-50 text-red-600"
+              : "bg-yellow-100 text-yellow-600"
+          }`}
+        >
+          {venue.status}
+        </span>
+      ),
+    },
     {
       header: "Action",
-      accessorKey: "id",
+      accessorKey: "_id",
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
@@ -129,34 +89,42 @@ const Association = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDeleteClick(cellItem.id)}
+              onClick={() => handleDeleteClick(cellItem._id)}
             >
               <Trash2 className="text-red-600" />
             </Button>
-            {/* <Button variant="ghost" size="icon">
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button> */}
           </div>
         );
       },
     },
   ];
+  const handleConfirmDeletion = () => {
+    // Implement the delete logic here
+    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
+    setIsDeleteDialogOpen(false);
+    setSelectedExhibitionId(null);
+  };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={transactions}
-        title="Association"
-        itemsPerPage={5}
-        viewAllLink="/forms/add-association"
-        addButtonTitle="Add Association"
+        data={venues}
+        title="Venue"
+        viewAllLink="/forms/add-venue"
+        addButtonTitle="Add Venue"
+        itemsPerPage={totalPages}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleDeleteConfirm}
+        onConfirm={handleConfirmDeletion}
+        title="Delete Item"
+        description="Are you sure you want to delete this item? This action is irreversible."
+        confirmButtonText="Yes, Delete"
+        cancelButtonText="No, Cancel"
       />
     </div>
   );
 };
+
 export default withAuth(Association, { requiredRole: ["admin", "staff"] });

@@ -41,6 +41,7 @@ const Login = () => {
           title: "Login Successful",
           description: "You have successfully logged in",
           duration: 1500,
+          variant: "default",
         });
       } catch (error) {
         console.log("error", error);

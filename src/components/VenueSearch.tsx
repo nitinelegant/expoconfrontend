@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import debounce from "lodash/debounce";
-import axios, { AxiosError } from "axios";
 import { axiosInstance } from "@/lib/axios";
 
 interface Venue {
@@ -37,19 +36,9 @@ interface Venue {
 interface VenueSearchProps {
   value: string;
   onChange: (value: string) => void;
-  onBlur: (e: React.FocusEvent<HTMLButtonElement | HTMLInputElement>) => void; // Updated type
-
+  onBlur: (e: React.FocusEvent<HTMLButtonElement | HTMLInputElement>) => void;
   error?: string;
   touched?: boolean;
-}
-
-interface VenuesResponse {
-  message: string;
-  venues: Venue[];
-  hasMore: boolean;
-  currentPage: number;
-  totalPages: number;
-  error?: string;
 }
 
 const VenueSearch: React.FC<VenueSearchProps> = ({
@@ -59,10 +48,11 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
   error,
   touched,
 }) => {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [searchError, setSearchError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [selectedVenueName, setSelectedVenueName] = useState("");
 
   const debouncedSearch = useCallback(
     debounce(async (searchTerm: string) => {
@@ -75,16 +65,12 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
       try {
         setLoading(true);
         setSearchError("");
-
-        const { data } = await axiosInstance.get<VenuesResponse>(
+        const { data } = await axiosInstance.get(
           `/venue/list?search=${searchTerm}&page=1`
         );
         setVenues(data.venues);
-      } catch (error) {
-        const axiosError = error as AxiosError<VenuesResponse>;
-        setSearchError(
-          axiosError.response?.data?.error || "Failed to fetch venues"
-        );
+      } catch (error: any) {
+        setSearchError(error.response?.data?.error || "Failed to fetch venues");
         setVenues([]);
       } finally {
         setLoading(false);
@@ -95,14 +81,16 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
 
   const handleSelect = useCallback(
     (selectedVenue: Venue) => {
-      // Set the value first
-      onChange(selectedVenue.venue_name);
-
-      // Close the popover
+      onChange(selectedVenue._id);
+      setSelectedVenueName(selectedVenue.venue_name);
       setOpen(false);
     },
     [onChange]
   );
+
+  // Find venue name for display
+  const displayValue =
+    selectedVenueName || venues.find((v) => v._id === value)?.venue_name || "";
 
   return (
     <div className="space-y-2">
@@ -113,16 +101,15 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            aria-label="Select venue"
             className={cn(
               "w-full justify-between text-black bg-white",
-              !value && "text-gray-600",
+              !displayValue && "text-gray-600",
               touched && error && "border-red-500"
             )}
             onBlur={onBlur}
             type="button"
           >
-            {value || "Select venue..."}
+            {displayValue || "Select venue..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -153,7 +140,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === venue.venue_name ? "opacity-100" : "opacity-0"
+                      value === venue._id ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {venue.venue_name}

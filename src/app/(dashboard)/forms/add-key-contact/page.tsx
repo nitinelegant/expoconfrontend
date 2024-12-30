@@ -23,13 +23,14 @@ import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
+import VenueSearch from "@/components/VenueSearch";
 
 const KeyContactForm = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [companies, setcompanies] = useState<CompanyProps[]>([]);
-  const [venues, setVenues] = useState<VenueProps[]>([]);
+
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   const formik = useFormik({
@@ -95,7 +96,6 @@ const KeyContactForm = () => {
 
   useEffect(() => {
     fetchCompany();
-    fetchVenue();
     fetchAssociation();
   }, []);
   const fetchCompany = async () => {
@@ -104,12 +104,7 @@ const KeyContactForm = () => {
       if (companies?.length > 0) setcompanies(companies);
     } catch (error) {}
   };
-  const fetchVenue = async () => {
-    try {
-      const { venues } = await listApi.getVenues();
-      if (venues?.length > 0) setVenues(venues);
-    } catch (error) {}
-  };
+
   const fetchAssociation = async () => {
     try {
       const { associations } = await listApi.getAssociation();
@@ -269,43 +264,18 @@ const KeyContactForm = () => {
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="venue" className="text-gray-900">
-                  Venue
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    formik.setFieldValue("venue", value)
-                  }
-                  defaultValue={formik.values.venue}
-                >
-                  <SelectTrigger
-                    tabIndex={4}
-                    className={
-                      formik.touched.venue && formik.errors.venue
-                        ? "border-red-500 text-black capitalize"
-                        : "text-black capitalize"
-                    }
-                  >
-                    <SelectValue placeholder="Select Venue" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {venues?.map((item, index) => (
-                      <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
-                        className="hover:cursor-pointer capitalize"
-                        tabIndex={index + 1}
-                      >
-                        {item.venue_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.venue && formik.errors.venue && (
-                  <p className="text-sm text-red-600">{formik.errors.venue}</p>
-                )}
-              </div>
+              <VenueSearch
+                value={formik.values.venue}
+                onBlur={formik.handleBlur}
+                error={formik.errors.venue}
+                touched={formik.touched.venue}
+                onChange={(value) =>
+                  formik.handleChange({ target: { name: "venue", value } })
+                }
+                onBlur={formik.handleBlur}
+                error={formik.errors.venue}
+                touched={formik.touched.venue}
+              />
             </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">

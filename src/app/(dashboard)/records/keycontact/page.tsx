@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { KeyContactListResponse, KeyContactProps } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { statesAndUnionTerritories } from "@/constants/form";
 
 const KeyContact = () => {
   const { toast } = useToast();
@@ -56,7 +57,17 @@ const KeyContact = () => {
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
-    { header: "State", accessorKey: "state_id" },
+    {
+      header: "State",
+      accessorKey: "state_id",
+      cell: (state) => {
+        return (
+          <span className="capitalize">
+            {statesAndUnionTerritories[state.state_id]?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Action",
       accessorKey: "_id",
@@ -92,7 +103,7 @@ const KeyContact = () => {
         title="Key Contact"
         viewAllLink="/forms/add-key-contact"
         addButtonTitle="Add Key Contact"
-        itemsPerPage={5}
+        itemsPerPage={10}
         searchField={"contact_name"}
       />
       <DeleteConfirmationDialog

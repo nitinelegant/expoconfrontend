@@ -64,14 +64,12 @@ const Association = () => {
       cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item.status === "active"
+            item.status === "approved"
               ? "bg-green-100 text-green-600"
-              : item.status === "pending"
-              ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.status}
+          {item.status === "approved" ? "Acitve" : "Pending"}
         </span>
       ),
     },
@@ -110,7 +108,7 @@ const Association = () => {
         title="Association"
         viewAllLink="/forms/add-association"
         addButtonTitle="Add Association"
-        itemsPerPage={5}
+        itemsPerPage={10}
         searchField="association_name"
       />
       <DeleteConfirmationDialog

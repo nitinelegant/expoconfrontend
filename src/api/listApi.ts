@@ -10,7 +10,7 @@ export const listApi = {
   getVenues: async (): Promise<VenueListResponse> => {
     try {
       const response = await axiosInstance.get<VenueListResponse>(
-        "/venue/list"
+        "/venue/list?limit=50"
       );
       return response.data;
     } catch (error) {
@@ -20,7 +20,7 @@ export const listApi = {
   getAssociation: async (): Promise<AssociationsListResponse> => {
     try {
       const response = await axiosInstance.get<AssociationsListResponse>(
-        "/association/list"
+        "/association/list?limit=50"
       );
       return response.data;
     } catch (error) {
@@ -41,6 +41,16 @@ export const listApi = {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
         "/keycontact/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while fetching data");
+    }
+  },
+  getExpConference: async (): Promise<KeyContactListResponse> => {
+    try {
+      const response = await axiosInstance.get<KeyContactListResponse>(
+        "/expiredconference/list"
       );
       return response.data;
     } catch (error) {

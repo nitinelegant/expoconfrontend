@@ -522,11 +522,11 @@ const ConferenceForm = () => {
                   <SelectContent>
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
-                        key={state}
-                        value={state}
+                        key={state.id}
+                        value={state.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {state}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

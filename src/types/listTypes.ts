@@ -68,7 +68,7 @@ export interface AssociationProps {
   association_address: string;
   association_type_id: number;
   association_website: string;
-  status: "pending" | "active" | "inactive"; // Using union type for status
+  status: "approved" | "pending" | "rejected";
 }
 
 export interface AssociationsListResponse {

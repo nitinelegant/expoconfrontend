@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { VenueProps, VenueListResponse } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { statesAndUnionTerritories } from "@/constants/form";
 
 const Venue = () => {
   const { toast } = useToast();
@@ -53,9 +54,20 @@ const Venue = () => {
   const columns: Column<VenueProps>[] = [
     { header: "Venue Name", accessorKey: "venue_name" },
     { header: "City", accessorKey: "venue_city" },
-    { header: "State", accessorKey: "state_id" },
+    // { header: "State", accessorKey: "state_id" },
     { header: "Address", accessorKey: "venue_address" },
     { header: "Website", accessorKey: "venue_website" },
+    {
+      header: "State",
+      accessorKey: "state_id",
+      cell: (state) => {
+        return (
+          <span className="capitalize">
+            {statesAndUnionTerritories[state.state_id]?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Status",
       accessorKey: "status",

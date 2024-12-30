@@ -115,8 +115,8 @@ const Conference = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await listApi.getConferences();
-      console.log("getting data", data);
+      // const { data } = await listApi.getConferences();
+      // console.log("getting data", data);
     };
     fetchData();
   }, []);

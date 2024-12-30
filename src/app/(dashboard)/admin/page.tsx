@@ -31,7 +31,6 @@ const overviewSection: userSection[] = [
 const Dashboard = () => {
   const router = useRouter();
   const { user, isAuthenticated, loading } = useAuth();
-  console.log("user", user);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {

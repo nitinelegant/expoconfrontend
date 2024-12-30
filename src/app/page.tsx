@@ -32,7 +32,6 @@ const Login = () => {
       try {
         setIsLoading(true);
         setSubmitError(null);
-        console.log("subitting form");
         const { email, password } = values;
         await login(email, password);
       } catch (error) {
@@ -47,8 +46,6 @@ const Login = () => {
   });
 
   useEffect(() => {
-    console.log("isAuthenticated", isAuthenticated);
-    console.log("user", user);
     if (isAuthenticated && user === "admin") {
       router.replace("/admin");
     }

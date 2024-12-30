@@ -30,6 +30,7 @@ import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
+import SearchInput from "@/components/SearchInput";
 
 const ExhibitionForm = () => {
   const today = new Date();
@@ -182,6 +183,12 @@ const ExhibitionForm = () => {
       }
     }
     return times;
+  };
+
+  const handleResultFound = (result: MySearchResponse | null) => {
+    if (result?.data) {
+      console.log("Found:", result.data);
+    }
   };
 
   const timeOptions = generateTimeOptions();
@@ -544,10 +551,26 @@ const ExhibitionForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
-                tabIndex={12}
               />
 
-              <div className="space-y-2">
+              <SearchInput
+                label="Website"
+                placeholder="Enter website URL"
+                id="website"
+                onResultFound={handleResultFound}
+                apiEndpoint="/api/search-website"
+                debounceTime={600}
+                value={formik.values.website}
+                onChange={(value) => {
+                  console.log("values", value);
+                  formik.setFieldValue("website", value);
+                  formik.setFieldTouched("venue", true, false);
+                }}
+                onBlur={formik.handleBlur}
+                error={formik.errors.website}
+                touched={formik.touched.website}
+              />
+              {/* <div className="space-y-2">
                 <Label htmlFor="website">Website*</Label>
                 <Input
                   id="website"
@@ -565,7 +588,7 @@ const ExhibitionForm = () => {
                     {formik.errors.website}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="logo">Upload Event Logo</Label>

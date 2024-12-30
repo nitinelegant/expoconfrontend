@@ -1,3 +1,4 @@
+import { AUTH_TOKEN, USER } from "@/constants/auth";
 import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.example.com";
@@ -34,9 +35,9 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       // Clear auth data and redirect to login
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      localStorage.removeItem(AUTH_TOKEN);
+      localStorage.removeItem(USER);
+      window.location.href = "/";
     }
 
     return Promise.reject(error);

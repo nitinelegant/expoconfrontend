@@ -6,7 +6,11 @@ export default function Unauthorized() {
   const router = useRouter();
 
   const handleGoBack = () => {
-    router.push("/");
+    if (window.history.length > 1) {
+      window.history.go(-2);
+    } else {
+      router.push("/");
+    }
   };
 
   return (

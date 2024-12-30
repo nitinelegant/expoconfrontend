@@ -25,7 +25,7 @@ const Loader: React.FC<LoaderProps> = ({
   };
 
   return (
-    <div className="h-screen flex  justify-center items-center">
+    <div className="h-screen w-full flex  justify-center items-center">
       <div
         className={cn(
           "inline-block rounded-full animate-spin ",

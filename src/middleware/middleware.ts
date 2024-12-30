@@ -11,17 +11,11 @@ export function middleware(request: NextRequest) {
   if (user) {
     const userData = JSON.parse(user);
 
-    if (
-      request.nextUrl.pathname.startsWith("/admin") &&
-      userData.user_role !== "admin"
-    ) {
+    if (request.nextUrl.pathname.startsWith("/admin") && userData !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
-    if (
-      request.nextUrl.pathname.startsWith("/staff") &&
-      userData.role !== "staff"
-    ) {
+    if (request.nextUrl.pathname.startsWith("/staff") && userData !== "staff") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 

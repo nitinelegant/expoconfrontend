@@ -2,7 +2,7 @@
 import { authApi } from "@/api/authApi";
 import { useRouter } from "next/navigation";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import Cookies from "js-cookie";
+import { ADMIN, AUTH_TOKEN, STAFF, USER } from "@/constants/auth";
 interface AuthContextType {
   user: string | null;
   login: (email: string, password: string) => Promise<void>;
@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
   const checkAuth = async () => {
+    setLoading(true);
     const storedUser = await localStorage.getItem("authToken");
     const userType = await localStorage.getItem("user");
     if (storedUser && userType) {
@@ -33,15 +34,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const { accessToken, type } = await authApi.login({ email, password });
-      const userType = type === 1 ? "admin" : "staff";
-      await localStorage.setItem("authToken", accessToken);
-      await localStorage.setItem("user", JSON.stringify(userType));
+      const userType = type === 1 ? ADMIN : STAFF;
+      await localStorage.setItem(AUTH_TOKEN, accessToken);
+      await localStorage.setItem(USER, JSON.stringify(userType));
       setUser(userType);
-      if (userType === "admin") {
+      if (userType === ADMIN) {
         router.replace("/admin");
         return;
       }
-      if (userType === "staff") {
+      if (userType === STAFF) {
         router.replace("/staff");
       }
     } catch (error) {
@@ -52,15 +53,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("user");
-      // await authApi.logout();
-      // router.replace("/");
+      localStorage.removeItem(AUTH_TOKEN);
+      localStorage.removeItem(USER);
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("user");
+      localStorage.removeItem(AUTH_TOKEN);
+      localStorage.removeItem(USER);
       setUser(null);
       router.replace("/");
     }

@@ -8,7 +8,6 @@ import { useEffect } from "react";
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading } = useAuth();
-  console.log("user", user);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {

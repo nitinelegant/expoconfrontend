@@ -25,15 +25,16 @@ const KeyContact = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: KeyContactListResponse = await listApi.getKeyContact();
-        setKeyContacts(response.keyContacts);
+        const { keyContacts }: KeyContactListResponse =
+          await listApi.getKeyContact();
+        if (keyContacts?.length > 0) setKeyContacts(keyContacts);
         // setTotalPages(response.totalPages);
       } catch (error) {
         toast({
           title: "Error",
           description: "Error while fetching data",
           duration: 1500,
-          variant: "destructive",
+          variant: "error",
         });
       } finally {
         setIsLoading(false);
@@ -52,12 +53,10 @@ const KeyContact = () => {
   };
 
   const columns: Column<KeyContactProps>[] = [
-    { header: "Contact Name", accessorKey: "contact_name" },
+    { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
     { header: "State", accessorKey: "state_id" },
-    // { header: "Organizer Id", accessorKey: "contact_organizer_id" },
-    // { header: "Venue Id", accessorKey: "contact_venue_id" },
     {
       header: "Action",
       accessorKey: "_id",
@@ -93,7 +92,8 @@ const KeyContact = () => {
         title="Key Contact"
         viewAllLink="/forms/add-key-contact"
         addButtonTitle="Add Key Contact"
-        itemsPerPage={10}
+        itemsPerPage={5}
+        searchField={"contact_name"}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

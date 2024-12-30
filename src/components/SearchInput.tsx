@@ -64,13 +64,15 @@ const SearchInput: React.FC<SearchInputProps> = ({
     try {
       setIsLoading(true);
       setIsError(false);
-      setErrorMessage("Not available");
-
-      const response = await axiosInstance.get<SearchResponse>(
-        `/venue/list?search=${searchTerm}&page=1`
+      setErrorMessage(
+        "This website is already in use. Please use another one."
       );
 
-      if (!response.data.found) {
+      const response = await axiosInstance.get<SearchResponse>(
+        `${apiEndpoint}/website?url=${searchTerm}`
+      );
+
+      if (response.data.found) {
         setIsError(true);
         onResultFound(null);
       } else {

@@ -14,8 +14,7 @@ const Venue = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [venues, setVenues] = useState<VenueProps[]>([]);
-  // const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
@@ -26,17 +25,14 @@ const Venue = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: VenueListResponse = await listApi.getVenues();
-        setVenues(response.venues);
-        // setCurrentPage(response.currentPage);
-        setTotalPages(response.totalPages);
-        console.log("getting venue data", response.venues);
+        const { venues }: VenueListResponse = await listApi.getVenues();
+        if (venues?.length > 0) setVenues(venues);
       } catch (error) {
         toast({
           title: "Error",
           description: "Error while fetching data",
           duration: 1000,
-          variant: "destructive",
+          variant: "error",
         });
       } finally {
         setIsLoading(false);
@@ -112,7 +108,8 @@ const Venue = () => {
         title="Venue"
         viewAllLink="/forms/add-venue"
         addButtonTitle="Add Venue"
-        itemsPerPage={totalPages}
+        itemsPerPage={5}
+        searchField="venue_name"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

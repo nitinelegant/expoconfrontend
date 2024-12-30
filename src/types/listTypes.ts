@@ -29,7 +29,8 @@ export interface CompanyProps {
   status: "approved" | "pending" | "rejected";
 }
 export interface VenueListResponse {
-  companies: VenueProps[];
+  message: string;
+  venues: VenueProps[];
   hasMore: boolean;
   currentPage: number;
   totalPages: number;

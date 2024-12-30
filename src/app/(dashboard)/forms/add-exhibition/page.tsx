@@ -160,17 +160,17 @@ const ExhibitionForm = () => {
     },
   });
 
-  // const handleLogoChange = (event) => {
-  //   const file = event.currentTarget.files?.[0];
-  //   formik.setFieldValue("logo", file);
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setLogoPreview(reader.result);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const handleLogoChange = (event) => {
+    const file = event.currentTarget.files?.[0];
+    formik.setFieldValue("logo", file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Generate time options for the time picker
   const generateTimeOptions = () => {
@@ -185,11 +185,7 @@ const ExhibitionForm = () => {
     return times;
   };
 
-  const handleResultFound = (result: MySearchResponse | null) => {
-    if (result?.data) {
-      console.log("Found:", result.data);
-    }
-  };
+  const handleResultFound = () => {};
 
   const timeOptions = generateTimeOptions();
   const todayStr = today.toISOString().split("T")[0];
@@ -529,11 +525,11 @@ const ExhibitionForm = () => {
                   <SelectContent>
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
-                        key={state}
-                        value={state}
+                        key={state.id}
+                        value={state.id}
                         className="hover:cursor-pointer"
                       >
-                        {state}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -558,17 +554,16 @@ const ExhibitionForm = () => {
                 placeholder="Enter website URL"
                 id="website"
                 onResultFound={handleResultFound}
-                apiEndpoint="/api/search-website"
                 debounceTime={600}
                 value={formik.values.website}
                 onChange={(value) => {
                   console.log("values", value);
                   formik.setFieldValue("website", value);
-                  formik.setFieldTouched("venue", true, false);
                 }}
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
+                apiEndpoint="company"
               />
               {/* <div className="space-y-2">
                 <Label htmlFor="website">Website*</Label>
@@ -598,6 +593,7 @@ const ExhibitionForm = () => {
                   tabIndex={14}
                   accept="image/*"
                   className="cursor-pointer"
+                  onChange={handleLogoChange}
                 />
                 {/* {logoPreview && (
                   <img

@@ -18,9 +18,16 @@ import { Button } from "@/components/ui/button";
 import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
+import SearchInput from "@/components/SearchInput";
+import { createFormApi } from "@/api/createFormApi";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const CompanyForm = () => {
-  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -32,7 +39,7 @@ const CompanyForm = () => {
       phone: "",
       website: "",
       googleMapLink: "",
-      logo: null,
+      logo: "",
       featured: false,
       email: "",
       password: "",
@@ -51,15 +58,68 @@ const CompanyForm = () => {
         .url("Must be a valid URL")
         .required("Website is required"),
       googleMapLink: Yup.string().url("Must be a valid URL"),
-      logo: Yup.mixed(),
       featured: Yup.boolean().required("Featured is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
-      password: Yup.string().min(6, "Password must be at least 6 characters"),
+      password: Yup.string()
+        .min(8, "Password must be at least 8 characters")
+        .required("Password is required"),
     }),
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const {
+          companyName,
+          city,
+          state,
+          address,
+          phone,
+          website,
+          googleMapLink,
+          logo = "",
+          featured,
+          email,
+          password,
+          companyType,
+        } = values;
+        const payload = {
+          company_name: companyName,
+          company_type_id: parseInt(companyType),
+          company_city: city,
+          state_id: parseInt(state),
+          company_address: address,
+          company_phone: phone,
+          company_website: website,
+          company_map: googleMapLink,
+          company_logo: logo,
+          company_featured: featured,
+          company_user_id: email,
+          company_password: password,
+          status: featured ? "pending" : "pending",
+        };
+        const response = await createFormApi.addCompany(payload);
+        console.log("submitting vlaues", response);
+        toast({
+          title: "Company Added Successfully!",
+          description:
+            "The company has been added successfully. You can view it in the company list.",
+          duration: 3000,
+          variant: "success",
+        });
+        router.push("/records/company");
+      } catch (error) {
+        toast({
+          title: "Add Company Failed",
+          description:
+            "Failed to add company. Please check your credentials and try again.",
+          duration: 2500,
+          variant: "error",
+        });
+        console.log(`error while submitting form`, error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -74,6 +134,8 @@ const CompanyForm = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleResultFound = () => {};
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -132,13 +194,13 @@ const CompanyForm = () => {
                     />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {companyTypes.map((type) => (
+                    {companyTypes.map((item) => (
                       <SelectItem
-                        key={type}
-                        value={type}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="text-black hover:cursor-pointer"
                       >
-                        {type}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -183,8 +245,8 @@ const CompanyForm = () => {
                     tabIndex={4}
                     className={
                       formik.touched.state && formik.errors.state
-                        ? "border-red-500 text-black"
-                        : "text-black"
+                        ? "border-red-500 text-black capitalize"
+                        : "text-black capitalize"
                     }
                   >
                     <SelectValue placeholder="Select State" />
@@ -192,11 +254,11 @@ const CompanyForm = () => {
                   <SelectContent className="bg-white">
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
-                        key={state}
-                        value={state}
-                        className=" text-black hover:cursor-pointer"
+                        key={state.id}
+                        value={state.id.toString()}
+                        className=" text-black hover:cursor-pointer capitalize"
                       >
-                        {state}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -247,7 +309,24 @@ const CompanyForm = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
+              <SearchInput
+                label="Website"
+                placeholder="Enter website URL"
+                id="website"
+                onResultFound={handleResultFound}
+                debounceTime={600}
+                value={formik.values.website}
+                onChange={(value) => {
+                  console.log("values", value);
+                  formik.setFieldValue("website", value);
+                }}
+                onBlur={formik.handleBlur}
+                error={formik.errors.website}
+                touched={formik.touched.website}
+                apiEndpoint="company"
+              />
+
+              {/* <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">
                   Website*
                 </Label>
@@ -267,7 +346,7 @@ const CompanyForm = () => {
                     {formik.errors.website}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="googleMapLink" className="text-gray-900">
@@ -368,11 +447,26 @@ const CompanyForm = () => {
                   type="password"
                   tabIndex={12}
                   {...formik.getFieldProps("password")}
+                  className={
+                    formik.touched.password && formik.errors.password
+                      ? "border-red-500"
+                      : ""
+                  }
                 />
+                {formik.touched.password && formik.errors.password && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.password}
+                  </p>
+                )}
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-primary" tabIndex={13}>
+            <Button
+              type="submit"
+              className="w-full bg-primary"
+              tabIndex={13}
+              disabled={isLoading}
+            >
               Submit
             </Button>
           </form>

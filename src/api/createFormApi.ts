@@ -1,21 +1,17 @@
 import { axiosInstance } from "@/lib/axios";
 import { User } from "@/types/authTypes";
+import {
+  AddCompanyCredentials,
+  AddCompanyResponseProps,
+} from "@/types/createFormApi";
 
-interface LoginResponse {
-  accessToken: string;
-  type: number;
-}
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+export const createFormApi = {
+  addCompany: async (
+    credentials: AddCompanyCredentials
+  ): Promise<AddCompanyResponseProps> => {
     try {
-      const response = await axiosInstance.post<LoginResponse>(
-        "/users/login",
+      const response = await axiosInstance.post<AddCompanyResponseProps>(
+        "/company",
         credentials
       );
       return response.data;

@@ -35,6 +35,7 @@ interface DataTableProps<T> {
   showCheckbox?: boolean;
   addButtonTitle?: string;
   itemsPerPage?: number;
+  searchField?: keyof T; // New prop for specifying the search field
 }
 
 export function DataTable<T>({
@@ -46,19 +47,28 @@ export function DataTable<T>({
   showCheckbox = false,
   addButtonTitle,
   itemsPerPage = 10,
+  searchField, // Add this new prop
 }: DataTableProps<T>) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  const filteredData = data.filter((item) =>
-    Object.values(item).some(
+  const filteredData = data.filter((item) => {
+    if (searchField) {
+      const fieldValue = item[searchField];
+      return (
+        typeof fieldValue === "string" &&
+        fieldValue.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    // If no searchField is specified, fall back to searching all fields
+    return Object.values(item).some(
       (value) =>
         typeof value === "string" &&
         value.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    );
+  });
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -68,9 +78,9 @@ export function DataTable<T>({
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
   const handleNavigation = (href: string, event: React.MouseEvent) => {
     event.preventDefault();
-    // Add a small delay to prevent the glitch during navigation
     setTimeout(() => {
       router.push(href);
     }, 50);

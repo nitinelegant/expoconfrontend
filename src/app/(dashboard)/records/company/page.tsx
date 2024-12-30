@@ -14,7 +14,7 @@ const Company = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
@@ -25,15 +25,15 @@ const Company = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: CompanyListResponse = await listApi.getCompanies();
-        setCompanies(response.companies);
-        setTotalPages(response.totalPages);
+        const { companies }: CompanyListResponse = await listApi.getCompanies();
+        if (companies) setCompanies(companies);
+        // setTotalPages(response.totalPages);
       } catch (error) {
         toast({
           title: "Error",
           description: "Error while fetching data",
           duration: 1500,
-          variant: "destructive",
+          variant: "error",
         });
       } finally {
         setIsLoading(false);
@@ -109,7 +109,8 @@ const Company = () => {
         title="Companies"
         viewAllLink="/forms/add-company"
         addButtonTitle="Add Company"
-        itemsPerPage={10}
+        itemsPerPage={5}
+        searchField="company_name"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

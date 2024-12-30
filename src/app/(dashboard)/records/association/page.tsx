@@ -6,11 +6,7 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import {
-  CompanyListResponse,
-  AssociationProps,
-  AssociationsListResponse,
-} from "@/types/listTypes";
+import { AssociationProps, AssociationsListResponse } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 
@@ -18,7 +14,7 @@ const Association = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
@@ -29,16 +25,16 @@ const Association = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: AssociationsListResponse =
+        const { associations }: AssociationsListResponse =
           await listApi.getAssociation();
-        setAssociations(response.associations);
+        if (associations?.length > 0) setAssociations(associations);
         // setTotalPages(response.totalPages);
       } catch (error) {
         toast({
           title: "Error",
           description: "Error while fetching data",
           duration: 1500,
-          variant: "destructive",
+          variant: "error",
         });
       } finally {
         setIsLoading(false);
@@ -114,7 +110,8 @@ const Association = () => {
         title="Association"
         viewAllLink="/forms/add-association"
         addButtonTitle="Add Association"
-        itemsPerPage={10}
+        itemsPerPage={5}
+        searchField="association_name"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

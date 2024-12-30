@@ -170,7 +170,7 @@ const StaffList = () => {
         columns={columns}
         data={transactions}
         title="Staff List"
-        viewAllLink="#"
+        viewAllLink="/staff-onboard"
         addButtonTitle="Add Staff"
         itemsPerPage={5}
       />

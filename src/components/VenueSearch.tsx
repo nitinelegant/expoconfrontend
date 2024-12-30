@@ -17,6 +17,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import debounce from "lodash/debounce";
 import axios, { AxiosError } from "axios";
+import { axiosInstance } from "@/lib/axios";
 
 interface Venue {
   _id: string;
@@ -51,14 +52,6 @@ interface VenuesResponse {
   error?: string;
 }
 
-const api = axios.create({
-  baseURL: "http://13.233.254.86:3000/api/v1",
-  timeout: 5000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 const VenueSearch: React.FC<VenueSearchProps> = ({
   value,
   onChange,
@@ -83,7 +76,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
         setLoading(true);
         setSearchError("");
 
-        const { data } = await api.get<VenuesResponse>(
+        const { data } = await axiosInstance.get<VenuesResponse>(
           `/venue/list?search=${searchTerm}&page=1`
         );
         setVenues(data.venues);

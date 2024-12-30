@@ -3,6 +3,8 @@ import { User } from "@/types/authTypes";
 import {
   AddCompanyCredentials,
   AddCompanyResponseProps,
+  AddKeyContactCredentials,
+  AddKeyContactResponseProps,
 } from "@/types/createFormApi";
 
 export const createFormApi = {
@@ -16,16 +18,20 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error("Error while adding company");
     }
   },
-
-  getCurrentUser: async (): Promise<User> => {
+  addKeyContact: async (
+    credentials: AddKeyContactCredentials
+  ): Promise<AddKeyContactResponseProps> => {
     try {
-      const response = await axiosInstance.get<User>("/auth/me");
+      const response = await axiosInstance.post<AddKeyContactResponseProps>(
+        "/keycontact",
+        credentials
+      );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching user data");
+      throw new Error("Error while adding company");
     }
   },
 

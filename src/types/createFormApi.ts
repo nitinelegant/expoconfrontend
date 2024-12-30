@@ -16,6 +16,18 @@ export interface AddCompanyResponseProps {
     status: string;
   };
 }
+export interface AddKeyContactResponseProps {
+  message: string;
+  keycontact: {
+    contact_name: string;
+    contact_mobile: string;
+    contact_email: string;
+    state_id: number;
+    contact_organizer_id?: string; // Optional, if applicable
+    contact_venue_id?: string; // Optional, if applicable
+    contact_association_id?: string; // Optional, if applicable
+  };
+}
 
 export interface AddCompanyCredentials {
   company_name: string;
@@ -30,4 +42,13 @@ export interface AddCompanyCredentials {
   company_user_id: string;
   company_password: string;
   status: string;
+}
+export interface AddKeyContactCredentials {
+  contact_name: string;
+  contact_mobile: string;
+  contact_email: string;
+  state_id: number;
+  contact_organizer_id?: string; // Optional, if applicable
+  contact_venue_id?: string; // Optional, if applicable
+  contact_association_id?: string; // Optional, if applicable
 }

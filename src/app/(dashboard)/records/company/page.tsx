@@ -109,7 +109,7 @@ const Company = () => {
         title="Companies"
         viewAllLink="/forms/add-company"
         addButtonTitle="Add Company"
-        itemsPerPage={totalPages}
+        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

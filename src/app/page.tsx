@@ -34,20 +34,22 @@ const Login = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        setSubmitError(null);
         const { email, password } = values;
         await login(email, password);
         toast({
           title: "Login Successful",
           description: "You have successfully logged in",
           duration: 1500,
-          variant: "default",
+          variant: "success",
         });
       } catch (error) {
-        console.log("error", error);
-        setSubmitError(
-          "Failed to log in. Please check your credentials and try again."
-        );
+        toast({
+          title: "Login Failed",
+          description:
+            "Failed to log in. Please check your credentials and try again.",
+          duration: 2500,
+          variant: "error",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -130,10 +132,6 @@ const Login = () => {
               )}
             </div>
           </div>
-
-          {submitError && (
-            <div className="text-sm text-red-600 mt-1">{submitError}</div>
-          )}
 
           <div>
             <Button

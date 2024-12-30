@@ -34,22 +34,44 @@ export interface VenueListResponse {
   currentPage: number;
   totalPages: number;
 }
-export interface KeyContactListResponse {
-  message: string;
-  venues: VenueProps[];
-  hasMore: boolean;
-  currentPage: number;
-  totalPages: number;
-}
-export interface AssociationListResponse {
-  message: string;
-  venues: VenueProps[];
-  hasMore: boolean;
-  currentPage: number;
-  totalPages: number;
-}
+
 export interface CompanyListResponse {
   companies: CompanyProps[];
+  hasMore: boolean;
+  currentPage: number;
+  totalPages: number;
+}
+
+export interface KeyContactProps {
+  _id: string;
+  contact_name: string;
+  contact_mobile: string;
+  contact_email: string;
+  state_id: number;
+  contact_organizer_id: string;
+  contact_venue_id: string;
+  contact_association_id: string;
+}
+export interface KeyContactListResponse {
+  keyContacts: KeyContactProps[];
+  hasMore: boolean;
+  currentPage: number;
+  totalPages: number;
+}
+
+export interface AssociationProps {
+  _id: string;
+  association_name: string;
+  association_city: string;
+  state_id: number;
+  association_address: string;
+  association_type_id: number;
+  association_website: string;
+  status: "pending" | "active" | "inactive"; // Using union type for status
+}
+
+export interface AssociationsListResponse {
+  associations: AssociationProps[];
   hasMore: boolean;
   currentPage: number;
   totalPages: number;

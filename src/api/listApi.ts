@@ -1,6 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import {
-  AssociationListResponse,
+  AssociationsListResponse,
   CompanyListResponse,
   KeyContactListResponse,
   VenueListResponse,
@@ -56,20 +56,28 @@ export const listApi = {
     }
   },
   getKeyContact: async (): Promise<KeyContactListResponse> => {
-    const response = await axiosInstance.get<KeyContactListResponse>(
-      "/keycontact/list"
-    );
-    return response.data;
+    try {
+      const response = await axiosInstance.get<KeyContactListResponse>(
+        "/keycontact/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while fetching data");
+    }
   },
-  getAssociation: async (): Promise<AssociationListResponse> => {
-    const response = await axiosInstance.get<AssociationListResponse>(
-      "/keycontact/list"
-    );
-    return response.data;
+  getAssociation: async (): Promise<AssociationsListResponse> => {
+    try {
+      const response = await axiosInstance.get<AssociationsListResponse>(
+        "/association/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while fetching data");
+    }
   },
-  getExpConference: async (): Promise<AssociationListResponse> => {
-    const response = await axiosInstance.get<AssociationListResponse>(
-      "/keycontact/list"
+  getExpConference: async (): Promise<AssociationsListResponse> => {
+    const response = await axiosInstance.get<AssociationsListResponse>(
+      "/expired/list"
     );
     return response.data;
   },

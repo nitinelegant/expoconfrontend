@@ -6,15 +6,18 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { VenueProps, VenueListResponse } from "@/types/listTypes";
+import {
+  CompanyListResponse,
+  AssociationProps,
+  AssociationsListResponse,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 
 const Association = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [venues, setVenues] = useState<VenueProps[]>([]);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [associations, setAssociations] = useState<AssociationProps[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,16 +29,15 @@ const Association = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: VenueListResponse = await listApi.getAssociation();
-        setVenues(response.venues);
-        // setCurrentPage(response.currentPage);
-        setTotalPages(response.totalPages);
-        console.log("getting venue data", response);
+        const response: AssociationsListResponse =
+          await listApi.getAssociation();
+        setAssociations(response.associations);
+        // setTotalPages(response.totalPages);
       } catch (error) {
         toast({
           title: "Error",
           description: "Error while fetching data",
-          duration: 1000,
+          duration: 1500,
           variant: "destructive",
         });
       } finally {
@@ -54,26 +56,26 @@ const Association = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const columns: Column<VenueProps>[] = [
-    { header: "Venue Name", accessorKey: "venue_name" },
-    { header: "City", accessorKey: "venue_city" },
+  const columns: Column<AssociationProps>[] = [
+    { header: "Association Name", accessorKey: "association_name" },
+    { header: "City", accessorKey: "association_city" },
     { header: "State", accessorKey: "state_id" },
-    { header: "Address", accessorKey: "venue_address" },
-    { header: "Website", accessorKey: "venue_website" },
+    { header: "Address", accessorKey: "association_address" },
+    { header: "Website", accessorKey: "association_website" },
     {
       header: "Status",
       accessorKey: "status",
-      cell: (venue) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.status === "approved"
+            item.status === "active"
               ? "bg-green-100 text-green-600"
-              : venue.status === "rejected"
+              : item.status === "pending"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.status}
+          {item.status}
         </span>
       ),
     },
@@ -108,11 +110,11 @@ const Association = () => {
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={venues}
-        title="Venue"
-        viewAllLink="/forms/add-venue"
-        addButtonTitle="Add Venue"
-        itemsPerPage={totalPages}
+        data={associations}
+        title="Association"
+        viewAllLink="/forms/add-association"
+        addButtonTitle="Add Association"
+        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

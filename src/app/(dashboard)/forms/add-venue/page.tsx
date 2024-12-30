@@ -18,13 +18,23 @@ import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
+import { useEffect, useState } from "react";
+import { listApi } from "@/api/listApi";
+import { VenueProps } from "@/types/listTypes";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { Loader } from "@/components/ui/loader";
+import { createFormApi } from "@/api/createFormApi";
+import SearchInput from "@/components/SearchInput";
 
 const VenueForm = () => {
-  // const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      companyName: "",
+      venue: "",
       city: "",
       state: "",
       address: "",
@@ -38,14 +48,13 @@ const VenueForm = () => {
       password: "",
     },
     validationSchema: Yup.object({
-      companyName: Yup.string().required("Company Name is required"),
+      venue: Yup.string().required("Company Name is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       address: Yup.string().required("Address is required"),
-      phone: Yup.string().matches(
-        /^\d{10}$/,
-        "Phone number must be exactly 10 digits"
-      ),
+      phone: Yup.string()
+        .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+        .required("Phone number is required"),
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
@@ -53,13 +62,65 @@ const VenueForm = () => {
         .required("Google Map link is required")
         .url("Must be a valid URL"),
       logo: Yup.mixed().required("Venue photo is required"),
-      layout: Yup.mixed(),
+
       featured: Yup.boolean(),
     }),
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        const {
+          venue,
+          city,
+          state,
+          address,
+          phone,
+          logo = "",
+          featured,
+          layout,
+          website,
+          googleMapLink,
+        } = values;
+        setIsLoading(true);
+
+        const payload = {
+          venue_name: venue,
+          venue_city: city,
+          state_id: parseInt(state),
+          venue_address: address,
+          venue_phone: phone,
+          venue_website: website,
+          venue_map: googleMapLink,
+          venue_photo: "",
+          venue_layout: "",
+          venue_featured: featured,
+        };
+        const response = await createFormApi.addVenue(payload);
+        if (response) {
+          console.log("submitting vlaues", response);
+          toast({
+            title: "Venue Added Successfully!",
+            description:
+              "The venue has been added successfully. You can view it in the key venue table.",
+            duration: 3000,
+            variant: "success",
+          });
+          router.push("/records/venue");
+        }
+      } catch (error) {
+        toast({
+          title: "Add Venue Failed",
+          description:
+            "Failed to add venue. Please check your fields and try again.",
+          duration: 2500,
+          variant: "error",
+        });
+        console.log(`error while submitting form`, error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
+
+  if (isLoading) return <Loader size="medium" />;
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
@@ -97,23 +158,21 @@ const VenueForm = () => {
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="companyName" className="text-gray-900">
+                <Label htmlFor="venue" className="text-gray-900">
                   Venue Name*
                 </Label>
                 <Input
-                  id="companyName"
-                  {...formik.getFieldProps("companyName")}
+                  id="venue"
+                  {...formik.getFieldProps("venue")}
                   tabIndex={1}
                   className={
-                    formik.touched.companyName && formik.errors.companyName
+                    formik.touched.venue && formik.errors.venue
                       ? "border-red-500"
                       : ""
                   }
                 />
-                {formik.touched.companyName && formik.errors.companyName && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.companyName}
-                  </p>
+                {formik.touched.venue && formik.errors.venue && (
+                  <p className="text-sm text-red-600">{formik.errors.venue}</p>
                 )}
               </div>
 
@@ -151,8 +210,8 @@ const VenueForm = () => {
                     aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
-                        ? "border-red-500 text-black"
-                        : "text-black"
+                        ? "border-red-500 text-black capitalize"
+                        : "text-black capitalize"
                     }
                   >
                     <SelectValue placeholder="Select State" />
@@ -160,11 +219,11 @@ const VenueForm = () => {
                   <SelectContent className="bg-white">
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
-                        key={state}
-                        value={state}
-                        className=" text-black hover:cursor-pointer"
+                        key={state.id}
+                        value={state.id.toString()}
+                        className=" text-black hover:cursor-pointer capitalize"
                       >
-                        {state}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -214,7 +273,23 @@ const VenueForm = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="space-y-2">
+              <SearchInput
+                label="Website"
+                placeholder="Enter website URL"
+                id="website"
+                onResultFound={() => {}}
+                debounceTime={600}
+                value={formik.values.website}
+                onChange={(value) => {
+                  console.log("values", value);
+                  formik.setFieldValue("website", value);
+                }}
+                onBlur={formik.handleBlur}
+                error={formik.errors.website}
+                touched={formik.touched.website}
+                apiEndpoint="company"
+              />
+              {/* <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">
                   Website*
                 </Label>
@@ -234,7 +309,7 @@ const VenueForm = () => {
                     {formik.errors.website}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="googleMapLink" className="text-gray-900">

@@ -5,6 +5,8 @@ import {
   AddCompanyResponseProps,
   AddKeyContactCredentials,
   AddKeyContactResponseProps,
+  AddVenueCredentials,
+  AddVenueResponseProps,
   AssociationCredentials,
   AssociationResponseProps,
 } from "@/types/createFormApi";
@@ -49,12 +51,17 @@ export const createFormApi = {
       throw new Error("Error while adding company");
     }
   },
-
-  logout: async (): Promise<void> => {
+  addVenue: async (
+    credentials: AddVenueCredentials
+  ): Promise<AddVenueResponseProps> => {
     try {
-      await axiosInstance.post("/auth/logout");
+      const response = await axiosInstance.post<AddVenueResponseProps>(
+        "/venue",
+        credentials
+      );
+      return response.data;
     } catch (error) {
-      throw new Error("Error while logging out");
+      throw new Error("Error while adding company");
     }
   },
 };

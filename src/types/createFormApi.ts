@@ -72,3 +72,31 @@ export interface AssociationResponseProps {
     association_type_id: number; // The ID representing the type of association
   };
 }
+
+export interface AddVenueCredentials {
+  venue_name: string;
+  venue_city: string;
+  state_id: number;
+  venue_address: string;
+  venue_phone: string;
+  venue_website?: string;
+  venue_map?: string;
+  venue_photo?: string;
+  venue_layout?: string;
+  venue_featured: boolean;
+}
+export interface AddVenueResponseProps {
+  message: string;
+  venue: {
+    venue_name: string;
+    venue_city: string;
+    state_id: number;
+    venue_address: string;
+    venue_phone: string;
+    venue_website?: string;
+    venue_map?: string;
+    venue_photo?: string;
+    venue_layout?: string;
+    venue_featured: boolean;
+  };
+}

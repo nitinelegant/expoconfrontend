@@ -108,7 +108,7 @@ const Venue = () => {
         title="Venue"
         viewAllLink="/forms/add-venue"
         addButtonTitle="Add Venue"
-        itemsPerPage={5}
+        itemsPerPage={10}
         searchField="venue_name"
       />
       <DeleteConfirmationDialog

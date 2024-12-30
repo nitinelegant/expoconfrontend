@@ -22,6 +22,7 @@ import { AssociationProps, CompanyProps, VenueProps } from "@/types/listTypes";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { Loader } from "@/components/ui/loader";
 
 const KeyContactForm = () => {
   const router = useRouter();
@@ -115,6 +116,8 @@ const KeyContactForm = () => {
       if (associations?.length > 0) setAssociations(associations);
     } catch (error) {}
   };
+
+  if (isLoading) return <Loader size="medium" />;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

@@ -5,6 +5,8 @@ import {
   AddCompanyResponseProps,
   AddKeyContactCredentials,
   AddKeyContactResponseProps,
+  AssociationCredentials,
+  AssociationResponseProps,
 } from "@/types/createFormApi";
 
 export const createFormApi = {
@@ -27,6 +29,19 @@ export const createFormApi = {
     try {
       const response = await axiosInstance.post<AddKeyContactResponseProps>(
         "/keycontact",
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while adding company");
+    }
+  },
+  addAssociation: async (
+    credentials: AssociationCredentials
+  ): Promise<AssociationResponseProps> => {
+    try {
+      const response = await axiosInstance.post<AssociationResponseProps>(
+        "/association",
         credentials
       );
       return response.data;

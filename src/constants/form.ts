@@ -127,11 +127,15 @@ export const companyTypes: CompanyTypesProps[] = [
   { id: 15, name: "Filming & Photography" },
   { id: 16, name: "Event Manager" },
 ];
+interface AssociationTypesProps {
+  id: number;
+  name: string;
+}
 
-export const associationTypes: string[] = [
-  "National Association",
-  "State Chapter / Branch",
-  "State Association",
+export const associationTypes: AssociationTypesProps[] = [
+  { id: 1, name: "National Association" },
+  { id: 2, name: "State Chapter / Branch" },
+  { id: 3, name: "State Association" },
 ];
 
 export const segmentTypes: string[] = [

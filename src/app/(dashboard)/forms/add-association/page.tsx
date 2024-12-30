@@ -17,8 +17,16 @@ import { Button } from "@/components/ui/button";
 import { associationTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { createFormApi } from "@/api/createFormApi";
+import SearchInput from "@/components/SearchInput";
 
 const AssociationForm = () => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
       website: "",
@@ -26,7 +34,7 @@ const AssociationForm = () => {
       city: "",
       state: "",
       address: "",
-      type: "",
+      associationType: "",
     },
     validationSchema: Yup.object({
       website: Yup.string()
@@ -36,10 +44,50 @@ const AssociationForm = () => {
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       address: Yup.string().required("Address is required"),
-      type: Yup.string().required("Type is required"),
+      associationType: Yup.string().required("Type is required"),
     }),
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const {
+          website,
+          associationName,
+          city,
+          state,
+          address,
+          associationType,
+        } = values;
+        const payload = {
+          association_website: website,
+          association_name: associationName,
+          association_city: city,
+          state_id: parseInt(state),
+          association_address: address,
+          association_type_id: parseInt(associationType),
+        };
+        const response = await createFormApi.addAssociation(payload);
+        if (response) {
+          toast({
+            title: "Association Added Successfully!",
+            description:
+              "The associdation has been added successfully. You can view it in the association list.",
+            duration: 3000,
+            variant: "success",
+          });
+          router.push("/records/association");
+        }
+      } catch (error) {
+        toast({
+          title: "Add Key Contact Failed",
+          description:
+            "Failed to add key contact. Please check your credentials and try again.",
+          duration: 2500,
+          variant: "error",
+        });
+        console.log(`error while submitting form`, error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -56,7 +104,23 @@ const AssociationForm = () => {
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Website */}
-              <div className="space-y-2">
+              <SearchInput
+                label="Website"
+                placeholder="Enter website URL"
+                id="website"
+                onResultFound={() => {}}
+                debounceTime={600}
+                value={formik.values.website}
+                onChange={(value) => {
+                  console.log("values", value);
+                  formik.setFieldValue("website", value);
+                }}
+                onBlur={formik.handleBlur}
+                error={formik.errors.website}
+                touched={formik.touched.website}
+                apiEndpoint="company"
+              />
+              {/* <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">
                   Website*
                 </Label>
@@ -75,7 +139,7 @@ const AssociationForm = () => {
                     {formik.errors.website}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               {/* Association Name */}
               <div className="space-y-2">
@@ -137,7 +201,7 @@ const AssociationForm = () => {
                     tabIndex={4}
                     className={
                       formik.touched.state && formik.errors.state
-                        ? "border-red-500 text-black"
+                        ? "border-red-500 text-black capitalize"
                         : "text-black"
                     }
                   >
@@ -146,11 +210,11 @@ const AssociationForm = () => {
                   <SelectContent>
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
-                        key={state}
-                        value={state}
-                        className="hover:cursor-pointer"
+                        key={state.id}
+                        value={state.id.toString()}
+                        className="hover:cursor-pointer capitalize"
                       >
-                        {state}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -187,13 +251,16 @@ const AssociationForm = () => {
                 Type*
               </Label>
               <Select
-                onValueChange={(value) => formik.setFieldValue("type", value)}
-                defaultValue={formik.values.type}
+                onValueChange={(value) =>
+                  formik.setFieldValue("associationType", value)
+                }
+                defaultValue={formik.values.associationType}
               >
                 <SelectTrigger
                   tabIndex={6}
                   className={
-                    formik.touched.type && formik.errors.type
+                    formik.touched.associationType &&
+                    formik.errors.associationType
                       ? "border-red-500 text-black"
                       : "text-black"
                   }
@@ -203,18 +270,21 @@ const AssociationForm = () => {
                 <SelectContent>
                   {associationTypes.map((item) => (
                     <SelectItem
-                      key={item}
-                      value={item}
+                      key={item.id}
+                      value={item.id.toString()}
                       className="hover:cursor-pointer"
                     >
-                      {item}
+                      {item.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {formik.touched.type && formik.errors.type && (
-                <p className="text-sm text-red-600">{formik.errors.type}</p>
-              )}
+              {formik.touched.associationType &&
+                formik.errors.associationType && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.associationType}
+                  </p>
+                )}
             </div>
 
             {/* Submit Button */}

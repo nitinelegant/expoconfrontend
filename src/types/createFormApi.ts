@@ -52,3 +52,23 @@ export interface AddKeyContactCredentials {
   contact_venue_id?: string; // Optional, if applicable
   contact_association_id?: string; // Optional, if applicable
 }
+export interface AssociationCredentials {
+  association_website: string; // The website of the association
+  association_name: string; // The name of the association
+  association_city: string; // The city where the association is located
+  state_id: number; // The ID of the state
+  association_address: string; // The address of the association
+  association_type_id: number; // The ID representing the type of association
+}
+
+export interface AssociationResponseProps {
+  message: string;
+  association: {
+    association_website: string; // The website of the association
+    association_name: string; // The name of the association
+    association_city: string; // The city where the association is located
+    state_id: number; // The ID of the state
+    association_address: string; // The address of the association
+    association_type_id: number; // The ID representing the type of association
+  };
+}

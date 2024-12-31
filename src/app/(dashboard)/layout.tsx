@@ -133,6 +133,21 @@ export default function DashboardLayout({
           text: "Conference",
           visible: ["admin"],
         },
+        {
+          href: "/approval/association",
+          text: "Association",
+          visible: ["admin"],
+        },
+        {
+          href: "/approval/company",
+          text: "Company",
+          visible: ["admin"],
+        },
+        {
+          href: "/approval/keycontact",
+          text: "KeyContact",
+          visible: ["admin"],
+        },
         { href: "#", text: "Job", visible: ["admin"] },
       ],
       visible: ["admin"],

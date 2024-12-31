@@ -1,7 +1,7 @@
 import { AUTH_TOKEN, USER } from "@/constants/auth";
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.example.com";
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 export const axiosInstance = axios.create({
   baseURL,

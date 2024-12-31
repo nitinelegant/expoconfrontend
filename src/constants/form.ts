@@ -73,20 +73,23 @@ export const statesAndUnionTerritories: StatesProps[] = [
   { id: 36, name: "lakshadweep" },
   { id: 37, name: "puducherry" },
 ];
-
-export const months: string[] = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+interface MonthsProps {
+  id: number;
+  name: string;
+}
+export const months: MonthsProps[] = [
+  { id: 1, name: "January" },
+  { id: 2, name: "February" },
+  { id: 3, name: "March" },
+  { id: 4, name: "April" },
+  { id: 5, name: "May" },
+  { id: 6, name: "June" },
+  { id: 7, name: "July" },
+  { id: 8, name: "August" },
+  { id: 9, name: "September" },
+  { id: 10, name: "October" },
+  { id: 11, name: "November" },
+  { id: 12, name: "December" },
 ];
 
 export const years: string[] = [
@@ -137,27 +140,31 @@ export const associationTypes: AssociationTypesProps[] = [
   { id: 2, name: "State Chapter / Branch" },
   { id: 3, name: "State Association" },
 ];
+interface SegmentProps {
+  id: number;
+  name: string;
+}
 
-export const segmentTypes: string[] = [
-  "Anaesthesiology",
-  "Orthopedics",
-  "Dermatology",
-  "Cardiology",
-  "Psychiatrist",
-  "Gastroenterology",
-  "ENT",
-  "Obstetrics & Gynecology",
-  "Neurology",
-  "Urology",
-  "Dentist",
-  "Diabetes Endocrinology",
-  "Ophthalmology",
-  "General Surgery",
-  "Infectious Diseases",
-  "Internal Medicine",
-  "Nutrition",
-  "Nephrology",
-  "Paediatrica & Neonatology",
-  "Pathology",
-  "Radiology",
+export const segmentTypes: SegmentProps[] = [
+  { id: 1, name: "Anaesthesiology" },
+  { id: 2, name: "Orthopedics" },
+  { id: 3, name: "Dermatology" },
+  { id: 4, name: "Cardiology" },
+  { id: 5, name: "Psychiatrist" },
+  { id: 6, name: "Gastroenterology" },
+  { id: 7, name: "ENT" },
+  { id: 8, name: "Obstetrics & Gynecology" },
+  { id: 9, name: "Neurology" },
+  { id: 10, name: "Urology" },
+  { id: 11, name: "Dentist" },
+  { id: 12, name: "Diabetes Endocrinology" },
+  { id: 13, name: "Ophthalmology" },
+  { id: 14, name: "General Surgery" },
+  { id: 15, name: "Infectious Diseases" },
+  { id: 16, name: "Internal Medicine" },
+  { id: 17, name: "Nutrition" },
+  { id: 18, name: "Nephrology" },
+  { id: 19, name: "Paediatrica & Neonatology" },
+  { id: 20, name: "Pathology" },
+  { id: 21, name: "Radiology" },
 ];

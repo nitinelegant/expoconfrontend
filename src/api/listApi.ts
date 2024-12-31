@@ -2,6 +2,7 @@ import { axiosInstance } from "@/lib/axios";
 import {
   AssociationsListResponse,
   CompanyListResponse,
+  ConferenceListResponse,
   KeyContactListResponse,
   VenueListResponse,
 } from "@/types/listTypes";
@@ -47,10 +48,10 @@ export const listApi = {
       throw new Error("Error while fetching data");
     }
   },
-  getExpConference: async (): Promise<KeyContactListResponse> => {
+  getConference: async (): Promise<ConferenceListResponse> => {
     try {
-      const response = await axiosInstance.get<KeyContactListResponse>(
-        "/expiredconference/list"
+      const response = await axiosInstance.get<ConferenceListResponse>(
+        "/conference/list"
       );
       return response.data;
     } catch (error) {

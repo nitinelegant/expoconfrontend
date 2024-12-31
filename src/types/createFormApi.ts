@@ -100,3 +100,30 @@ export interface AddVenueResponseProps {
     venue_featured: boolean;
   };
 }
+
+export interface AddConferenceCredentials {
+  con_type_id: number;
+  con_fullname: string;
+  con_shortname: string;
+  con_sd: string; // ISO date string
+  con_ed: string; // ISO date string
+  month_id: number | null;
+  year_id: number | null;
+  con_time: string;
+  fee_id: number | null;
+  con_city: string;
+  state_id: number | null;
+  venue_id: string | null;
+  con_website: string;
+  con_logo: string;
+  con_frequency: string;
+  company_id: string | null;
+  con_segment_id: number | null;
+  con_nassociation_id: number | null;
+  con_hassociation_id: number | null;
+}
+
+export interface AddKeyConferenceResponseProps {
+  message: string;
+  conference: AddConferenceCredentials;
+}

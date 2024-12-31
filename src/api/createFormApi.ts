@@ -1,8 +1,9 @@
 import { axiosInstance } from "@/lib/axios";
-import { User } from "@/types/authTypes";
 import {
   AddCompanyCredentials,
   AddCompanyResponseProps,
+  AddConferenceCredentials,
+  AddKeyConferenceResponseProps,
   AddKeyContactCredentials,
   AddKeyContactResponseProps,
   AddVenueCredentials,
@@ -12,6 +13,19 @@ import {
 } from "@/types/createFormApi";
 
 export const createFormApi = {
+  addConference: async (
+    credentials: AddConferenceCredentials
+  ): Promise<AddKeyConferenceResponseProps> => {
+    try {
+      const response = await axiosInstance.post<AddKeyConferenceResponseProps>(
+        "/conference",
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while adding company");
+    }
+  },
   addCompany: async (
     credentials: AddCompanyCredentials
   ): Promise<AddCompanyResponseProps> => {

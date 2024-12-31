@@ -14,6 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
+  associationTypes,
   eventTypes,
   months,
   segmentTypes,
@@ -30,10 +31,23 @@ import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
+import SearchInput from "@/components/SearchInput";
+import { useEffect, useState } from "react";
+import { listApi } from "@/api/listApi";
+import { AssociationProps, CompanyProps } from "@/types/listTypes";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { createFormApi } from "@/api/createFormApi";
 
 const ConferenceForm = () => {
+  const router = useRouter();
+  const { toast } = useToast();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const [companies, setcompanies] = useState<CompanyProps[]>([]);
+  const [associations, setAssociations] = useState<AssociationProps[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   // const [logoPreview, setLogoPreview] = useState(null);
 
   const formik = useFormik({
@@ -53,10 +67,11 @@ const ConferenceForm = () => {
       website: "",
       logo: null,
       frequency: "",
-      exhibitionOrganizer: "",
+      conferenceOrganizer: "",
       segment: "",
       exhibitorProfile: "",
       visitorProfile: "",
+      nationalAssociation: "",
     },
     validationSchema: Yup.object({
       eventType: Yup.string().required("Event Type is required"),
@@ -72,79 +87,91 @@ const ConferenceForm = () => {
         .required("Month is required")
         .test("future-month", "Cannot select past month", function (value) {
           if (!value || !this.parent.year) return true;
+
           const selectedYear = parseInt(this.parent.year);
           const currentYear = today.getFullYear();
-          const months = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ];
-          const selectedMonthIndex = months.indexOf(value);
+          const selectedMonth = parseInt(value);
+          const currentMonth = today.getMonth() + 1; // Adding 1 since months array is 1-based
 
           if (selectedYear > currentYear) return true;
           if (selectedYear === currentYear) {
-            return selectedMonthIndex >= today.getMonth();
+            return selectedMonth >= currentMonth;
           }
           return false;
         }),
       startDate: Yup.date()
         .required("Start Date is required")
-        .min(today, "Cannot select past date")
-        .test(
-          "year-match",
-          "Start date must be in selected year",
-          function (value) {
-            if (!value || !this.parent.year) return true;
-            return (
-              new Date(value).getFullYear().toString() === this.parent.year
-            );
+        .test("valid-date-range", "Invalid date selection", function (value) {
+          if (!value || !this.parent.year || !this.parent.month) return true;
+
+          const selectedDate = new Date(value);
+          const selectedYear = parseInt(this.parent.year);
+          const selectedMonth = parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
+
+          // Check if date is in past
+          if (selectedDate < today) {
+            return this.createError({ message: "Cannot select past date" });
           }
-        ),
+
+          // Check if date matches selected year and month
+          if (selectedDate.getFullYear() !== selectedYear) {
+            return this.createError({
+              message: "Date must be in selected year",
+            });
+          }
+
+          if (selectedDate.getMonth() !== selectedMonth) {
+            return this.createError({
+              message: "Date must be in selected month",
+            });
+          }
+
+          return true;
+        }),
+
       endDate: Yup.date()
         .required("End Date is required")
-        .min(Yup.ref("startDate"), "End date must be after start date")
-        .min(today, "Cannot select past date")
-        .test(
-          "year-match",
-          "End date must be in selected year",
-          function (value) {
-            if (!value || !this.parent.year) return true;
-            return (
-              new Date(value).getFullYear().toString() === this.parent.year
-            );
+        .test("valid-end-date", "Invalid end date selection", function (value) {
+          if (
+            !value ||
+            !this.parent.startDate ||
+            !this.parent.year ||
+            !this.parent.month
+          )
+            return true;
+
+          const endDate = new Date(value);
+          const startDate = new Date(this.parent.startDate);
+          const selectedYear = parseInt(this.parent.year);
+          const selectedMonth = parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
+
+          // Check if end date is before start date
+          if (endDate < startDate) {
+            return this.createError({
+              message: "End date must be after start date",
+            });
           }
-        )
-        .test(
-          "month-match",
-          "End date must be in selected month",
-          function (value) {
-            if (!value || !this.parent.month) return true;
-            const months = [
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ];
-            return months[new Date(value).getMonth()] === this.parent.month;
+
+          // Check if date is in past
+          if (endDate < today) {
+            return this.createError({ message: "Cannot select past date" });
           }
-        ),
+
+          // Check if date matches selected year and month
+          if (endDate.getFullYear() !== selectedYear) {
+            return this.createError({
+              message: "Date must be in selected year",
+            });
+          }
+
+          if (endDate.getMonth() !== selectedMonth) {
+            return this.createError({
+              message: "Date must be in selected month",
+            });
+          }
+
+          return true;
+        }),
       entryFees: Yup.number().required("Entry Fees is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
@@ -153,11 +180,101 @@ const ConferenceForm = () => {
         .url("Must be a valid URL")
         .required("Website is required"),
       segment: Yup.string().required("Exhibition Type is required"),
+      nationalAssociation: Yup.string().required(
+        "National Association is required"
+      ),
+      conferenceOrganizer: Yup.string().required(
+        "Conference Organizer is required"
+      ),
     }),
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const {
+          eventType,
+          eventFullName,
+          eventShortName,
+          startDate,
+          endDate,
+          timings,
+          year,
+          state,
+          city,
+          conferenceOrganizer,
+          segment,
+          website,
+          venue,
+          entryFees,
+          frequency,
+          exhibitorProfile,
+          visitorProfile,
+          month,
+          nationalAssociation,
+        } = values;
+        const payload = {
+          con_type_id: parseInt(eventType),
+          con_fullname: eventFullName,
+          con_shortname: eventShortName,
+          con_sd: startDate,
+          con_ed: endDate,
+          month_id: parseInt(month),
+          year_id: parseInt(year),
+          con_time: timings,
+          fee_id: parseInt(entryFees),
+          con_city: city,
+          state_id: parseInt(state),
+          venue_id: venue,
+          con_website: website,
+          con_logo: "",
+          con_frequency: frequency,
+          company_id: conferenceOrganizer,
+          con_segment_id: parseInt(segment),
+          con_nassociation_id: parseInt(nationalAssociation),
+          con_hassociation_id: parseInt(segment),
+        };
+        const response = await createFormApi.addConference(payload);
+        if (response) {
+          console.log("submitting vlaues", response);
+          toast({
+            title: "Conference Added Successfully!",
+            description:
+              "The conference has been added successfully. You can view it in the conference list.",
+            duration: 3000,
+            variant: "success",
+          });
+          router.push("/records/conference");
+        }
+      } catch (error) {
+        toast({
+          title: "Add Conference Failed",
+          description:
+            "Failed to add conference. Please check your credentials and try again.",
+          duration: 2500,
+          variant: "error",
+        });
+        console.log(`error while submitting form`, error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
+
+  useEffect(() => {
+    fetchCompany();
+    fetchAssociation();
+  }, []);
+  const fetchCompany = async () => {
+    try {
+      const { companies } = await listApi.getCompanies();
+      if (companies?.length > 0) setcompanies(companies);
+    } catch (error) {}
+  };
+  const fetchAssociation = async () => {
+    try {
+      const { associations } = await listApi.getAssociation();
+      if (associations?.length > 0) setAssociations(associations);
+    } catch (error) {}
+  };
 
   // const handleLogoChange = (event) => {
   //   const file = event.currentTarget.files?.[0];
@@ -186,6 +303,15 @@ const ConferenceForm = () => {
 
   const timeOptions = generateTimeOptions();
   const todayStr = today.toISOString().split("T")[0];
+
+  const getMaxDateForMonth = (year: string, month: string) => {
+    if (!year || !month) return undefined;
+
+    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+    return `${year}-${String(month).padStart(2, "0")}-${String(
+      lastDay
+    ).padStart(2, "0")}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -218,13 +344,13 @@ const ConferenceForm = () => {
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    {eventTypes.map((type) => (
+                    {associationTypes.map((item) => (
                       <SelectItem
-                        key={type}
-                        value={type}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {type}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -335,8 +461,8 @@ const ConferenceForm = () => {
                   <SelectContent>
                     {months.map((month) => (
                       <SelectItem
-                        key={month}
-                        value={month}
+                        key={month.id}
+                        value={month.id.toString()}
                         disabled={
                           formik.values.year ===
                             today.getFullYear().toString() &&
@@ -344,7 +470,7 @@ const ConferenceForm = () => {
                         }
                         className="hover:cursor-pointer"
                       >
-                        {month}
+                        {month.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -359,7 +485,6 @@ const ConferenceForm = () => {
                 <Input
                   type="date"
                   id="startDate"
-                  tabIndex={6}
                   {...formik.getFieldProps("startDate")}
                   className={cn(
                     formik.touched.startDate &&
@@ -369,13 +494,10 @@ const ConferenceForm = () => {
                   min={todayStr}
                   max={
                     formik.values.year && formik.values.month
-                      ? `${formik.values.year}-${String(
-                          months.indexOf(formik.values.month) + 1
-                        ).padStart(2, "0")}-${new Date(
+                      ? getMaxDateForMonth(
                           formik.values.year,
-                          months.indexOf(formik.values.month) + 1,
-                          0
-                        ).getDate()}`
+                          formik.values.month
+                        )
                       : undefined
                   }
                 />
@@ -391,7 +513,6 @@ const ConferenceForm = () => {
                 <Input
                   type="date"
                   id="endDate"
-                  tabIndex={7}
                   {...formik.getFieldProps("endDate")}
                   className={cn(
                     formik.touched.endDate &&
@@ -401,13 +522,10 @@ const ConferenceForm = () => {
                   min={formik.values.startDate || todayStr}
                   max={
                     formik.values.year && formik.values.month
-                      ? `${formik.values.year}-${String(
-                          months.indexOf(formik.values.month) + 1
-                        ).padStart(2, "0")}-${new Date(
+                      ? getMaxDateForMonth(
                           formik.values.year,
-                          months.indexOf(formik.values.month) + 1,
-                          0
-                        ).getDate()}`
+                          formik.values.month
+                        )
                       : undefined
                   }
                 />
@@ -510,8 +628,8 @@ const ConferenceForm = () => {
                     tabIndex={11}
                     className={
                       formik.touched.state && formik.errors.state
-                        ? "border-red-500 text-black"
-                        : "text-black"
+                        ? "border-red-500 text-black capitalize"
+                        : "text-black capitalize"
                     }
                   >
                     <SelectValue
@@ -524,7 +642,7 @@ const ConferenceForm = () => {
                       <SelectItem
                         key={state.id}
                         value={state.id.toString()}
-                        className="hover:cursor-pointer"
+                        className="hover:cursor-pointer capitalize"
                       >
                         {state.name}
                       </SelectItem>
@@ -537,14 +655,35 @@ const ConferenceForm = () => {
               </div>
               <VenueSearch
                 value={formik.values.venue}
-                onChange={(value) => formik.setFieldValue("venue", value)}
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
-                // tabIndex={12}
+                onChange={(value) =>
+                  formik.handleChange({ target: { name: "venue", value } })
+                }
+                onBlur={formik.handleBlur}
+                error={formik.errors.venue}
+                touched={formik.touched.venue}
               />
 
-              <div className="space-y-2">
+              <SearchInput
+                label="Website"
+                placeholder="Enter website URL"
+                id="website"
+                onResultFound={() => {}}
+                debounceTime={600}
+                value={formik.values.website}
+                onChange={(value) => {
+                  console.log("values", value);
+                  formik.setFieldValue("website", value);
+                }}
+                onBlur={formik.handleBlur}
+                error={formik.errors.website}
+                touched={formik.touched.website}
+                apiEndpoint="company"
+              />
+
+              {/* <div className="space-y-2">
                 <Label htmlFor="website">Website*</Label>
                 <Input
                   id="website"
@@ -562,7 +701,7 @@ const ConferenceForm = () => {
                     {formik.errors.website}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="logo">Upload Event Logo</Label>
@@ -590,17 +729,57 @@ const ConferenceForm = () => {
                   {...formik.getFieldProps("frequency")}
                 />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="exhibitionOrganizer">
+                <Label htmlFor="conferenceOrganizer">
+                  {" "}
+                  Conference Organizer PCO
+                </Label>
+                <Select
+                  onValueChange={(value) =>
+                    formik.setFieldValue("conferenceOrganizer", value)
+                  }
+                >
+                  <SelectTrigger
+                    tabIndex={17}
+                    className={
+                      formik.touched.conferenceOrganizer &&
+                      formik.errors.conferenceOrganizer
+                        ? "border-red-500 text-black"
+                        : "text-black"
+                    }
+                  >
+                    <SelectValue placeholder="Select conference organizer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {companies?.map((item) => (
+                      <SelectItem
+                        key={item._id}
+                        value={item._id}
+                        className="hover:cursor-pointer"
+                      >
+                        {item.company_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.conferenceOrganizer &&
+                  formik.errors.conferenceOrganizer && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.conferenceOrganizer}
+                    </p>
+                  )}
+              </div>
+
+              {/* <div className="space-y-2">
+                <Label htmlFor="conferenceOrganizer">
                   Conference Organizer PCO
                 </Label>
                 <Input
-                  id="exhibitionOrganizer"
+                  id="conferenceOrganizer"
                   tabIndex={16}
-                  {...formik.getFieldProps("exhibitionOrganizer")}
+                  {...formik.getFieldProps("conferenceOrganizer")}
                 />
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="segment">Conference Segment</Label>
@@ -620,13 +799,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((type) => (
+                    {segmentTypes.map((item) => (
                       <SelectItem
-                        key={type}
-                        value={type}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {type}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -641,13 +820,14 @@ const ConferenceForm = () => {
                 <Label htmlFor="segment">National Association</Label>
                 <Select
                   onValueChange={(value) =>
-                    formik.setFieldValue("segment", value)
+                    formik.setFieldValue("nationalAssociation", value)
                   }
                 >
                   <SelectTrigger
                     tabIndex={18}
                     className={
-                      formik.touched.segment && formik.errors.segment
+                      formik.touched.nationalAssociation &&
+                      formik.errors.nationalAssociation
                         ? "border-red-500 text-black"
                         : "text-black"
                     }
@@ -655,22 +835,23 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((type) => (
+                    {associations?.map((item) => (
                       <SelectItem
-                        key={type}
-                        value={type}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {type}
+                        {item.association_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.segment && formik.errors.segment && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.segment}
-                  </p>
-                )}
+                {formik.touched.nationalAssociation &&
+                  formik.errors.nationalAssociation && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.nationalAssociation}
+                    </p>
+                  )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="segment">Hosting Chapter</Label>
@@ -690,13 +871,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((type) => (
+                    {segmentTypes.map((item) => (
                       <SelectItem
-                        key={type}
-                        value={type}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {type}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

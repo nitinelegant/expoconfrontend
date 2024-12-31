@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AssociationProps, AssociationsListResponse } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { statesAndUnionTerritories } from "@/constants/form";
 
 const Association = () => {
   const { toast } = useToast();
@@ -55,9 +56,20 @@ const Association = () => {
   const columns: Column<AssociationProps>[] = [
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
-    { header: "State", accessorKey: "state_id" },
+
     { header: "Address", accessorKey: "association_address" },
     { header: "Website", accessorKey: "association_website" },
+    {
+      header: "State",
+      accessorKey: "state_id",
+      cell: (state) => {
+        return (
+          <span className="capitalize">
+            {statesAndUnionTerritories[state.state_id]?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Status",
       accessorKey: "status",

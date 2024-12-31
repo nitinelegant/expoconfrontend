@@ -77,3 +77,34 @@ export interface AssociationsListResponse {
   currentPage: number;
   totalPages: number;
 }
+
+export interface ConferenceProps {
+  _id: string;
+  con_type_id: number;
+  con_fullname: string;
+  con_shortname: string;
+  con_sd: string; // Start date in ISO format
+  con_ed: string; // End date in ISO format
+  month_id: string;
+  year_id: string;
+  con_time: string; // Conference time
+  fee_id: string;
+  con_city: string;
+  state_id: number;
+  venue_id: string;
+  con_website: string;
+  con_logo: string;
+  con_frequency: string;
+  company_id: string;
+  con_segment_id: string;
+  con_nassociation_id: string;
+  con_hassociation_id: string;
+  status: string; // e.g., "pending"
+}
+
+export interface ConferenceListResponse {
+  conferences: ConferenceProps[];
+  hasMore: boolean;
+  currentPage: number;
+  totalPages: number;
+}

@@ -6,7 +6,11 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { CompanyListResponse, CompanyProps } from "@/types/listTypes";
+import {
+  CompanyDeleteResponse,
+  CompanyListResponse,
+  CompanyProps,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
@@ -15,12 +19,9 @@ const Company = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
+  const [rerenderData, setRerenderData] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,17 +42,11 @@ const Company = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
-    setIsDeleteDialogOpen(true);
-  };
-
   const columns: Column<CompanyProps>[] = [
     { header: "Company Name", accessorKey: "company_name" },
     { header: "City", accessorKey: "company_city" },
@@ -106,12 +101,51 @@ const Company = () => {
       },
     },
   ];
-  const handleConfirmDeletion = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setIsDeleteDialogOpen(true);
   };
+
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        setIsLoading(true);
+        const { message }: CompanyDeleteResponse = await listApi.deleteCompany(
+          selectedId
+        );
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully Deleted the company.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected company.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting company. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8 p-6">
       <DataTable

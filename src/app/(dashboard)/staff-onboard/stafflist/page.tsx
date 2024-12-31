@@ -116,7 +116,7 @@ const StaffList = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully Deleted the key contact.",
+            description: "You have successfully deleted the staff.",
             duration: 1500,
             variant: "success",
           });
@@ -125,7 +125,7 @@ const StaffList = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected key contact.",
+          description: "Id is missing from the selected staff.",
           duration: 1500,
           variant: "destructive",
         });
@@ -133,7 +133,7 @@ const StaffList = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting key contact. Please try again.",
+        description: "Error while deleting staff. Please try again.",
         duration: 1500,
         variant: "error",
       });

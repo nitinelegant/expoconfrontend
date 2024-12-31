@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  ConferenceDeleteResponse,
   ExpConferenceListResponse,
   ExpConferenceProps,
 } from "@/types/listTypes";
@@ -19,12 +20,9 @@ const Venue = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [expConferences, setConferences] = useState<ExpConferenceProps[]>([]);
-
+  const [rerenderData, setRerenderData] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,14 +44,14 @@ const Venue = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
   const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
+    setSelectedId(id);
     setIsDeleteDialogOpen(true);
   };
 
@@ -84,7 +82,10 @@ const Venue = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state?.state_id]?.name}
+            {
+              statesAndUnionTerritories.find((x) => x.id === state.state_id)
+                ?.name
+            }
           </span>
         );
       },
@@ -118,7 +119,7 @@ const Venue = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDeleteClick(cellItem.con_type_id)}
+              onClick={() => handleDeleteClick(cellItem._id)}
             >
               <Trash2 className="text-red-600" />
             </Button>
@@ -127,11 +128,42 @@ const Venue = () => {
       },
     },
   ];
-  const handleConfirmDeletion = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        setIsLoading(true);
+        const { message }: ConferenceDeleteResponse =
+          await listApi.deleteConference(selectedId);
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully deleted the venue.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected venue.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting venue. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="space-y-8 p-6">

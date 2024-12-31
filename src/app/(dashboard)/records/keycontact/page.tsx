@@ -135,7 +135,7 @@ const KeyContact = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully Deleted the key contact.",
+            description: "You have successfully eleted the key contact.",
             duration: 1500,
             variant: "success",
           });

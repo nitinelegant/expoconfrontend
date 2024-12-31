@@ -139,6 +139,7 @@ export interface ConferenceListResponse {
 }
 
 export interface ExpConferenceProps {
+  _id: string;
   con_type_id: number;
   con_fullname: string;
   con_shortname: string;
@@ -195,5 +196,17 @@ export interface KeyContactDeleteResponse {
   message: string;
 }
 export interface StaffDeleteResponse {
+  message: string;
+}
+export interface CompanyDeleteResponse {
+  message: string;
+}
+export interface AssociationDeleteResponse {
+  message: string;
+}
+export interface VenueDeleteResponse {
+  message: string;
+}
+export interface ConferenceDeleteResponse {
   message: string;
 }

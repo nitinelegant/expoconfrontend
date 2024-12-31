@@ -18,15 +18,21 @@ import { associationTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
+import { Loader } from "@/components/ui/loader";
 
 const AssociationForm = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const associationId = searchParams.get("id");
+  const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
   const formik = useFormik({
     initialValues: {
       website: "",
@@ -65,17 +71,32 @@ const AssociationForm = () => {
           association_address: address,
           association_type_id: parseInt(associationType),
         };
-        const response = await createFormApi.addAssociation(payload);
-        if (response) {
+        if (isEditMode) {
+          await createFormApi.updateAssociation(
+            associationId as string,
+            payload
+          );
           toast({
-            title: "Association Added Successfully!",
-            description:
-              "The associdation has been added successfully. You can view it in the association list.",
+            title: "Association Updated Successfully!",
+            description: "The association has been updated successfully.",
             duration: 3000,
             variant: "success",
           });
-          router.push("/records/association");
+        } else {
+          const response = await createFormApi.addAssociation(payload);
+          if (response) {
+            toast({
+              title: "Association Added Successfully!",
+              description:
+                "The associdation has been added successfully. You can view it in the association list.",
+              duration: 3000,
+              variant: "success",
+            });
+            router.push("/records/association");
+          }
         }
+
+        router.push("/records/association");
       } catch (error) {
         toast({
           title: "Add Key Contact Failed",
@@ -90,6 +111,42 @@ const AssociationForm = () => {
       }
     },
   });
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setInitialLoading(true);
+        // await Promise.all([fetchCompany(), fetchAssociation()]);
+        if (isEditMode) {
+          const { association } = await createFormApi.getAssocian(
+            associationId as string
+          );
+          console.log("contactData", association);
+          formik.setValues({
+            website: association?.association_website,
+            associationName: association?.association_name,
+            city: association?.association_city,
+            state: association?.state_id?.toString(),
+            address: association?.association_address,
+            associationType: association?.association_type_id?.toString(),
+          });
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        toast({
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
+          variant: "error",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isEditMode, associationId]);
+
+  if (initialLoading || isLoading) return <Loader size="medium" />;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">

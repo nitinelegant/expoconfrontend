@@ -213,3 +213,60 @@ export interface ConferenceDeleteResponse {
 export interface KeyContactApproveResponse {
   message: string;
 }
+
+export interface CompanySingleResponse {
+  message: string;
+  company: CompanyDetailsProps;
+}
+
+export interface CompanyDetailsProps {
+  _id: string;
+  company_name: string;
+  company_type_id: number;
+  company_city: string;
+  state_id: number;
+  company_address: string;
+  company_phone: string;
+  company_website: string;
+  company_map: string;
+  company_logo: string;
+  company_featured: boolean;
+  company_user_id: string;
+  company_password: string;
+  status: string;
+  changes: CompanyChanges;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CompanyChanges {
+  fields: []; // Replace `any` with the type of items in the `fields` array if known
+  _id: string;
+}
+
+export interface AssociationSingleResponse {
+  message: string;
+  association: AssociationDetailsProps;
+}
+
+export interface AssociationDetailsProps {
+  _id: string;
+  association_name: string;
+  association_city: string;
+  state_id: number;
+  association_address: string;
+  association_type_id: number;
+  association_website: string;
+  status: string;
+  changes: AssociationChanges;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssociationChanges {
+  date: string; // ISO date string
+  type: string; // e.g., "create", "update"
+  fields: string[]; // Array of field names
+  user_id: string;
+  _id: string;
+}

@@ -32,11 +32,9 @@ const KeyContactForm = () => {
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
-  const searchParams = useSearchParams(); // For query parameters
+  const searchParams = useSearchParams();
   const keyContactId = searchParams.get("id");
-  const isEditMode = Boolean(searchParams.get("id")); // Get `id` from query parameters
-
-  // const isEditMode = Boolean(params?.id);
+  const isEditMode = Boolean(searchParams.get("id"));
 
   const formik = useFormik({
     initialValues: {
@@ -116,7 +114,6 @@ const KeyContactForm = () => {
       try {
         setInitialLoading(true);
         await Promise.all([fetchCompany(), fetchAssociation()]);
-        console.log("isEditMode", isEditMode, keyContactId);
         if (isEditMode) {
           const { keyContact } = await createFormApi.getKeyContact(
             keyContactId as string

@@ -21,13 +21,18 @@ import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Loader } from "@/components/ui/loader";
 
 const CompanyForm = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const companyId = searchParams.get("id");
+  const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -98,15 +103,25 @@ const CompanyForm = () => {
           company_password: password,
           status: featured ? "pending" : "pending",
         };
-        const response = await createFormApi.addCompany(payload);
-        console.log("submitting vlaues", response);
-        toast({
-          title: "Company Added Successfully!",
-          description:
-            "The company has been added successfully. You can view it in the company list.",
-          duration: 3000,
-          variant: "success",
-        });
+        if (isEditMode) {
+          await createFormApi.updateCompany(companyId as string, payload);
+          toast({
+            title: "Company Updated Successfully!",
+            description: "The company has been updated successfully.",
+            duration: 3000,
+            variant: "success",
+          });
+        } else {
+          const response = await createFormApi.addCompany(payload);
+          console.log("submitting vlaues", response);
+          toast({
+            title: "Company Added Successfully!",
+            description:
+              "The company has been added successfully. You can view it in the company list.",
+            duration: 3000,
+            variant: "success",
+          });
+        }
         router.push("/records/company");
       } catch (error) {
         toast({
@@ -122,6 +137,48 @@ const CompanyForm = () => {
       }
     },
   });
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setInitialLoading(true);
+        // await Promise.all([fetchCompany(), fetchAssociation()]);
+        if (isEditMode) {
+          const { company } = await createFormApi.getCompany(
+            companyId as string
+          );
+          console.log("contactData", company);
+          formik.setValues({
+            companyName: company?.company_name,
+            companyType: company?.company_type_id.toString(),
+            city: company?.company_city,
+            state: company?.state_id.toString(),
+            address: company?.company_address,
+            phone: company?.company_phone,
+            website: company?.company_website,
+            googleMapLink: company?.company_map,
+            logo: "",
+            featured: company?.company_featured,
+            email: company?.company_user_id,
+            password: "",
+          });
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        toast({
+          title: "Error Loading Data",
+          description: "Failed to load contact information. Please try again.",
+          variant: "error",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isEditMode, companyId]);
+
+  if (initialLoading || isLoading) return <Loader size="medium" />;
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
@@ -143,7 +200,7 @@ const CompanyForm = () => {
       <Card className="mx-auto max-w-3xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">
-            Add Company
+            {isEditMode ? "Update Company" : "Add Company"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -467,7 +524,7 @@ const CompanyForm = () => {
               tabIndex={13}
               disabled={isLoading}
             >
-              Submit
+              {isEditMode ? "Update" : "Submit"}
             </Button>
           </form>
         </CardContent>

@@ -13,7 +13,11 @@ import {
   AssociationCredentials,
   AssociationResponseProps,
 } from "@/types/createFormApi";
-import { KeyContactSingleResponse } from "@/types/listTypes";
+import {
+  AssociationSingleResponse,
+  CompanySingleResponse,
+  KeyContactSingleResponse,
+} from "@/types/listTypes";
 
 export const createFormApi = {
   addConference: async (
@@ -109,6 +113,7 @@ export const createFormApi = {
       throw new Error(`Error while adding company ${error}`);
     }
   },
+
   getKeyContact: async (id: string): Promise<KeyContactSingleResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactSingleResponse>(
@@ -117,6 +122,56 @@ export const createFormApi = {
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getCompany: async (id: string): Promise<CompanySingleResponse> => {
+    try {
+      const response = await axiosInstance.get<CompanySingleResponse>(
+        `/company/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+
+  updateCompany: async (
+    id: string,
+    credentials: AddCompanyCredentials
+  ): Promise<AddCompanyResponseProps> => {
+    try {
+      const response = await axiosInstance.put<AddCompanyResponseProps>(
+        `/company/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while adding company ${error}`);
+    }
+  },
+
+  getAssocian: async (id: string): Promise<AssociationSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<AssociationSingleResponse>(
+        `/association/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  updateAssociation: async (
+    id: string,
+    credentials: AssociationCredentials
+  ): Promise<AssociationResponseProps> => {
+    try {
+      const response = await axiosInstance.put<AssociationResponseProps>(
+        `/association/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while adding company ${error}`);
     }
   },
 };

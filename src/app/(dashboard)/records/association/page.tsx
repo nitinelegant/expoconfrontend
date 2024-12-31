@@ -14,9 +14,11 @@ import {
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
+import { useRouter } from "next/navigation";
 
 const Association = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
   const [rerenderData, setRerenderData] = useState(false);
@@ -61,7 +63,10 @@ const Association = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state.state_id]?.name}
+            {
+              statesAndUnionTerritories.find((x) => x.id === state.state_id)
+                ?.name
+            }
           </span>
         );
       },
@@ -87,7 +92,13 @@ const Association = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-association?id=${cellItem._id}`)
+              }
+            >
               <SquarePen />
             </Button>
             <Button

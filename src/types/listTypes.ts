@@ -137,3 +137,22 @@ export interface ExpConferenceListResponse {
   currentPage: number;
   totalPages: number;
 }
+
+export interface StaffProps {
+  _id: string;
+  id?: string; // Optional, as not all users have this field
+  user_id: string;
+  user_prefix: string;
+  user_fullname: string;
+  user_email: string;
+  user_role: number;
+  user_status: string;
+  user_tender: number;
+  profile_interest: any[]; // Update this type if the structure of profile_interest is known
+  updatedAt?: string; // Optional, as not all users have this field
+}
+
+export interface StaffListResponse {
+  message: string;
+  users: StaffProps[];
+}

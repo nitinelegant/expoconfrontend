@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { withAuth } from "@/utils/withAuth";
+import BackButton from "@/components/BackButton";
 
 const SignupSchema = Yup.object().shape({
   name: Yup.string()
@@ -28,82 +29,91 @@ const StaffOnBoardForm = () => {
   // const [signupSuccess, setSignupSuccess] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader>
-          <CardTitle>Staff Registration</CardTitle>
-          <CardDescription>Add staff details to create account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Formik
-            initialValues={{ name: "", email: "", password: "" }}
-            validationSchema={SignupSchema}
-            onSubmit={(values, { setSubmitting }) => {
-              setTimeout(() => {
-                // setSignupSuccess(true);
-                setSubmitting(false);
-              }, 400);
-            }}
-          >
-            {({ errors, touched, isSubmitting }) => (
-              <Form className="space-y-4 w-full">
-                <div>
-                  <Label htmlFor="name">Name</Label>
-                  <Field
-                    as={Input}
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Enter staff name"
-                  />
-                  {errors.name && touched.name && (
-                    <p className="text-sm text-red-500 mt-1">{errors.name}</p>
-                  )}
-                </div>
+    <>
+      <div className="ml-10">
+        <BackButton />
+      </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md shadow-lg">
+          <CardHeader>
+            <CardTitle>Staff Registration</CardTitle>
+            <CardDescription>
+              Add staff details to create account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Formik
+              initialValues={{ name: "", email: "", password: "" }}
+              validationSchema={SignupSchema}
+              onSubmit={(values, { setSubmitting }) => {
+                setTimeout(() => {
+                  // setSignupSuccess(true);
+                  setSubmitting(false);
+                }, 400);
+              }}
+            >
+              {({ errors, touched, isSubmitting }) => (
+                <Form className="space-y-4 w-full">
+                  <div>
+                    <Label htmlFor="name">Name</Label>
+                    <Field
+                      as={Input}
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Enter staff name"
+                    />
+                    {errors.name && touched.name && (
+                      <p className="text-sm text-red-500 mt-1">{errors.name}</p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Field
-                    as={Input}
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter staff email"
-                  />
-                  {errors.email && touched.email && (
-                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
-                  )}
-                </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Field
+                      as={Input}
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="Enter staff email"
+                    />
+                    {errors.email && touched.email && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <Label htmlFor="password">Password</Label>
-                  <Field
-                    as={Input}
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Enter staff password"
-                  />
-                  {errors.password && touched.password && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.password}
-                    </p>
-                  )}
-                </div>
+                  <div>
+                    <Label htmlFor="password">Password</Label>
+                    <Field
+                      as={Input}
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="Enter staff password"
+                    />
+                    {errors.password && touched.password && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.password}
+                      </p>
+                    )}
+                  </div>
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Signing up..." : "Sign Up"}
-                </Button>
-              </Form>
-            )}
-          </Formik>
-        </CardContent>
-      </Card>
-    </div>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Signing up..." : "Sign Up"}
+                  </Button>
+                </Form>
+              )}
+            </Formik>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 };
 

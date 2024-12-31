@@ -81,13 +81,16 @@ const Venue = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state?.state_id]?.name}
+            {
+              statesAndUnionTerritories.find((x) => x.id === state.state_id)
+                ?.name
+            }
           </span>
         );
       },
     },
     {
-      header: "Type",
+      header: "Status",
       accessorKey: "status",
       cell: (venue) => (
         <span
@@ -103,28 +106,9 @@ const Venue = () => {
         </span>
       ),
     },
+
     {
       header: "Action",
-      accessorKey: "_id",
-      cell: (cellItem) => {
-        return (
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <SquarePen />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
-            >
-              <Trash2 className="text-red-600" />
-            </Button>
-          </div>
-        );
-      },
-    },
-    {
-      header: "",
       accessorKey: "_id",
       cell: () => {
         return (

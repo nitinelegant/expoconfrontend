@@ -12,10 +12,10 @@ import {
 } from "@/types/listTypes";
 
 export const featureApi = {
-  getFeaturedOrganizers: async (): Promise<OrganizerListResponse> => {
+  getFeaturedOrganizers: async (): Promise<CompanyListResponse> => {
     try {
-      const response = await axiosInstance.get<OrganizerListResponse>(
-        `/organizer/featured`
+      const response = await axiosInstance.get<CompanyListResponse>(
+        `/company/featured`
       );
       return response.data;
     } catch (error) {

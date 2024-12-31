@@ -6,7 +6,11 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { VenueProps, VenueListResponse } from "@/types/listTypes";
+import {
+  VenueProps,
+  VenueListResponse,
+  VenueDeleteResponse,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
@@ -16,12 +20,9 @@ const Venue = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [venues, setVenues] = useState<VenueProps[]>([]);
-  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
+  const [rerenderData, setRerenderData] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,14 +43,14 @@ const Venue = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
   const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
+    setSelectedId(id);
     setIsDeleteDialogOpen(true);
   };
 
@@ -108,11 +109,43 @@ const Venue = () => {
       },
     },
   ];
-  const handleConfirmDeletion = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        setIsLoading(true);
+        const { message }: VenueDeleteResponse = await listApi.deleteVenue(
+          selectedId
+        );
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully deleted the venue.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected venue.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting venue. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="space-y-8 p-6">

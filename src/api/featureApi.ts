@@ -6,25 +6,26 @@ import {
 import {
   AssociationsListResponse,
   CompanyListResponse,
+  ConferenceListResponse,
   KeyContactListResponse,
   VenueListResponse,
 } from "@/types/listTypes";
 
 export const featureApi = {
-  getOrganizers: async (): Promise<OrganizerListResponse> => {
+  getFeaturedOrganizers: async (): Promise<OrganizerListResponse> => {
     try {
       const response = await axiosInstance.get<OrganizerListResponse>(
-        "featured/organizer"
+        `/organizer/featured`
       );
       return response.data;
     } catch (error) {
       throw new Error("Error while fetching data");
     }
   },
-  getVanues: async (): Promise<VenueListResponse> => {
+  getFeaturedVanues: async (): Promise<VenueListResponse> => {
     try {
       const response = await axiosInstance.get<VenueListResponse>(
-        "featured/venues"
+        `/venue/featured?limit=50`
       );
       return response.data;
     } catch (error) {
@@ -41,10 +42,10 @@ export const featureApi = {
       throw new Error("Error while fetching data");
     }
   },
-  getConferences: async (): Promise<KeyContactListResponse> => {
+  getFeaturedConferences: async (): Promise<ConferenceListResponse> => {
     try {
-      const response = await axiosInstance.get<KeyContactListResponse>(
-        "featured/conference"
+      const response = await axiosInstance.get<ConferenceListResponse>(
+        "/conference/featured"
       );
       return response.data;
     } catch (error) {

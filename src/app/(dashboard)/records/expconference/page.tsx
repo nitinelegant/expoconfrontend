@@ -6,15 +6,20 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { CompanyListResponse, CompanyProps } from "@/types/listTypes";
+import {
+  ExpConferenceListResponse,
+  ExpConferenceProps,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { statesAndUnionTerritories } from "@/constants/form";
+import formatDateToYear from "@/utils/common";
 
-const ExpConference = () => {
+const Venue = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
+  const [expConferences, setConferences] = useState<ExpConferenceProps[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
@@ -25,15 +30,16 @@ const ExpConference = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: CompanyListResponse = await listApi.getExpConference();
-        // setCompanies(response.companies);
-        // setTotalPages(response.totalPages);
+        const { conferences }: ExpConferenceListResponse =
+          await listApi.getExpConference();
+        console.log("expConferences", conferences);
+        if (conferences?.length > 0) setConferences(conferences);
       } catch (error) {
         toast({
           title: "Error",
           description: "Error while fetching data",
-          duration: 1500,
-          variant: "destructive",
+          duration: 1000,
+          variant: "error",
         });
       } finally {
         setIsLoading(false);
@@ -51,32 +57,58 @@ const ExpConference = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const columns: Column<CompanyProps>[] = [
-    { header: "Conference Name", accessorKey: "company_name" },
-    { header: "City", accessorKey: "company_city" },
-    { header: "State", accessorKey: "state_id" },
-    { header: "Address", accessorKey: "company_address" },
-    { header: "Website", accessorKey: "company_website" },
+  const columns: Column<ExpConferenceProps>[] = [
+    { header: "Conference Name", accessorKey: "con_shortname" },
+    {
+      header: "Start Date",
+      accessorKey: "con_sd",
+      cell: (state) => {
+        return (
+          <span className="capitalize">{formatDateToYear(state.con_sd)}</span>
+        );
+      },
+    },
+    {
+      header: "End Date",
+      accessorKey: "con_ed",
+      cell: (state) => {
+        return (
+          <span className="capitalize">{formatDateToYear(state.con_sd)}</span>
+        );
+      },
+    },
+    { header: "City", accessorKey: "con_city" },
+    {
+      header: "State",
+      accessorKey: "state_id",
+      cell: (state) => {
+        return (
+          <span className="capitalize">
+            {statesAndUnionTerritories[state?.state_id]?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Status",
       accessorKey: "status",
-      cell: (item) => (
+      cell: (venue) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item.status === "approved"
+            venue.status === "approved"
               ? "bg-green-100 text-green-600"
-              : item.status === "rejected"
+              : venue.status === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.status}
+          {venue.status}
         </span>
       ),
     },
     {
       header: "Action",
-      accessorKey: "_id",
+      accessorKey: "con_type_id",
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
@@ -86,7 +118,7 @@ const ExpConference = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
+              onClick={() => handleDeleteClick(cellItem.con_type_id)}
             >
               <Trash2 className="text-red-600" />
             </Button>
@@ -105,9 +137,10 @@ const ExpConference = () => {
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={companies}
+        data={expConferences}
         title="Expired Conference"
         itemsPerPage={10}
+        searchField="con_shortname"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
@@ -122,4 +155,4 @@ const ExpConference = () => {
   );
 };
 
-export default withAuth(ExpConference, { requiredRole: ["admin", "staff"] });
+export default withAuth(Venue, { requiredRole: ["admin", "staff"] });

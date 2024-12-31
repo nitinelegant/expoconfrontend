@@ -3,6 +3,7 @@ import {
   AssociationsListResponse,
   CompanyListResponse,
   ConferenceListResponse,
+  ExpConferenceListResponse,
   KeyContactListResponse,
   VenueListResponse,
 } from "@/types/listTypes";
@@ -52,6 +53,16 @@ export const listApi = {
     try {
       const response = await axiosInstance.get<ConferenceListResponse>(
         "/conference/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while fetching data");
+    }
+  },
+  getExpConference: async (): Promise<ExpConferenceListResponse> => {
+    try {
+      const response = await axiosInstance.get<ExpConferenceListResponse>(
+        "/conference/expired"
       );
       return response.data;
     } catch (error) {

@@ -3,6 +3,7 @@ import {
   ConferenceApprovalListResponse,
   ExhibitionApprovalListResponse,
 } from "@/types/approvalTypes";
+import { ConferenceListResponse } from "@/types/listTypes";
 
 export const approvalApi = {
   getExhibition: async (): Promise<ExhibitionApprovalListResponse> => {
@@ -15,10 +16,10 @@ export const approvalApi = {
       throw new Error("Error while fetching data");
     }
   },
-  getConference: async (): Promise<ConferenceApprovalListResponse> => {
+  getConferenceApproval: async (): Promise<ConferenceListResponse> => {
     try {
-      const response = await axiosInstance.get<ConferenceApprovalListResponse>(
-        "/company/list"
+      const response = await axiosInstance.get<ConferenceListResponse>(
+        `/conference/approval`
       );
       return response.data;
     } catch (error) {

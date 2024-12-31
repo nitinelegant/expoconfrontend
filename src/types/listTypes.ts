@@ -108,3 +108,32 @@ export interface ConferenceListResponse {
   currentPage: number;
   totalPages: number;
 }
+
+export interface ExpConferenceProps {
+  con_type_id: number;
+  con_fullname: string;
+  con_shortname: string;
+  con_sd: string; // ISO date string
+  con_ed: string; // ISO date string
+  month_id: number | null;
+  year_id: number | null;
+  con_time: string;
+  fee_id: number | null;
+  con_city: string;
+  state_id: number | null;
+  venue_id: number | null;
+  con_website: string;
+  con_logo: string;
+  con_frequency: string;
+  company_id: number | null;
+  con_segment_id: number | null;
+  con_nassociation_id: number | null;
+  con_hassociation_id: number | null;
+  status: string;
+}
+export interface ExpConferenceListResponse {
+  conferences: ExpConferenceProps[];
+  hasMore: boolean;
+  currentPage: number;
+  totalPages: number;
+}

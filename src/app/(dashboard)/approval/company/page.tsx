@@ -5,7 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { useToast } from "@/hooks/use-toast";
-import { CompanyListResponse, CompanyProps } from "@/types/listTypes";
+import {
+  ApproveResponse,
+  CompanyListResponse,
+  CompanyProps,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
@@ -15,8 +19,8 @@ const Company = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [rerenderData, setRerenderData] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -43,18 +47,63 @@ const Company = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
-    setIsDeleteDialogOpen(true);
+  const handleAction = async (id: string, action: string) => {
+    try {
+      setIsLoading(true);
+      const isApproved = action === "approve" ? true : false;
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `keycontact/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          }.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const columns: Column<CompanyProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: ({ changes }) => {
+        return (
+          <span
+            className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
+              changes.type === "create"
+                ? "text-green-600"
+                : changes.type === "update"
+                ? "text-[#d87225]"
+                : "text-[#d1202a]"
+            }`}
+          >
+            {changes.type}
+          </span>
+        );
+      },
+    },
     { header: "Company Name", accessorKey: "company_name" },
     { header: "City", accessorKey: "company_city" },
     { header: "Address", accessorKey: "company_address" },
@@ -93,15 +142,24 @@ const Company = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <SquarePen />
+            <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
+              disabled={isLoading}
+            >
+              <h1>Approve</h1>
             </Button>
+
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
+              size="sm"
+              className="border border-primary text-primary"
+              disabled={isLoading}
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
-              <Trash2 className="text-red-600" />
+              Reject
             </Button>
           </div>
         );

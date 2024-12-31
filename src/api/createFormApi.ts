@@ -16,6 +16,7 @@ import {
 import {
   AssociationSingleResponse,
   CompanySingleResponse,
+  ConferenceSingleResponse,
   KeyContactSingleResponse,
   VenueSingleResponse,
 } from "@/types/listTypes";
@@ -197,6 +198,17 @@ export const createFormApi = {
       return response.data;
     } catch (error) {
       throw new Error(`Error while adding company ${error}`);
+    }
+  },
+
+  getConference: async (id: string): Promise<ConferenceSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<ConferenceSingleResponse>(
+        `/conference/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

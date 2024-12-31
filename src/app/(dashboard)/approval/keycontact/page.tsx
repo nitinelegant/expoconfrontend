@@ -6,7 +6,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  KeyContactApproveResponse,
+  ApproveResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
@@ -55,12 +55,11 @@ const KeyContact = () => {
     try {
       setIsLoading(true);
       const isApproved = action === "approve" ? true : false;
-      const { message }: KeyContactApproveResponse =
-        await approvalApi.approveOrReject(id, action);
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `keycontact/${id}/${action}`
+      );
 
       if (message) {
-        setIsDeleteDialogOpen(false);
-        setSelectedId(null);
         toast({
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
           description: `You have successfully ${
@@ -85,6 +84,25 @@ const KeyContact = () => {
   };
 
   const columns: Column<KeyContactProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: ({ changes }) => {
+        return (
+          <span
+            className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
+              changes.type === "create"
+                ? "text-green-600"
+                : changes.type === "updates"
+                ? "text-[#d87225]"
+                : "text-[#d1202a]"
+            }`}
+          >
+            {changes.type}
+          </span>
+        );
+      },
+    },
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
@@ -101,6 +119,24 @@ const KeyContact = () => {
           </span>
         );
       },
+    },
+
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: (venue) => (
+        <span
+          className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            venue.status === "approved"
+              ? "bg-green-100 text-green-600"
+              : venue.status === "rejected"
+              ? "bg-red-50 text-red-600"
+              : "bg-yellow-100 text-yellow-600"
+          }`}
+        >
+          {venue.status}
+        </span>
+      ),
     },
 
     {

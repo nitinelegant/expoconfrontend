@@ -35,8 +35,9 @@ import { useEffect, useState } from "react";
 import { listApi } from "@/api/listApi";
 import { AssociationProps, CompanyProps } from "@/types/listTypes";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createFormApi } from "@/api/createFormApi";
+import { Loader } from "@/components/ui/loader";
 
 const ConferenceForm = () => {
   const router = useRouter();
@@ -45,7 +46,11 @@ const ConferenceForm = () => {
   today.setHours(0, 0, 0, 0);
   const [companies, setcompanies] = useState<CompanyProps[]>([]);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
+  const searchParams = useSearchParams();
+  const conferenceId = searchParams.get("id");
+  const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -254,10 +259,6 @@ const ConferenceForm = () => {
     },
   });
 
-  useEffect(() => {
-    fetchCompany();
-    fetchAssociation();
-  }, []);
   const fetchCompany = async () => {
     try {
       const { companies } = await listApi.getCompanies();
@@ -274,6 +275,56 @@ const ConferenceForm = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setInitialLoading(true);
+        await Promise.all([fetchCompany(), fetchAssociation()]);
+        if (isEditMode) {
+          const { conference } = await createFormApi.getConference(
+            conferenceId as string
+          );
+          console.log("contactData", conference);
+          formik.setValues({
+            eventType: conference?.con_type_id?.toString(),
+            eventFullName: conference?.con_fullname,
+            eventShortName: conference?.con_shortname,
+            startDate: conference?.con_sd,
+            endDate: conference?.con_ed,
+            month: conference?.month_id,
+            year: conference?.year_id,
+            timings: conference?.con_time,
+            entryFees: conference?.fee_id,
+            city: conference?.con_city,
+            state: conference?.state_id?.toString(),
+            venue: conference?.venue_id,
+            website: conference?.con_website,
+            logo: null,
+            frequency: conference?.con_frequency,
+            conferenceOrganizer: conference?.company_id,
+            segment: conference?.con_segment_id,
+            exhibitorProfile: "",
+            visitorProfile: "",
+            nationalAssociation: conference?.con_hassociation_id,
+          });
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        toast({
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
+          variant: "error",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isEditMode, conferenceId]);
+
+  if (initialLoading || isLoading) return <Loader size="medium" />;
 
   // const handleLogoChange = (event) => {
   //   const file = event.currentTarget.files?.[0];

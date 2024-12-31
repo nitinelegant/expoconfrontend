@@ -1,10 +1,10 @@
 import { axiosInstance } from "@/lib/axios";
 import { ExhibitionApprovalListResponse } from "@/types/approvalTypes";
 import {
+  ApproveResponse,
   AssociationsListResponse,
   CompanyListResponse,
   ConferenceListResponse,
-  KeyContactApproveResponse,
   KeyContactListResponse,
 } from "@/types/listTypes";
 
@@ -59,14 +59,9 @@ export const approvalApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  approveOrReject: async (
-    id: string,
-    action: string
-  ): Promise<KeyContactApproveResponse> => {
+  approveOrReject: async (url: string): Promise<ApproveResponse> => {
     try {
-      const response = await axiosInstance.post<KeyContactApproveResponse>(
-        `keycontact/${id}/${action}`
-      );
+      const response = await axiosInstance.post<ApproveResponse>(`${url}`);
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);

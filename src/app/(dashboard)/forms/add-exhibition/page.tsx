@@ -73,79 +73,91 @@ const ExhibitionForm = () => {
         .required("Month is required")
         .test("future-month", "Cannot select past month", function (value) {
           if (!value || !this.parent.year) return true;
+
           const selectedYear = parseInt(this.parent.year);
           const currentYear = today.getFullYear();
-          const months = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ];
-          const selectedMonthIndex = months.indexOf(value);
+          const selectedMonth = parseInt(value);
+          const currentMonth = today.getMonth() + 1; // Adding 1 since months array is 1-based
 
           if (selectedYear > currentYear) return true;
           if (selectedYear === currentYear) {
-            return selectedMonthIndex >= today.getMonth();
+            return selectedMonth >= currentMonth;
           }
           return false;
         }),
       startDate: Yup.date()
         .required("Start Date is required")
-        .min(today, "Cannot select past date")
-        .test(
-          "year-match",
-          "Start date must be in selected year",
-          function (value) {
-            if (!value || !this.parent.year) return true;
-            return (
-              new Date(value).getFullYear().toString() === this.parent.year
-            );
+        .test("valid-date-range", "Invalid date selection", function (value) {
+          if (!value || !this.parent.year || !this.parent.month) return true;
+
+          const selectedDate = new Date(value);
+          const selectedYear = parseInt(this.parent.year);
+          const selectedMonth = parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
+
+          // Check if date is in past
+          if (selectedDate < today) {
+            return this.createError({ message: "Cannot select past date" });
           }
-        ),
+
+          // Check if date matches selected year and month
+          if (selectedDate.getFullYear() !== selectedYear) {
+            return this.createError({
+              message: "Date must be in selected year",
+            });
+          }
+
+          if (selectedDate.getMonth() !== selectedMonth) {
+            return this.createError({
+              message: "Date must be in selected month",
+            });
+          }
+
+          return true;
+        }),
+
       endDate: Yup.date()
         .required("End Date is required")
-        .min(Yup.ref("startDate"), "End date must be after start date")
-        .min(today, "Cannot select past date")
-        .test(
-          "year-match",
-          "End date must be in selected year",
-          function (value) {
-            if (!value || !this.parent.year) return true;
-            return (
-              new Date(value).getFullYear().toString() === this.parent.year
-            );
+        .test("valid-end-date", "Invalid end date selection", function (value) {
+          if (
+            !value ||
+            !this.parent.startDate ||
+            !this.parent.year ||
+            !this.parent.month
+          )
+            return true;
+
+          const endDate = new Date(value);
+          const startDate = new Date(this.parent.startDate);
+          const selectedYear = parseInt(this.parent.year);
+          const selectedMonth = parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
+
+          // Check if end date is before start date
+          if (endDate < startDate) {
+            return this.createError({
+              message: "End date must be after start date",
+            });
           }
-        )
-        .test(
-          "month-match",
-          "End date must be in selected month",
-          function (value) {
-            if (!value || !this.parent.month) return true;
-            const months = [
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ];
-            return months[new Date(value).getMonth()] === this.parent.month;
+
+          // Check if date is in past
+          if (endDate < today) {
+            return this.createError({ message: "Cannot select past date" });
           }
-        ),
+
+          // Check if date matches selected year and month
+          if (endDate.getFullYear() !== selectedYear) {
+            return this.createError({
+              message: "Date must be in selected year",
+            });
+          }
+
+          if (endDate.getMonth() !== selectedMonth) {
+            return this.createError({
+              message: "Date must be in selected month",
+            });
+          }
+
+          return true;
+        }),
       entryFees: Yup.number().required("Entry Fees is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
@@ -190,12 +202,21 @@ const ExhibitionForm = () => {
   const timeOptions = generateTimeOptions();
   const todayStr = today.toISOString().split("T")[0];
 
+  const getMaxDateForMonth = (year: string, month: string) => {
+    if (!year || !month) return undefined;
+
+    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+    return `${year}-${String(month).padStart(2, "0")}-${String(
+      lastDay
+    ).padStart(2, "0")}`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add Conference</CardTitle>
+          <CardTitle className="text-2xl font-bold">Add Exhibition</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
@@ -338,8 +359,8 @@ const ExhibitionForm = () => {
                   <SelectContent>
                     {months.map((month) => (
                       <SelectItem
-                        key={month}
-                        value={month}
+                        key={month.id}
+                        value={month.id.toString()}
                         disabled={
                           formik.values.year ===
                             today.getFullYear().toString() &&
@@ -347,7 +368,7 @@ const ExhibitionForm = () => {
                         }
                         className="hover:cursor-pointer"
                       >
-                        {month}
+                        {month.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -372,13 +393,10 @@ const ExhibitionForm = () => {
                   min={todayStr}
                   max={
                     formik.values.year && formik.values.month
-                      ? `${formik.values.year}-${String(
-                          months.indexOf(formik.values.month) + 1
-                        ).padStart(2, "0")}-${new Date(
+                      ? getMaxDateForMonth(
                           formik.values.year,
-                          months.indexOf(formik.values.month) + 1,
-                          0
-                        ).getDate()}`
+                          formik.values.month
+                        )
                       : undefined
                   }
                 />
@@ -404,13 +422,10 @@ const ExhibitionForm = () => {
                   min={formik.values.startDate || todayStr}
                   max={
                     formik.values.year && formik.values.month
-                      ? `${formik.values.year}-${String(
-                          months.indexOf(formik.values.month) + 1
-                        ).padStart(2, "0")}-${new Date(
+                      ? getMaxDateForMonth(
                           formik.values.year,
-                          months.indexOf(formik.values.month) + 1,
-                          0
-                        ).getDate()}`
+                          formik.values.month
+                        )
                       : undefined
                   }
                 />
@@ -526,7 +541,7 @@ const ExhibitionForm = () => {
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state.id}
-                        value={state.id}
+                        value={state.id.toString()}
                         className="hover:cursor-pointer"
                       >
                         {state.name}
@@ -615,7 +630,7 @@ const ExhibitionForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="exhibitionOrganizer">
-                  Conference Organizer PCO
+                  Exhibition Organizer
                 </Label>
                 <Input
                   id="exhibitionOrganizer"
@@ -625,7 +640,7 @@ const ExhibitionForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="segment">Conference Segment</Label>
+                <Label htmlFor="segment">Exhibition Type</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("segment", value)
@@ -642,83 +657,13 @@ const ExhibitionForm = () => {
                     <SelectValue placeholder="Select conference segment" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((type) => (
+                    {segmentTypes.map((item) => (
                       <SelectItem
-                        key={type}
-                        value={type}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.segment && formik.errors.segment && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.segment}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="segment">National Association</Label>
-                <Select
-                  onValueChange={(value) =>
-                    formik.setFieldValue("segment", value)
-                  }
-                >
-                  <SelectTrigger
-                    tabIndex={18}
-                    className={
-                      formik.touched.segment && formik.errors.segment
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue placeholder="Select conference segment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {segmentTypes.map((type) => (
-                      <SelectItem
-                        key={type}
-                        value={type}
-                        className="hover:cursor-pointer"
-                      >
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.segment && formik.errors.segment && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.segment}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="segment">Hosting Chapter</Label>
-                <Select
-                  onValueChange={(value) =>
-                    formik.setFieldValue("segment", value)
-                  }
-                >
-                  <SelectTrigger
-                    tabIndex={19}
-                    className={
-                      formik.touched.segment && formik.errors.segment
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue placeholder="Select conference segment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {segmentTypes.map((type) => (
-                      <SelectItem
-                        key={type}
-                        value={type}
-                        className="hover:cursor-pointer"
-                      >
-                        {type}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

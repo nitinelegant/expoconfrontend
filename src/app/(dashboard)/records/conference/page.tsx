@@ -15,9 +15,11 @@ import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import formatDateToYear from "@/utils/common";
+import { useRouter } from "next/navigation";
 
 const Venue = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [conferences, setConferences] = useState<ConferenceProps[]>([]);
   const [rerenderData, setRerenderData] = useState(false);
@@ -30,7 +32,7 @@ const Venue = () => {
         setIsLoading(true);
         const { conferences }: ConferenceListResponse =
           await listApi.getConference();
-        if (conferences?.length > 0) setConferences(conferences);
+        setConferences(conferences);
       } catch (error) {
         toast({
           title: "Error",
@@ -113,7 +115,13 @@ const Venue = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-conference?id=${cellItem._id}`)
+              }
+            >
               <SquarePen />
             </Button>
             <Button

@@ -57,15 +57,18 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (isAuthenticated && user === "admin") {
-      router.replace("/admin");
+    setIsLoading(true);
+    if (isAuthenticated && user) {
+      router.replace(`${user}`);
     }
-    if (isAuthenticated && user === "staff") {
-      router.replace("/staff");
-    }
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, [loading, isAuthenticated, router]);
 
-  if (loading) return <Loader size="medium" />;
+  if (loading || isLoading) return <Loader size="medium" />;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

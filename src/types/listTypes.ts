@@ -34,6 +34,7 @@ export interface CompanyProps {
   company_user_id: number;
   company_password: string;
   status: "approved" | "pending" | "rejected";
+  changes: ContactChanges;
 }
 export interface VenueListResponse {
   message: string;
@@ -59,7 +60,16 @@ export interface KeyContactProps {
   contact_organizer_id: string;
   contact_venue_id: string;
   contact_association_id: string;
+  changes: ContactChanges;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+
   status: "approved" | "pending" | "rejected";
+}
+export interface ContactChanges {
+  date: string; // ISO date string
+  type: string; // e.g., "update", "create"
+  fields: string[]; // Array of field names
 }
 export interface KeyContactListResponse {
   keyContacts: KeyContactProps[];
@@ -210,7 +220,7 @@ export interface VenueDeleteResponse {
 export interface ConferenceDeleteResponse {
   message: string;
 }
-export interface KeyContactApproveResponse {
+export interface ApproveResponse {
   message: string;
 }
 
@@ -289,4 +299,42 @@ export interface VenueDetailsProps {
   venue_layout: string;
   venue_featured: boolean;
   status: string;
+}
+
+export interface ConferenceSingleResponse {
+  message: string;
+  conference: ConferenceDetailsProps;
+}
+
+export interface ConferenceDetailsProps {
+  _id: string;
+  con_type_id: number;
+  con_fullname: string;
+  con_shortname: string;
+  con_sd: string; // ISO date string
+  con_ed: string; // ISO date string
+  month_id: string;
+  year_id: string;
+  con_time: string;
+  fee_id: string;
+  con_city: string;
+  state_id: string;
+  venue_id: string;
+  con_website: string;
+  con_logo: string;
+  con_frequency: string;
+  company_id: string;
+  con_segment_id: string;
+  con_nassociation_id: string;
+  con_hassociation_id: string;
+  con_featured: boolean;
+  status: string;
+  changes: ConferenceChanges;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+
+export interface ConferenceChanges {
+  fields: any[]; // Replace `any` with the type of items in the `fields` array if known
+  _id: string;
 }

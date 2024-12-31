@@ -7,6 +7,7 @@ import {
   AssociationsListResponse,
   CompanyListResponse,
   ConferenceListResponse,
+  KeyContactApproveResponse,
   KeyContactListResponse,
 } from "@/types/listTypes";
 
@@ -55,6 +56,19 @@ export const approvalApi = {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
         `/keycontact/approval`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while fetching data");
+    }
+  },
+  approveOrReject: async (
+    id: string,
+    action: string
+  ): Promise<KeyContactApproveResponse> => {
+    try {
+      const response = await axiosInstance.post<KeyContactApproveResponse>(
+        `keycontact/${id}/${action}`
       );
       return response.data;
     } catch (error) {

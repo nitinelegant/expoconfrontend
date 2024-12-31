@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  KeyContactApproveResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
@@ -32,7 +33,7 @@ const KeyContact = () => {
         setIsLoading(true);
         const { keyContacts }: KeyContactListResponse =
           await approvalApi.getKeyContactApproval();
-        if (keyContacts?.length > 0) setKeyContacts(keyContacts);
+        setKeyContacts(keyContacts);
         // setTotalPages(response.totalPages);
       } catch (error) {
         toast({
@@ -57,6 +58,38 @@ const KeyContact = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleAction = async (id: string, action: string) => {
+    try {
+      setIsLoading(true);
+      const isApproved = action === "approve" ? true : false;
+      const { message }: KeyContactApproveResponse =
+        await approvalApi.approveOrReject(id, action);
+
+      if (message) {
+        setIsDeleteDialogOpen(false);
+        setSelectedId(null);
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          } the key contact.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const columns: Column<KeyContactProps>[] = [
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
@@ -75,6 +108,7 @@ const KeyContact = () => {
         );
       },
     },
+
     {
       header: "Action",
       accessorKey: "_id",
@@ -82,20 +116,23 @@ const KeyContact = () => {
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                router.push(`/forms/add-key-contact?id=${cellItem._id}`)
-              }
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
+              disabled={isLoading}
             >
-              <SquarePen />
+              <h1>Approve</h1>
             </Button>
+
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
+              size="sm"
+              className="border border-primary text-primary"
+              disabled={isLoading}
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
-              <Trash2 className="text-red-600" />
+              Reject
             </Button>
           </div>
         );

@@ -210,3 +210,6 @@ export interface VenueDeleteResponse {
 export interface ConferenceDeleteResponse {
   message: string;
 }
+export interface KeyContactApproveResponse {
+  message: string;
+}

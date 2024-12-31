@@ -34,7 +34,7 @@ const KeyContact = () => {
         setIsLoading(true);
         const { keyContacts }: KeyContactListResponse =
           await listApi.getKeyContact();
-        if (keyContacts?.length > 0) setKeyContacts(keyContacts);
+        setKeyContacts(keyContacts);
         // setTotalPages(response.totalPages);
       } catch (error) {
         toast({
@@ -111,13 +111,15 @@ const KeyContact = () => {
             >
               <SquarePen />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
-            >
-              <Trash2 className="text-red-600" />
-            </Button>
+            {cellItem.status !== "approved" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeleteClick(cellItem._id)}
+              >
+                <Trash2 className="text-red-600" />
+              </Button>
+            )}
           </div>
         );
       },

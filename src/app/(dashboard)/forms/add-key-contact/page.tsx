@@ -123,13 +123,13 @@ const KeyContactForm = () => {
           );
           console.log("contactData", keyContact);
           formik.setValues({
-            fullName: keyContact.contact_name,
-            mobile: keyContact.contact_mobile,
-            email: keyContact.contact_email,
-            state: keyContact.state_id.toString(),
-            company: keyContact.contact_organizer_id,
-            venue: keyContact.contact_venue_id,
-            association: keyContact.contact_association_id,
+            fullName: keyContact?.contact_name,
+            mobile: keyContact?.contact_mobile,
+            email: keyContact?.contact_email,
+            state: keyContact?.state_id?.toString(),
+            company: keyContact?.contact_organizer_id,
+            venue: keyContact?.contact_venue_id,
+            association: keyContact?.contact_association_id,
           });
         }
       } catch (error) {

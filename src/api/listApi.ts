@@ -7,7 +7,6 @@ import {
   ConferenceDeleteResponse,
   ConferenceListResponse,
   ExpConferenceListResponse,
-  KeyContactDeleteCredential,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   StaffDeleteResponse,
@@ -24,7 +23,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getAssociation: async (): Promise<AssociationsListResponse> => {
@@ -34,7 +33,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getCompanies: async (): Promise<CompanyListResponse> => {
@@ -44,7 +43,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getKeyContact: async (): Promise<KeyContactListResponse> => {
@@ -54,7 +53,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getConference: async (): Promise<ConferenceListResponse> => {
@@ -64,7 +63,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getExpConference: async (): Promise<ExpConferenceListResponse> => {
@@ -74,7 +73,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getStaff: async (): Promise<StaffListResponse> => {
@@ -84,7 +83,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   deleteKeyContact: async (id: string): Promise<KeyContactDeleteResponse> => {
@@ -94,7 +93,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   deleteStaff: async (id: string): Promise<StaffDeleteResponse> => {
@@ -104,7 +103,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   deleteCompany: async (id: string): Promise<CompanyDeleteResponse> => {
@@ -114,7 +113,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   deleteAssociation: async (id: string): Promise<AssociationDeleteResponse> => {
@@ -124,7 +123,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   deleteVenue: async (id: string): Promise<VenueDeleteResponse> => {
@@ -134,7 +133,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   deleteConference: async (id: string): Promise<ConferenceDeleteResponse> => {
@@ -144,7 +143,7 @@ export const listApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

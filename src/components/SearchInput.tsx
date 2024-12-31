@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 
 interface SearchResponse {
   found: boolean;
-  data?: any;
+  data?: [];
 }
 
 interface SearchInputProps {

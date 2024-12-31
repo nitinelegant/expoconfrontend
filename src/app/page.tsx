@@ -14,7 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 const Login = () => {
   const router = useRouter();
   const { user, isAuthenticated, loading, login } = useAuth();
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -50,6 +49,7 @@ const Login = () => {
           duration: 2500,
           variant: "error",
         });
+        console.log("error", error);
       } finally {
         setIsLoading(false);
       }

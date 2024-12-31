@@ -4,8 +4,6 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
-import { listApi } from "@/api/listApi";
-import { useToast } from "@/hooks/use-toast";
 import { AssociationProps, AssociationsListResponse } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
@@ -13,7 +11,6 @@ import { statesAndUnionTerritories } from "@/constants/form";
 import { approvalApi } from "@/api/approvalApi";
 
 const Association = () => {
-  const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
   // const [totalPages, setTotalPages] = useState(1);
@@ -32,12 +29,7 @@ const Association = () => {
         if (associations?.length > 0) setAssociations(associations);
         // setTotalPages(response.totalPages);
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Error while fetching data",
-          duration: 1500,
-          variant: "error",
-        });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }

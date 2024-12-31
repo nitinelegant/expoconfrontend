@@ -288,7 +288,12 @@ const AssociationForm = () => {
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full bg-primary" tabIndex={7}>
+            <Button
+              type="submit"
+              className="w-full bg-primary"
+              tabIndex={7}
+              disabled={isLoading}
+            >
               Submit
             </Button>
           </form>

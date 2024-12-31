@@ -71,9 +71,7 @@ const VenueForm = () => {
           state,
           address,
           phone,
-          logo = "",
           featured,
-          layout,
           website,
           googleMapLink,
         } = values;

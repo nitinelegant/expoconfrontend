@@ -35,6 +35,7 @@ const StaffList = () => {
           duration: 1000,
           variant: "error",
         });
+        console.log("error", error);
       } finally {
         setIsLoading(false);
       }
@@ -137,6 +138,7 @@ const StaffList = () => {
         duration: 1500,
         variant: "error",
       });
+      console.log("error", error);
     } finally {
       setIsLoading(false);
     }

@@ -1,8 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
-import {
-  ConferenceApprovalListResponse,
-  ExhibitionApprovalListResponse,
-} from "@/types/approvalTypes";
+import { ExhibitionApprovalListResponse } from "@/types/approvalTypes";
 import {
   AssociationsListResponse,
   CompanyListResponse,
@@ -19,7 +16,7 @@ export const approvalApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getConferenceApproval: async (): Promise<ConferenceListResponse> => {
@@ -29,7 +26,7 @@ export const approvalApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getAssociationApproval: async (): Promise<AssociationsListResponse> => {
@@ -39,7 +36,7 @@ export const approvalApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getCompanyApproval: async (): Promise<CompanyListResponse> => {
@@ -49,7 +46,7 @@ export const approvalApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getKeyContactApproval: async (): Promise<KeyContactListResponse> => {
@@ -59,7 +56,7 @@ export const approvalApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   approveOrReject: async (
@@ -72,7 +69,7 @@ export const approvalApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

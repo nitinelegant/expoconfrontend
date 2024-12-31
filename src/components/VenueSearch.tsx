@@ -68,11 +68,9 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
         if (data.venue) {
           setSelectedVenueName(data.venue.venue_name);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error fetching initial venue:", error);
-        setSearchError(
-          error.response?.data?.error || "Failed to fetch venue details"
-        );
+        setSearchError("Failed to fetch venue details");
       } finally {
         setLoading(false);
       }
@@ -96,8 +94,9 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
           `/venue/list?search=${searchTerm}&page=1`
         );
         setVenues(data.venues);
-      } catch (error: any) {
-        setSearchError(error.response?.data?.error || "Failed to fetch venues");
+      } catch (error) {
+        console.log(error);
+        setSearchError("Failed to fetch venues");
         setVenues([]);
       } finally {
         setLoading(false);

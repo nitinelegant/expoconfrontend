@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
@@ -15,12 +14,10 @@ import {
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
-import { useRouter } from "next/navigation";
 import { approvalApi } from "@/api/approvalApi";
 
 const KeyContact = () => {
   const { toast } = useToast();
-  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [keyContacts, setKeyContacts] = useState<KeyContactProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +39,7 @@ const KeyContact = () => {
           duration: 1500,
           variant: "error",
         });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -52,11 +50,6 @@ const KeyContact = () => {
   if (isLoading) {
     return <Loader size="medium" />;
   }
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedId(id);
-    setIsDeleteDialogOpen(true);
-  };
 
   const handleAction = async (id: string, action: string) => {
     try {
@@ -85,6 +78,7 @@ const KeyContact = () => {
         duration: 1500,
         variant: "error",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -172,6 +166,7 @@ const KeyContact = () => {
         duration: 1500,
         variant: "error",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

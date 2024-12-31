@@ -38,6 +38,7 @@ const Venue = () => {
           duration: 1000,
           variant: "error",
         });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -143,6 +144,7 @@ const Venue = () => {
         duration: 1500,
         variant: "error",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

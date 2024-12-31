@@ -178,7 +178,7 @@ export interface StaffProps {
   user_role: number;
   user_status: string;
   user_tender: number;
-  profile_interest: any[]; // Update this type if the structure of profile_interest is known
+  profile_interest: []; // Update this type if the structure of profile_interest is known
   updatedAt?: string; // Optional, as not all users have this field
 }
 

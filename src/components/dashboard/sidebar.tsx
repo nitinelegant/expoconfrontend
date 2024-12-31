@@ -4,7 +4,6 @@ import { SidebarProps, MenuLink, MenuSection } from "../../types/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/images/logo.png";
-import { role } from "@/lib/data";
 import { useAuth } from "@/context/AuthContext";
 
 export function Sidebar({ menuSections }: SidebarProps) {

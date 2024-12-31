@@ -20,7 +20,7 @@ export const authApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 
@@ -29,7 +29,7 @@ export const authApi = {
       const response = await axiosInstance.get<User>("/auth/me");
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching user data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 
@@ -37,7 +37,7 @@ export const authApi = {
     try {
       await axiosInstance.post("/auth/logout");
     } catch (error) {
-      throw new Error("Error while logging out");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   associationTypes,
-  eventTypes,
   months,
   segmentTypes,
   statesAndUnionTerritories,
@@ -47,8 +46,6 @@ const ConferenceForm = () => {
   const [companies, setcompanies] = useState<CompanyProps[]>([]);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // const [logoPreview, setLogoPreview] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -206,8 +203,6 @@ const ConferenceForm = () => {
           venue,
           entryFees,
           frequency,
-          exhibitorProfile,
-          visitorProfile,
           month,
           nationalAssociation,
         } = values;
@@ -267,13 +262,17 @@ const ConferenceForm = () => {
     try {
       const { companies } = await listApi.getCompanies();
       if (companies?.length > 0) setcompanies(companies);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   const fetchAssociation = async () => {
     try {
       const { associations } = await listApi.getAssociation();
       if (associations?.length > 0) setAssociations(associations);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // const handleLogoChange = (event) => {
@@ -661,9 +660,6 @@ const ConferenceForm = () => {
                 onChange={(value) =>
                   formik.handleChange({ target: { name: "venue", value } })
                 }
-                onBlur={formik.handleBlur}
-                error={formik.errors.venue}
-                touched={formik.touched.venue}
               />
 
               <SearchInput
@@ -910,7 +906,12 @@ const ConferenceForm = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary" tabIndex={22}>
+            <Button
+              type="submit"
+              className="w-full bg-primary"
+              tabIndex={22}
+              disabled={isLoading}
+            >
               Submit
             </Button>
           </form>

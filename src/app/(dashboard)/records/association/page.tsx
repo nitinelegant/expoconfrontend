@@ -38,6 +38,7 @@ const Association = () => {
           duration: 1500,
           variant: "error",
         });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -140,6 +141,7 @@ const Association = () => {
         duration: 1500,
         variant: "error",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

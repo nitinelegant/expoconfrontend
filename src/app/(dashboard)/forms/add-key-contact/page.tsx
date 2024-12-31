@@ -3,7 +3,7 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +27,6 @@ import VenueSearch from "@/components/VenueSearch";
 
 const KeyContactForm = () => {
   const router = useRouter();
-  const params = useParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
@@ -101,6 +100,7 @@ const KeyContactForm = () => {
           duration: 2500,
           variant: "error",
         });
+
         console.error(
           `Error while ${isEditMode ? "updating" : "submitting"} form`,
           error
@@ -260,7 +260,7 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent>
-                    {statesAndUnionTerritories.map((state, index) => (
+                    {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state.id}
                         value={state.id.toString()}

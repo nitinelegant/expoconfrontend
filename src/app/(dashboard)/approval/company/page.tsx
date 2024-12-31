@@ -4,7 +4,6 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
-import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import { CompanyListResponse, CompanyProps } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
@@ -38,6 +37,7 @@ const Company = () => {
           duration: 1500,
           variant: "error",
         });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }

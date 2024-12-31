@@ -13,11 +13,7 @@ import {
   AssociationCredentials,
   AssociationResponseProps,
 } from "@/types/createFormApi";
-import {
-  KeyContactListResponse,
-  KeyContactProps,
-  KeyContactSingleResponse,
-} from "@/types/listTypes";
+import { KeyContactSingleResponse } from "@/types/listTypes";
 
 export const createFormApi = {
   addConference: async (
@@ -30,7 +26,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   addCompany: async (
@@ -43,7 +39,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   addKeyContact: async (
@@ -56,7 +52,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   addAssociation: async (
@@ -69,7 +65,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   addVenue: async (
@@ -82,7 +78,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   addStaff: async (
@@ -95,7 +91,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 
@@ -110,7 +106,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while adding company");
+      throw new Error(`Error while adding company ${error}`);
     }
   },
   getKeyContact: async (id: string): Promise<KeyContactSingleResponse> => {
@@ -120,7 +116,7 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

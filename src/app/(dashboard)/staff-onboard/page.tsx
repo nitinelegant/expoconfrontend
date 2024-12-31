@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { withAuth } from "@/utils/withAuth";
 import BackButton from "@/components/BackButton";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { createFormApi } from "@/api/createFormApi";
@@ -24,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Prefix, statesAndUnionTerritories } from "@/constants/form";
+import { Prefix } from "@/constants/form";
 
 const SignupSchema = Yup.object().shape({
   prefix: Yup.string().required("Prefix is required"),
@@ -41,7 +40,6 @@ const SignupSchema = Yup.object().shape({
 const StaffOnBoardForm = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
@@ -60,10 +58,9 @@ const StaffOnBoardForm = () => {
             <Formik
               initialValues={{ prefix: "", name: "", email: "", password: "" }}
               validationSchema={SignupSchema}
-              onSubmit={async (values, { setSubmitting }) => {
+              onSubmit={async (values, {}) => {
                 try {
                   const { name, email, password, prefix } = values;
-                  setIsLoading(true);
 
                   const payload = {
                     user_fullname: name,
@@ -93,7 +90,6 @@ const StaffOnBoardForm = () => {
                   });
                   console.log(`error while submitting form`, error);
                 } finally {
-                  setIsLoading(false);
                 }
               }}
             >

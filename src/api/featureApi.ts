@@ -1,13 +1,8 @@
 import { axiosInstance } from "@/lib/axios";
+import { SupplierPropsListResponse } from "@/types/featureTypes";
 import {
-  OrganizerListResponse,
-  SupplierPropsListResponse,
-} from "@/types/featureTypes";
-import {
-  AssociationsListResponse,
   CompanyListResponse,
   ConferenceListResponse,
-  KeyContactListResponse,
   VenueListResponse,
 } from "@/types/listTypes";
 
@@ -19,7 +14,7 @@ export const featureApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getFeaturedVanues: async (): Promise<VenueListResponse> => {
@@ -29,7 +24,7 @@ export const featureApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getExhibitions: async (): Promise<CompanyListResponse> => {
@@ -39,7 +34,7 @@ export const featureApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getFeaturedConferences: async (): Promise<ConferenceListResponse> => {
@@ -49,7 +44,7 @@ export const featureApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getSuppliers: async (): Promise<SupplierPropsListResponse> => {
@@ -59,7 +54,7 @@ export const featureApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

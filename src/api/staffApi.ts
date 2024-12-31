@@ -12,7 +12,7 @@ export const staffApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while logging in");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
   getStaff: async (): Promise<AssociationsListResponse> => {
@@ -22,7 +22,7 @@ export const staffApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while fetching data");
+      throw new Error(`Error while fetching data ${error}`);
     }
   },
 };

@@ -6,15 +6,17 @@ interface WithAuthOptions {
   requiredRole: string[];
 }
 
-export const withAuth = (Component: FC<any>, options: WithAuthOptions) => {
-  return (props: any) => {
-    const { user, loading } = useAuth(); // Add isLoading from your auth context
+export const withAuth = (
+  Component: FC<React.Component>, // `any` will be fixed in the next step
+  options: WithAuthOptions
+) => {
+  const WrappedComponent = (props) => {
+    const { user, loading } = useAuth();
     const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-
     const router = useRouter();
+
     useEffect(() => {
       if (!loading) {
-        // Only proceed with auth checks after initial load
         if (!user) {
           setIsAuthorized(false);
           router.replace("/");
@@ -30,12 +32,16 @@ export const withAuth = (Component: FC<any>, options: WithAuthOptions) => {
       }
     }, [user, router, loading]);
 
-    // Show nothing during initial load or unauthorized state
     if (loading || !isAuthorized) {
-      return null; // Or return a loading spinner/component
+      return null; // Optionally, display a spinner here
     }
 
-    // Pass props to the Component
     return <Component {...props} />;
   };
+
+  WrappedComponent.displayName = `WithAuth(${
+    Component.displayName || Component.name || "Component"
+  })`;
+
+  return WrappedComponent;
 };

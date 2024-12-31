@@ -39,6 +39,7 @@ const Company = () => {
           duration: 1500,
           variant: "error",
         });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -143,6 +144,7 @@ const Company = () => {
         duration: 1500,
         variant: "error",
       });
+      console.log(error);
     } finally {
       setIsLoading(false);
     }

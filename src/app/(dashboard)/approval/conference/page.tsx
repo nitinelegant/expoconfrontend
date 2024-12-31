@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
-import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import { ConferenceListResponse, ConferenceProps } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
@@ -38,6 +36,7 @@ const Venue = () => {
           duration: 1000,
           variant: "error",
         });
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -48,11 +47,6 @@ const Venue = () => {
   if (isLoading) {
     return <Loader size="medium" />;
   }
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
-    setIsDeleteDialogOpen(true);
-  };
 
   const columns: Column<ConferenceProps>[] = [
     { header: "Conference Name", accessorKey: "con_shortname" },

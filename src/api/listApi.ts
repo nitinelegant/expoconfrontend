@@ -4,6 +4,8 @@ import {
   CompanyListResponse,
   ConferenceListResponse,
   ExpConferenceListResponse,
+  KeyContactDeleteCredential,
+  KeyContactDeleteResponse,
   KeyContactListResponse,
   StaffListResponse,
   VenueListResponse,
@@ -78,6 +80,18 @@ export const listApi = {
       return response.data;
     } catch (error) {
       throw new Error("Error while fetching data");
+    }
+  },
+  deleteKeyContact: async (
+    id: KeyContactDeleteCredential
+  ): Promise<KeyContactDeleteResponse> => {
+    try {
+      const response = await axiosInstance.delete<KeyContactDeleteResponse>(
+        `/keycontact/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while logging in");
     }
   },
 };

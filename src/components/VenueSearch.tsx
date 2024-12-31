@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Command,
@@ -54,6 +54,33 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
   const [searchError, setSearchError] = useState("");
   const [selectedVenueName, setSelectedVenueName] = useState("");
 
+  // Fetch initial venue details if value exists
+  useEffect(() => {
+    const fetchInitialVenue = async () => {
+      if (!value) {
+        setSelectedVenueName("");
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const { data } = await axiosInstance.get(`/venue/${value}`);
+        if (data.venue) {
+          setSelectedVenueName(data.venue.venue_name);
+        }
+      } catch (error: any) {
+        console.error("Error fetching initial venue:", error);
+        setSearchError(
+          error.response?.data?.error || "Failed to fetch venue details"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialVenue();
+  }, [value]);
+
   const debouncedSearch = useCallback(
     debounce(async (searchTerm: string) => {
       if (!searchTerm || searchTerm.length < 2) {
@@ -88,10 +115,6 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
     [onChange]
   );
 
-  // Find venue name for display
-  const displayValue =
-    selectedVenueName || venues.find((v) => v._id === value)?.venue_name || "";
-
   return (
     <div className="space-y-2">
       <Label htmlFor="venue">Venue*</Label>
@@ -103,13 +126,13 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
             aria-expanded={open}
             className={cn(
               "w-full justify-between text-black bg-white",
-              !displayValue && "text-gray-600",
+              !selectedVenueName && "text-gray-600",
               touched && error && "border-red-500"
             )}
             onBlur={onBlur}
             type="button"
           >
-            {displayValue || "Select venue..."}
+            {loading ? "Loading..." : selectedVenueName || "Select venue..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

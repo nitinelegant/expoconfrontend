@@ -2,6 +2,8 @@
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useEffect, useState } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,22 +18,26 @@ import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
-import { useEffect, useState } from "react";
 import { createFormApi } from "@/api/createFormApi";
-import { AssociationProps, CompanyProps, VenueProps } from "@/types/listTypes";
+import { AssociationProps, CompanyProps } from "@/types/listTypes";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import VenueSearch from "@/components/VenueSearch";
 
 const KeyContactForm = () => {
   const router = useRouter();
+  const params = useParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [companies, setcompanies] = useState<CompanyProps[]>([]);
-
+  const [companies, setCompanies] = useState<CompanyProps[]>([]);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const searchParams = useSearchParams(); // For query parameters
+  const keyContactId = searchParams.get("id");
+  const isEditMode = Boolean(searchParams.get("id")); // Get `id` from query parameters
+
+  // const isEditMode = Boolean(params?.id);
 
   const formik = useFormik({
     initialValues: {
@@ -58,36 +64,47 @@ const KeyContactForm = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const { fullName, mobile, email, state, company, venue, association } =
-          values;
         const payload = {
-          contact_name: fullName,
-          contact_mobile: mobile,
-          contact_email: email,
-          state_id: parseInt(state),
-          contact_organizer_id: company,
-          contact_venue_id: venue,
-          contact_association_id: association,
+          contact_name: values.fullName,
+          contact_mobile: values.mobile,
+          contact_email: values.email,
+          state_id: parseInt(values.state),
+          contact_organizer_id: values.company,
+          contact_venue_id: values.venue,
+          contact_association_id: values.association,
         };
-        const response = await createFormApi.addKeyContact(payload);
-        console.log("submitting vlaues", response);
-        toast({
-          title: "Key Contact Added Successfully!",
-          description:
-            "The key contact has been added successfully. You can view it in the key contact list.",
-          duration: 3000,
-          variant: "success",
-        });
+        if (isEditMode) {
+          await createFormApi.updateKeyContact(keyContactId as string, payload);
+          toast({
+            title: "Key Contact Updated Successfully!",
+            description: "The key contact has been updated successfully.",
+            duration: 3000,
+            variant: "success",
+          });
+        } else {
+          await createFormApi.addKeyContact(payload);
+          toast({
+            title: "Key Contact Added Successfully!",
+            description: "The key contact has been added successfully.",
+            duration: 3000,
+            variant: "success",
+          });
+        }
+
         router.push("/records/keycontact");
       } catch (error) {
         toast({
-          title: "Add Key Contact Failed",
-          description:
-            "Failed to add key contact. Please check your credentials and try again.",
+          title: `${isEditMode ? "Update" : "Add"} Key Contact Failed`,
+          description: `Failed to ${
+            isEditMode ? "update" : "add"
+          } key contact. Please try again.`,
           duration: 2500,
           variant: "error",
         });
-        console.log(`error while submitting form`, error);
+        console.error(
+          `Error while ${isEditMode ? "updating" : "submitting"} form`,
+          error
+        );
       } finally {
         setIsLoading(false);
       }
@@ -95,24 +112,60 @@ const KeyContactForm = () => {
   });
 
   useEffect(() => {
-    fetchCompany();
-    fetchAssociation();
-  }, []);
+    const initializeData = async () => {
+      try {
+        setInitialLoading(true);
+        await Promise.all([fetchCompany(), fetchAssociation()]);
+        console.log("isEditMode", isEditMode, keyContactId);
+        if (isEditMode) {
+          const { keyContact } = await createFormApi.getKeyContact(
+            keyContactId as string
+          );
+          console.log("contactData", keyContact);
+          formik.setValues({
+            fullName: keyContact.contact_name,
+            mobile: keyContact.contact_mobile,
+            email: keyContact.contact_email,
+            state: keyContact.state_id.toString(),
+            company: keyContact.contact_organizer_id,
+            venue: keyContact.contact_venue_id,
+            association: keyContact.contact_association_id,
+          });
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        toast({
+          title: "Error Loading Data",
+          description: "Failed to load contact information. Please try again.",
+          variant: "error",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isEditMode, keyContactId]);
+
   const fetchCompany = async () => {
     try {
       const { companies } = await listApi.getCompanies();
-      if (companies?.length > 0) setcompanies(companies);
-    } catch (error) {}
+      if (companies?.length > 0) setCompanies(companies);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+    }
   };
 
   const fetchAssociation = async () => {
     try {
       const { associations } = await listApi.getAssociation();
       if (associations?.length > 0) setAssociations(associations);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching associations:", error);
+    }
   };
 
-  if (isLoading) return <Loader size="medium" />;
+  if (initialLoading || isLoading) return <Loader size="medium" />;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -120,7 +173,7 @@ const KeyContactForm = () => {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">
-            Add Key Contact
+            {isEditMode ? "Update Key Contact" : "Add Key Contact"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -165,6 +218,8 @@ const KeyContactForm = () => {
                 )}
               </div>
             </div>
+
+            {/* Email and State Fields */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-900">
@@ -184,7 +239,6 @@ const KeyContactForm = () => {
                   <p className="text-sm text-red-600">{formik.errors.email}</p>
                 )}
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="state" className="text-gray-900">
                   State
@@ -193,7 +247,7 @@ const KeyContactForm = () => {
                   onValueChange={(value) =>
                     formik.setFieldValue("state", value)
                   }
-                  defaultValue={formik.values.state}
+                  value={formik.values.state}
                 >
                   <SelectTrigger
                     tabIndex={4}
@@ -211,7 +265,6 @@ const KeyContactForm = () => {
                         key={state.id}
                         value={state.id.toString()}
                         className="hover:cursor-pointer capitalize"
-                        tabIndex={index + 1}
                       >
                         {state.name}
                       </SelectItem>
@@ -224,19 +277,20 @@ const KeyContactForm = () => {
               </div>
             </div>
 
+            {/* Company and Venue Fields */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="Companies" className="text-gray-900">
-                  Companies
+                <Label htmlFor="company" className="text-gray-900">
+                  Company*
                 </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("company", value)
                   }
-                  defaultValue={formik.values.company}
+                  value={formik.values.company}
                 >
                   <SelectTrigger
-                    tabIndex={4}
+                    tabIndex={5}
                     className={
                       formik.touched.company && formik.errors.company
                         ? "border-red-500 text-black capitalize"
@@ -246,12 +300,11 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select Company" />
                   </SelectTrigger>
                   <SelectContent>
-                    {companies?.map((item, index) => (
+                    {companies?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer capitalize"
-                        tabIndex={index + 1}
                       >
                         {item.company_name}
                       </SelectItem>
@@ -266,30 +319,27 @@ const KeyContactForm = () => {
               </div>
               <VenueSearch
                 value={formik.values.venue}
-                onBlur={formik.handleBlur}
-                error={formik.errors.venue}
-                touched={formik.touched.venue}
-                onChange={(value) =>
-                  formik.handleChange({ target: { name: "venue", value } })
-                }
+                onChange={(value) => formik.setFieldValue("venue", value)}
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
               />
             </div>
+
+            {/* Association Field */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="venue" className="text-gray-900">
-                  Association
+                <Label htmlFor="association" className="text-gray-900">
+                  Association*
                 </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("association", value)
                   }
-                  defaultValue={formik.values.association}
+                  value={formik.values.association}
                 >
                   <SelectTrigger
-                    tabIndex={4}
+                    tabIndex={6}
                     className={
                       formik.touched.association && formik.errors.association
                         ? "border-red-500 text-black capitalize"
@@ -299,12 +349,11 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select Association" />
                   </SelectTrigger>
                   <SelectContent>
-                    {associations?.map((item, index) => (
+                    {associations?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer capitalize"
-                        tabIndex={index + 1}
                       >
                         {item.association_name}
                       </SelectItem>
@@ -322,10 +371,10 @@ const KeyContactForm = () => {
             <Button
               type="submit"
               className="w-full bg-primary"
-              tabIndex={8}
+              tabIndex={7}
               disabled={isLoading}
             >
-              Submit
+              {isEditMode ? "Update" : "Submit"}
             </Button>
           </form>
         </CardContent>

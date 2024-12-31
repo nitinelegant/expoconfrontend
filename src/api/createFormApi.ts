@@ -6,11 +6,18 @@ import {
   AddKeyConferenceResponseProps,
   AddKeyContactCredentials,
   AddKeyContactResponseProps,
+  AddStaffCredentials,
+  AddStaffResponseProps,
   AddVenueCredentials,
   AddVenueResponseProps,
   AssociationCredentials,
   AssociationResponseProps,
 } from "@/types/createFormApi";
+import {
+  KeyContactListResponse,
+  KeyContactProps,
+  KeyContactSingleResponse,
+} from "@/types/listTypes";
 
 export const createFormApi = {
   addConference: async (
@@ -76,6 +83,44 @@ export const createFormApi = {
       return response.data;
     } catch (error) {
       throw new Error("Error while adding company");
+    }
+  },
+  addStaff: async (
+    credentials: AddStaffCredentials
+  ): Promise<AddStaffResponseProps> => {
+    try {
+      const response = await axiosInstance.post<AddStaffResponseProps>(
+        "/staff",
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while adding company");
+    }
+  },
+
+  updateKeyContact: async (
+    id: string,
+    credentials: AddKeyContactCredentials
+  ): Promise<AddKeyContactResponseProps> => {
+    try {
+      const response = await axiosInstance.put<AddKeyContactResponseProps>(
+        `/keycontact/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while adding company");
+    }
+  },
+  getKeyContact: async (id: string): Promise<KeyContactSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<KeyContactSingleResponse>(
+        `/keycontact/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while fetching data");
     }
   },
 };

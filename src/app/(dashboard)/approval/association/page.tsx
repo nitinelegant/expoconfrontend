@@ -77,14 +77,14 @@ const Association = () => {
       cell: (venue) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.status === "approved"
+            venue?.changes?.type === "create"
               ? "bg-green-100 text-green-600"
               : venue.status === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.status}
+          {venue?.changes?.type || "Pending"}
         </span>
       ),
     },

@@ -73,6 +73,14 @@ export const statesAndUnionTerritories: StatesProps[] = [
   { id: 36, name: "lakshadweep" },
   { id: 37, name: "puducherry" },
 ];
+interface PrefixProps {
+  id: number;
+  name: string;
+}
+export const Prefix: PrefixProps[] = [
+  { id: 1, name: "Mr" },
+  { id: 2, name: "Mrs" },
+];
 interface MonthsProps {
   id: number;
   name: string;

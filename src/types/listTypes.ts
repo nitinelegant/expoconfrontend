@@ -1,3 +1,10 @@
+interface AssociationChange {
+  date: string; // ISO date string
+  type: string; // Example: "create", could be an enum if predefined types are known
+  fields: string[]; // Array of field names
+  user_id: string; // User ID related to the change
+  _id: string; // Change ID
+}
 export interface VenueProps {
   _id: string;
   venue_name: string;
@@ -52,12 +59,31 @@ export interface KeyContactProps {
   contact_organizer_id: string;
   contact_venue_id: string;
   contact_association_id: string;
+  status: "approved" | "pending" | "rejected";
 }
 export interface KeyContactListResponse {
   keyContacts: KeyContactProps[];
   hasMore: boolean;
   currentPage: number;
   totalPages: number;
+}
+
+interface KeyContact {
+  _id: string;
+  contact_name: string;
+  contact_mobile: string;
+  contact_email: string;
+  state_id: number;
+  contact_organizer_id: string;
+  contact_venue_id: string;
+  contact_association_id: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+
+export interface KeyContactSingleResponse {
+  message: string;
+  keyContact: KeyContact;
 }
 
 export interface AssociationProps {
@@ -68,6 +94,9 @@ export interface AssociationProps {
   association_address: string;
   association_type_id: number;
   association_website: string;
+  changes: AssociationChange; // Nested structure for change details
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   status: "approved" | "pending" | "rejected";
 }
 
@@ -155,4 +184,13 @@ export interface StaffProps {
 export interface StaffListResponse {
   message: string;
   users: StaffProps[];
+}
+
+// delete interface
+
+export interface KeyContactDeleteCredential {
+  id: string;
+}
+export interface KeyContactDeleteResponse {
+  message: string;
 }

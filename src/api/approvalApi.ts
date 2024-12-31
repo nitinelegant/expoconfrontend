@@ -11,10 +11,10 @@ import {
 } from "@/types/listTypes";
 
 export const approvalApi = {
-  getExhibition: async (): Promise<ExhibitionApprovalListResponse> => {
+  getExhibitionApproval: async (): Promise<ExhibitionApprovalListResponse> => {
     try {
       const response = await axiosInstance.get<ExhibitionApprovalListResponse>(
-        "/association/list"
+        "/association/approval"
       );
       return response.data;
     } catch (error) {

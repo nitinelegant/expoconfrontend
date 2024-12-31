@@ -6,22 +6,25 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { KeyContactListResponse, KeyContactProps } from "@/types/listTypes";
+import {
+  KeyContactDeleteResponse,
+  KeyContactListResponse,
+  KeyContactProps,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
+import { useRouter } from "next/navigation";
 import { approvalApi } from "@/api/approvalApi";
 
 const KeyContact = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [keyContacts, setKeyContacts] = useState<KeyContactProps[]>([]);
-  // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [rerenderData, setRerenderData] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,14 +46,14 @@ const KeyContact = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
   const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
+    setSelectedId(id);
     setIsDeleteDialogOpen(true);
   };
 
@@ -64,7 +67,10 @@ const KeyContact = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state.state_id]?.name}
+            {
+              statesAndUnionTerritories.find((x) => x.id === state.state_id)
+                ?.name
+            }
           </span>
         );
       },
@@ -75,7 +81,13 @@ const KeyContact = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-key-contact?id=${cellItem._id}`)
+              }
+            >
               <SquarePen />
             </Button>
             <Button
@@ -90,18 +102,49 @@ const KeyContact = () => {
       },
     },
   ];
-  const handleConfirmDeletion = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        setIsLoading(true);
+        const { message }: KeyContactDeleteResponse =
+          await listApi.deleteKeyContact(selectedId);
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully Deleted the key contact.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected key contact.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={keyContacts}
         title="Approve Key Contact"
+        data={keyContacts}
         itemsPerPage={10}
         searchField={"contact_name"}
       />

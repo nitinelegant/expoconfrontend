@@ -13,20 +13,35 @@ import {
 } from "@/components/ui/card";
 import { withAuth } from "@/utils/withAuth";
 import BackButton from "@/components/BackButton";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { createFormApi } from "@/api/createFormApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Prefix, statesAndUnionTerritories } from "@/constants/form";
 
 const SignupSchema = Yup.object().shape({
+  prefix: Yup.string().required("Prefix is required"),
   name: Yup.string()
     .min(2, "Name is too short")
     .max(50, "Name is too long")
     .required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 8 characters")
     .required("Password is required"),
 });
 
 const StaffOnBoardForm = () => {
-  // const [signupSuccess, setSignupSuccess] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
@@ -43,18 +58,85 @@ const StaffOnBoardForm = () => {
           </CardHeader>
           <CardContent>
             <Formik
-              initialValues={{ name: "", email: "", password: "" }}
+              initialValues={{ prefix: "", name: "", email: "", password: "" }}
               validationSchema={SignupSchema}
-              onSubmit={(values, { setSubmitting }) => {
-                setTimeout(() => {
-                  // setSignupSuccess(true);
-                  setSubmitting(false);
-                }, 400);
+              onSubmit={async (values, { setSubmitting }) => {
+                try {
+                  const { name, email, password, prefix } = values;
+                  setIsLoading(true);
+
+                  const payload = {
+                    user_fullname: name,
+                    user_email: email,
+                    user_password: password,
+                    user_prefix: prefix,
+                  };
+                  const response = await createFormApi.addStaff(payload);
+                  if (response) {
+                    console.log("submitting vlaues", response);
+                    toast({
+                      title: "Staff Added Successfully!",
+                      description:
+                        "The staff has been added successfully. You can view it in the staff table.",
+                      duration: 3000,
+                      variant: "success",
+                    });
+                    router.push("/staff-onboard/stafflist");
+                  }
+                } catch (error) {
+                  toast({
+                    title: "Add Staff Failed",
+                    description:
+                      "Failed to add Staff. Please check your fields and try again.",
+                    duration: 2500,
+                    variant: "error",
+                  });
+                  console.log(`error while submitting form`, error);
+                } finally {
+                  setIsLoading(false);
+                }
               }}
             >
-              {({ errors, touched, isSubmitting }) => (
+              {({ errors, touched, isSubmitting, setFieldValue, values }) => (
                 <Form className="space-y-4 w-full">
                   <div>
+                    <div className="space-y-2">
+                      <Label htmlFor="prefix" className="text-gray-900">
+                        Name Prefix*
+                      </Label>
+                      <Select
+                        onValueChange={(value) =>
+                          setFieldValue("prefix", value)
+                        }
+                        defaultValue={values.prefix}
+                      >
+                        <SelectTrigger
+                          tabIndex={3}
+                          aria-required="true"
+                          className={
+                            touched.prefix && errors.prefix
+                              ? "border-red-500 text-black capitalize"
+                              : "text-black capitalize"
+                          }
+                        >
+                          <SelectValue placeholder="Select Prefix" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {Prefix.map((item) => (
+                            <SelectItem
+                              key={item.id}
+                              value={item.id.toString()}
+                              className=" text-black hover:cursor-pointer capitalize"
+                            >
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {touched.prefix && errors.prefix && (
+                        <p className="text-sm text-red-600">{errors.prefix}</p>
+                      )}
+                    </div>
                     <Label htmlFor="name">Name</Label>
                     <Field
                       as={Input}

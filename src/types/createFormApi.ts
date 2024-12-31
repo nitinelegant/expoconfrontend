@@ -127,3 +127,14 @@ export interface AddKeyConferenceResponseProps {
   message: string;
   conference: AddConferenceCredentials;
 }
+
+export interface AddStaffCredentials {
+  user_fullname: string;
+  user_email: string;
+  user_password: string;
+  user_prefix: string;
+}
+
+export interface AddStaffResponseProps {
+  message: string;
+}

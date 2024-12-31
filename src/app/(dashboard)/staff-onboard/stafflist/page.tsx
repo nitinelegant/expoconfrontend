@@ -6,7 +6,11 @@ import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
-import { StaffProps, StaffListResponse } from "@/types/listTypes";
+import {
+  StaffProps,
+  StaffListResponse,
+  StaffDeleteResponse,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 
@@ -15,10 +19,8 @@ const StaffList = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [users, setUsers] = useState<StaffProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
+  const [rerenderData, setRerenderData] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,14 +40,14 @@ const StaffList = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
   const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
+    setSelectedId(id);
     setIsDeleteDialogOpen(true);
   };
 
@@ -63,7 +65,6 @@ const StaffList = () => {
         </span>
       ),
     },
-
     {
       header: "Status",
       accessorKey: "user_status",
@@ -102,11 +103,43 @@ const StaffList = () => {
       },
     },
   ];
-  const handleConfirmDeletion = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        setIsLoading(true);
+        const { message }: StaffDeleteResponse = await listApi.deleteStaff(
+          selectedId
+        );
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully Deleted the key contact.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected key contact.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="space-y-8 p-6">

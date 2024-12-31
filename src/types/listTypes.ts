@@ -194,3 +194,6 @@ export interface KeyContactDeleteCredential {
 export interface KeyContactDeleteResponse {
   message: string;
 }
+export interface StaffDeleteResponse {
+  message: string;
+}

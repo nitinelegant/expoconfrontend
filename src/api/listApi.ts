@@ -7,6 +7,7 @@ import {
   KeyContactDeleteCredential,
   KeyContactDeleteResponse,
   KeyContactListResponse,
+  StaffDeleteResponse,
   StaffListResponse,
   VenueListResponse,
 } from "@/types/listTypes";
@@ -88,6 +89,16 @@ export const listApi = {
     try {
       const response = await axiosInstance.delete<KeyContactDeleteResponse>(
         `/keycontact/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error("Error while logging in");
+    }
+  },
+  deleteStaff: async (id: string): Promise<StaffDeleteResponse> => {
+    try {
+      const response = await axiosInstance.delete<StaffDeleteResponse>(
+        `/staff/${id}`
       );
       return response.data;
     } catch (error) {

@@ -18,9 +18,9 @@ import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
@@ -28,7 +28,11 @@ import SearchInput from "@/components/SearchInput";
 const VenueForm = () => {
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const venueId = searchParams.get("id");
+  const isEditMode = Boolean(searchParams.get("id"));
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -42,8 +46,6 @@ const VenueForm = () => {
       logo: null,
       layout: null,
       featured: false,
-      email: "",
-      password: "",
     },
     validationSchema: Yup.object({
       venue: Yup.string().required("Company Name is required"),
@@ -89,18 +91,28 @@ const VenueForm = () => {
           venue_layout: "",
           venue_featured: featured,
         };
-        const response = await createFormApi.addVenue(payload);
-        if (response) {
-          console.log("submitting vlaues", response);
+        if (isEditMode) {
+          await createFormApi.updateVenue(venueId as string, payload);
           toast({
-            title: "Venue Added Successfully!",
-            description:
-              "The venue has been added successfully. You can view it in the key venue table.",
+            title: "Venue Updated Successfully!",
+            description: "The venue has been updated successfully.",
             duration: 3000,
             variant: "success",
           });
-          router.push("/records/venue");
+        } else {
+          const response = await createFormApi.addVenue(payload);
+          if (response) {
+            console.log("submitting vlaues", response);
+            toast({
+              title: "Venue Added Successfully!",
+              description:
+                "The venue has been added successfully. You can view it in the key venue table.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         }
+        router.push("/records/venue");
       } catch (error) {
         toast({
           title: "Add Venue Failed",
@@ -116,7 +128,43 @@ const VenueForm = () => {
     },
   });
 
-  if (isLoading) return <Loader size="medium" />;
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setInitialLoading(true);
+        // await Promise.all([fetchCompany(), fetchAssociation()]);
+        if (isEditMode) {
+          const { venue } = await createFormApi.getVenue(venueId as string);
+          console.log("contactData", venue);
+          formik.setValues({
+            venue: venue.venue_name,
+            city: venue?.venue_city,
+            state: venue?.state_id.toString(),
+            address: venue?.venue_address,
+            phone: venue?.venue_phone,
+            website: venue?.venue_website,
+            googleMapLink: venue?.venue_map,
+            logo: null,
+            layout: null,
+            featured: venue?.venue_featured,
+          });
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        toast({
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
+          variant: "error",
+        });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isEditMode, venueId]);
+
+  if (initialLoading || isLoading) return <Loader size="medium" />;
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0];
@@ -147,7 +195,7 @@ const VenueForm = () => {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">
-            Add Venue
+            {isEditMode ? "Update" : "Add"} Venue
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -386,7 +434,7 @@ const VenueForm = () => {
             </div>
 
             <Button type="submit" className="w-full bg-primary" tabIndex={11}>
-              Submit
+              {isEditMode ? "Update" : "Submit"}
             </Button>
           </form>
         </CardContent>

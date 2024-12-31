@@ -17,6 +17,7 @@ import {
   AssociationSingleResponse,
   CompanySingleResponse,
   KeyContactSingleResponse,
+  VenueSingleResponse,
 } from "@/types/listTypes";
 
 export const createFormApi = {
@@ -167,6 +168,30 @@ export const createFormApi = {
     try {
       const response = await axiosInstance.put<AssociationResponseProps>(
         `/association/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while adding company ${error}`);
+    }
+  },
+  getVenue: async (id: string): Promise<VenueSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<VenueSingleResponse>(
+        `/venue/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  updateVenue: async (
+    id: string,
+    credentials: AddVenueCredentials
+  ): Promise<AddVenueResponseProps> => {
+    try {
+      const response = await axiosInstance.put<AddVenueResponseProps>(
+        `/venue/${id}`,
         credentials
       );
       return response.data;

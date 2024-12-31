@@ -14,9 +14,12 @@ import {
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
+import { useRouter } from "next/navigation";
 
 const Venue = () => {
   const { toast } = useToast();
+  const router = useRouter();
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [venues, setVenues] = useState<VenueProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +53,6 @@ const Venue = () => {
   const columns: Column<VenueProps>[] = [
     { header: "Venue Name", accessorKey: "venue_name" },
     { header: "City", accessorKey: "venue_city" },
-    // { header: "State", accessorKey: "state_id" },
     { header: "Address", accessorKey: "venue_address" },
     { header: "Website", accessorKey: "venue_website" },
     {
@@ -59,7 +61,10 @@ const Venue = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state.state_id]?.name}
+            {
+              statesAndUnionTerritories.find((x) => x.id === state.state_id)
+                ?.name
+            }
           </span>
         );
       },
@@ -87,7 +92,11 @@ const Venue = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push(`/forms/add-venue?id=${cellItem._id}`)}
+            >
               <SquarePen />
             </Button>
             <Button

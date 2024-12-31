@@ -154,7 +154,7 @@ const AssociationForm = () => {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-black">
-            Add Association
+            {isEditMode ? "Update" : "Add"} Association
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -351,7 +351,7 @@ const AssociationForm = () => {
               tabIndex={7}
               disabled={isLoading}
             >
-              Submit
+              {isEditMode ? "Update" : "Submit"}
             </Button>
           </form>
         </CardContent>

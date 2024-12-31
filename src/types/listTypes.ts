@@ -270,3 +270,23 @@ export interface AssociationChanges {
   user_id: string;
   _id: string;
 }
+
+export interface VenueSingleResponse {
+  message: string;
+  venue: VenueDetailsProps;
+}
+
+export interface VenueDetailsProps {
+  _id: string;
+  venue_name: string;
+  venue_city: string;
+  state_id: number;
+  venue_address: string;
+  venue_phone: string;
+  venue_website: string;
+  venue_map: string;
+  venue_photo: string;
+  venue_layout: string;
+  venue_featured: boolean;
+  status: string;
+}

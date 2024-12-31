@@ -200,7 +200,11 @@ export default function DashboardLayout({
       <Sidebar menuSections={menuSections} />
       <div className="flex-1 flex flex-col">
         <Header title="Dashboard" />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <div className="relative flex-1">
+          <main className="absolute inset-0 overflow-y-auto p-4">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

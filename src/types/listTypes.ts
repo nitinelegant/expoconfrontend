@@ -335,6 +335,6 @@ export interface ConferenceDetailsProps {
 }
 
 export interface ConferenceChanges {
-  fields: any[]; // Replace `any` with the type of items in the `fields` array if known
+  fields: []; // Replace `any` with the type of items in the `fields` array if known
   _id: string;
 }

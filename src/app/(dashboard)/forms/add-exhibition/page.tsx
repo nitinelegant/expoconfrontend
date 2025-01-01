@@ -31,11 +31,19 @@ import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ExhibitionForm = () => {
   const today = new Date();
+  const router = useRouter();
+  const firstInputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+  const keyContactId = searchParams.get("id");
+  const isEditMode = Boolean(searchParams.get("id"));
+
   today.setHours(0, 0, 0, 0);
-  // const [logoPreview, setLogoPreview] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -172,6 +180,54 @@ const ExhibitionForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setInitialLoading(true);
+        // await Promise.all([fetchCompany(), fetchAssociation()]);
+        if (isEditMode) {
+          // const { keyContact } = await createFormApi.getKeyContact(
+          //   keyContactId as string
+          // );
+          // console.log("contactData", keyContact);
+          // formik.setValues({
+          //   fullName: keyContact?.contact_name,
+          //   mobile: keyContact?.contact_mobile,
+          //   email: keyContact?.contact_email,
+          //   state: keyContact?.state_id?.toString(),
+          //   company: keyContact?.contact_organizer_id,
+          //   venue: keyContact?.contact_venue_id,
+          //   association: keyContact?.contact_association_id,
+          // });
+        }
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        // toast({
+        //   title: "Error Loading Data",
+        //   description: "Failed to load contact information. Please try again.",
+        //   variant: "error",
+        // });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    initializeData();
+  }, [isEditMode, keyContactId]);
+
   const handleLogoChange = (event) => {
     const file = event.currentTarget.files?.[0];
     formik.setFieldValue("logo", file);
@@ -229,6 +285,7 @@ const ExhibitionForm = () => {
                   }
                 >
                   <SelectTrigger
+                    ref={firstInputRef}
                     tabIndex={1}
                     className={
                       formik.touched.eventType && formik.errors.eventType

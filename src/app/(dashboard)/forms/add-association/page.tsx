@@ -19,12 +19,14 @@ import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
 import { Loader } from "@/components/ui/loader";
 
 const AssociationForm = () => {
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -111,6 +113,18 @@ const AssociationForm = () => {
       }
     },
   });
+  useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -162,6 +176,8 @@ const AssociationForm = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Website */}
               <SearchInput
+                ref={firstInputRef}
+                tabIndex={1}
                 label="Website"
                 placeholder="Enter website URL"
                 id="website"

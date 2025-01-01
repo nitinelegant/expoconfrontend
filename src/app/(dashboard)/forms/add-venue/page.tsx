@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
@@ -26,6 +26,8 @@ import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
 
 const VenueForm = () => {
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -129,6 +131,19 @@ const VenueForm = () => {
   });
 
   useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
+
+  useEffect(() => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
@@ -206,6 +221,7 @@ const VenueForm = () => {
                   Venue Name*
                 </Label>
                 <Input
+                  ref={firstInputRef}
                   id="venue"
                   {...formik.getFieldProps("venue")}
                   tabIndex={1}
@@ -332,6 +348,7 @@ const VenueForm = () => {
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="company"
+                tabIndex={6}
               />
               {/* <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">

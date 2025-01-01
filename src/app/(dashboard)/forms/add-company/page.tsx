@@ -22,10 +22,11 @@ import SearchInput from "@/components/SearchInput";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader } from "@/components/ui/loader";
 
 const CompanyForm = () => {
+  const firstInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -137,6 +138,18 @@ const CompanyForm = () => {
       }
     },
   });
+  useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -213,6 +226,7 @@ const CompanyForm = () => {
                 <Input
                   id="companyName"
                   tabIndex={1}
+                  ref={firstInputRef}
                   {...formik.getFieldProps("companyName")}
                   className={
                     formik.touched.companyName && formik.errors.companyName
@@ -374,13 +388,13 @@ const CompanyForm = () => {
                 debounceTime={600}
                 value={formik.values.website}
                 onChange={(value) => {
-                  console.log("values", value);
                   formik.setFieldValue("website", value);
                 }}
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="company"
+                tabIndex={7}
               />
 
               {/* <div className="space-y-2">

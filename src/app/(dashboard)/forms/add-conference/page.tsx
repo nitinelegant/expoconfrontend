@@ -31,7 +31,7 @@ import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { listApi } from "@/api/listApi";
 import { AssociationProps, CompanyProps } from "@/types/listTypes";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +40,8 @@ import { createFormApi } from "@/api/createFormApi";
 import { Loader } from "@/components/ui/loader";
 
 const ConferenceForm = () => {
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
   const { toast } = useToast();
   const today = new Date();
@@ -259,6 +261,19 @@ const ConferenceForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
+
   const fetchCompany = async () => {
     try {
       const { companies } = await listApi.getCompanies();
@@ -381,6 +396,7 @@ const ConferenceForm = () => {
                   }
                 >
                   <SelectTrigger
+                    ref={firstInputRef}
                     tabIndex={1}
                     className={
                       formik.touched.eventType && formik.errors.eventType
@@ -550,6 +566,7 @@ const ConferenceForm = () => {
                         )
                       : undefined
                   }
+                  tabIndex={6}
                 />
                 {formik.touched.startDate && formik.errors.startDate && (
                   <p className="text-sm text-red-600">
@@ -578,6 +595,7 @@ const ConferenceForm = () => {
                         )
                       : undefined
                   }
+                  tabIndex={7}
                 />
                 {formik.touched.endDate && formik.errors.endDate && (
                   <p className="text-sm text-red-600">
@@ -711,6 +729,7 @@ const ConferenceForm = () => {
                 onChange={(value) =>
                   formik.handleChange({ target: { name: "venue", value } })
                 }
+                tabIndex={12}
               />
 
               <SearchInput
@@ -728,6 +747,7 @@ const ConferenceForm = () => {
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="company"
+                tabIndex={13}
               />
 
               {/* <div className="space-y-2">

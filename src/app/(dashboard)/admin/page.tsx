@@ -1,36 +1,41 @@
 "use client";
+import { listApi } from "@/api/listApi";
 import { Overview } from "@/components/dashboard/overview";
 import { Statistics } from "@/components/dashboard/statistics";
 import { TransactionsTable } from "@/components/dashboard/transactionsTable";
 import { Loader } from "@/components/ui/loader";
 import { useAuth } from "@/context/AuthContext";
+import { StaffListResponse, StaffProps } from "@/types/listTypes";
 import { userSection } from "@/types/sidebar";
 import { withAuth } from "@/utils/withAuth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
-const overviewSection: userSection[] = [
-  {
-    name: "Users",
-    count: 66,
-  },
-  {
-    name: "Visitors",
-    count: 97,
-  },
-  {
-    name: "Exhibit",
-    count: 15,
-  },
-  {
-    name: "Delegate",
-    count: 233,
-  },
-];
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
+  const { toast } = useToast();
   const router = useRouter();
   const { isAuthenticated, loading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [users, setUsers] = useState<StaffProps[]>([]);
+  const [overviewSection, setOverviewSection] = useState<userSection[]>([
+    {
+      name: "Users",
+      count: 0,
+    },
+    {
+      name: "Visitors",
+      count: 0,
+    },
+    {
+      name: "Exhibit",
+      count: 0,
+    },
+    {
+      name: "Delegate",
+      count: 0,
+    },
+  ]);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -38,8 +43,59 @@ const Dashboard = () => {
     }
   }, [loading, isAuthenticated, router]);
 
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  const getUsers = async () => {
+    try {
+      setIsLoading(true);
+      const { users }: StaffListResponse = await listApi.getStaff();
+      if (users?.length > 0) {
+        setOverviewSection((prevOverview) =>
+          prevOverview.map(
+            (section) =>
+              section.name === "Users"
+                ? { ...section, count: users.length } // Update count to users.length
+                : section // Keep other entries unchanged
+          )
+        );
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while fetching data",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log("error", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (loading) return <Loader size="medium" />;
+
   if (!isAuthenticated) return null;
+
+  // const overviewSection: userSection[] = [
+  //   {
+  //     name: "Users",
+  //     count: 66,
+  //   },
+  //   {
+  //     name: "Visitors",
+  //     count: 97,
+  //   },
+  //   {
+  //     name: "Exhibit",
+  //     count: 15,
+  //   },
+  //   {
+  //     name: "Delegate",
+  //     count: 233,
+  //   },
+  // ];
 
   return (
     <div className="flex h-screen bg-gray-50">

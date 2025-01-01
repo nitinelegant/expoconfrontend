@@ -211,7 +211,7 @@ export interface StaffProps {
   _id: string;
   id?: string; // Optional, as not all users have this field
   user_id: string;
-  user_prefix: string;
+  user_prefix?: string;
   user_fullname: string;
   user_email: string;
   user_role: number;

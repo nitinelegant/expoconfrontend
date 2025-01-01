@@ -94,13 +94,6 @@ const StaffList = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => router.push(`/staff-onboard?id=${cellItem._id}`)}
-            >
-              <SquarePen />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={() => handleDeleteClick(cellItem._id)}
             >
               <Trash2 className="text-red-600" />

@@ -15,9 +15,12 @@ import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import formatDateToYear from "@/utils/common";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 
 const Venue = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [expConferences, setConferences] = useState<ExpConferenceProps[]>([]);
   const [rerenderData, setRerenderData] = useState(false);
@@ -112,6 +115,7 @@ const Venue = () => {
       header: "Action",
       accessorKey: "con_type_id",
       cell: (cellItem) => {
+        if (user !== ADMIN) return null;
         return (
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="icon">

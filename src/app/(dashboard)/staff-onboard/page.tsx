@@ -38,13 +38,13 @@ const StaffOnBoardForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      prefix: "",
+      // prefix: "",
       name: "",
       email: "",
       password: "",
     },
     validationSchema: Yup.object({
-      prefix: Yup.string().required("Prefix is required"),
+      // prefix: Yup.string().required("Prefix is required"),
       name: Yup.string()
         .min(2, "Name is too short")
         .max(50, "Name is too long")
@@ -57,12 +57,12 @@ const StaffOnBoardForm = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const { name, email, password, prefix } = values;
+        const { name, email, password } = values;
         const payload = {
           user_fullname: name,
           user_email: email,
           user_password: password,
-          user_prefix: prefix,
+          // user_prefix: prefix,
         };
         const response = await createFormApi.addStaff(payload);
         if (response) {
@@ -137,7 +137,7 @@ const StaffOnBoardForm = () => {
           <CardContent>
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="space-y-4">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="prefix" className="text-gray-900">
                     Name Prefix*
                   </Label>
@@ -174,7 +174,7 @@ const StaffOnBoardForm = () => {
                       {formik.errors.prefix}
                     </p>
                   )}
-                </div>
+                </div> */}
 
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>

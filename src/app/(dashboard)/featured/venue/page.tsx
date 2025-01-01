@@ -15,9 +15,11 @@ import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import { featureApi } from "@/api/featureApi";
+import { useRouter } from "next/navigation";
 
 const Venue = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [venues, setVenues] = useState<VenueProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -95,7 +97,11 @@ const Venue = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push(`/forms/add-venue?id=${cellItem._id}`)}
+            >
               <SquarePen />
             </Button>
             <Button

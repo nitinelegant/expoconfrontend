@@ -1,10 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ADMIN } from "@/constants/auth";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeaderProps {
   title: string;
 }
 
 export function Header({ title }: HeaderProps) {
+  const { user } = useAuth();
   return (
     <header className="border-b bg-white px-6 py-3">
       <div className="flex items-center justify-between">
@@ -29,11 +32,15 @@ export function Header({ title }: HeaderProps) {
           <div className="flex items-center space-x-2 text-black">
             <Avatar>
               <AvatarImage src="/placeholder-user.jpg" />
-              <AvatarFallback>GA</AvatarFallback>
+              {/* <AvatarFallback>GA</AvatarFallback> */}
             </Avatar>
             <div className="text-sm">
-              <p className="font-medium">Admin</p>
-              <p className="text-gray-500">ecpocon@gmail.com</p>
+              <p className="font-medium">
+                {user === ADMIN ? "Admin" : "Staff"}
+              </p>
+              <p className="text-gray-500">
+                {`${user === ADMIN ? "Adming" : "Staff"}`}@gmail.com
+              </p>
             </div>
           </div>
         </div>

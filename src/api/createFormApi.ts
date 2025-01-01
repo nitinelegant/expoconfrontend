@@ -148,7 +148,8 @@ export const createFormApi = {
       );
       return response.data;
     } catch (error) {
-      throw new Error(`Error while adding company ${error}`);
+      console.log(error);
+      throw new Error("Error while adding company ");
     }
   },
 

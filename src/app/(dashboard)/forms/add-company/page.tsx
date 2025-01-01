@@ -20,10 +20,10 @@ import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { createFormApi } from "@/api/createFormApi";
-import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "@/components/ui/loader";
+import { useToast } from "@/hooks/use-toast";
 
 const CompanyForm = () => {
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -68,9 +68,7 @@ const CompanyForm = () => {
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
-      password: Yup.string()
-        .min(8, "Password must be at least 8 characters")
-        .required("Password is required"),
+      password: Yup.string().min(8, "Password must be at least 8 characters"),
     }),
     onSubmit: async (values) => {
       try {
@@ -105,13 +103,18 @@ const CompanyForm = () => {
           status: featured ? "pending" : "pending",
         };
         if (isEditMode) {
-          await createFormApi.updateCompany(companyId as string, payload);
-          toast({
-            title: "Company Updated Successfully!",
-            description: "The company has been updated successfully.",
-            duration: 3000,
-            variant: "success",
-          });
+          const response = await createFormApi.updateCompany(
+            companyId as string,
+            payload
+          );
+          if (response) {
+            toast({
+              title: "Company Updated Successfully!",
+              description: "The company has been updated successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         } else {
           const response = await createFormApi.addCompany(payload);
           console.log("submitting vlaues", response);
@@ -123,13 +126,19 @@ const CompanyForm = () => {
             variant: "success",
           });
         }
-        router.push("/records/company");
+        // router.push("/records/company");
+        if (window.history.length > 1) {
+          router.back(); // Navigates to the previous page
+        } else {
+          router.push("/"); // Fallback: Navigate to the home page
+        }
       } catch (error) {
         toast({
-          title: "Add Company Failed",
-          description:
-            "Failed to add company. Please check your credentials and try again.",
-          duration: 2500,
+          title: `${isEditMode ? "Update Failed" : "Add Failed"}`,
+          description: `Failed to ${
+            isEditMode ? "Update" : "Add"
+          }. Please check your credentials and try again`,
+          duration: 3000,
           variant: "error",
         });
         console.log(`error while submitting form`, error);

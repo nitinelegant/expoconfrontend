@@ -234,16 +234,28 @@ const ConferenceForm = () => {
           con_nassociation_id: parseInt(nationalAssociation),
           con_hassociation_id: parseInt(segment),
         };
-        const response = await createFormApi.addConference(payload);
-        if (response) {
-          console.log("submitting vlaues", response);
+
+        if (isEditMode) {
+          await createFormApi.updateVenue(conferenceId as string, payload);
           toast({
-            title: "Conference Added Successfully!",
-            description:
-              "The conference has been added successfully. You can view it in the conference list.",
+            title: "Venue Updated Successfully!",
+            description: "The venue has been updated successfully.",
             duration: 3000,
             variant: "success",
           });
+        } else {
+          const response = await createFormApi.addConference(payload);
+          if (response) {
+            console.log("submitting vlaues", response);
+            toast({
+              title: "Conference Added Successfully!",
+              description:
+                "The conference has been added successfully. You can view it in the conference list.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
+
           router.push("/records/conference");
         }
       } catch (error) {

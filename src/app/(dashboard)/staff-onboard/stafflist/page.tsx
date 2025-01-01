@@ -13,9 +13,11 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { useRouter } from "next/navigation";
 
 const StaffList = () => {
   const { toast } = useToast();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [users, setUsers] = useState<StaffProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,7 +91,11 @@ const StaffList = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push(`/staff-onboard?id=${cellItem._id}`)}
+            >
               <SquarePen />
             </Button>
             <Button

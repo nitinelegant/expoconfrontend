@@ -100,21 +100,15 @@ export const months: MonthsProps[] = [
   { id: 12, name: "December" },
 ];
 
-export const years: string[] = [
-  "2024",
-  "2025",
-  "2026",
-  "2027",
-  "2028",
-  "2029",
-  "2030",
-  "2031",
-  "2032",
-  "2033",
-  "2034",
+export const years: number[] = [
+  2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034,
 ];
 
-export const eventTypes = ["Exhibition"];
+interface EventTypesProps {
+  id: number;
+  name: string;
+}
+export const eventTypes: EventTypesProps[] = [{ id: 1, name: "Exhibition" }];
 interface CompanyTypesProps {
   id: number;
   name: string;

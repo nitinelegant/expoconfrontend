@@ -6,6 +6,8 @@ import {
   CompanyListResponse,
   ConferenceDeleteResponse,
   ConferenceListResponse,
+  DeleteApiResponse,
+  ExhibitionsListResponse,
   ExpConferenceListResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
@@ -60,6 +62,26 @@ export const listApi = {
     try {
       const response = await axiosInstance.get<ConferenceListResponse>(
         "/conference/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getExhibition: async (): Promise<ExhibitionsListResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionsListResponse>(
+        "/exhibition/list?limit=50"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getExpExhibition: async (): Promise<ExhibitionsListResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionsListResponse>(
+        "/exhibition/expired?limit=50"
       );
       return response.data;
     } catch (error) {
@@ -141,6 +163,14 @@ export const listApi = {
       const response = await axiosInstance.delete<ConferenceDeleteResponse>(
         `/conference/${id}`
       );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  deleteApi: async (url: string): Promise<DeleteApiResponse> => {
+    try {
+      const response = await axiosInstance.delete<DeleteApiResponse>(`${url}`);
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);

@@ -3,6 +3,7 @@ import {
   AddCompanyCredentials,
   AddCompanyResponseProps,
   AddConferenceCredentials,
+  AddExhibitionCredentials,
   AddKeyConferenceResponseProps,
   AddKeyContactCredentials,
   AddKeyContactResponseProps,
@@ -10,6 +11,7 @@ import {
   AddStaffResponseProps,
   AddVenueCredentials,
   AddVenueResponseProps,
+  ApiCreateCommonResponse,
   AssociationCredentials,
   AssociationResponseProps,
 } from "@/types/createFormApi";
@@ -17,6 +19,8 @@ import {
   AssociationSingleResponse,
   CompanySingleResponse,
   ConferenceSingleResponse,
+  ExhibitionSingleResponse,
+  ExhibitionsListResponse,
   KeyContactSingleResponse,
   VenueSingleResponse,
 } from "@/types/listTypes";
@@ -28,6 +32,19 @@ export const createFormApi = {
     try {
       const response = await axiosInstance.post<AddKeyConferenceResponseProps>(
         "/conference",
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  addExhibition: async (
+    credentials: AddExhibitionCredentials
+  ): Promise<ApiCreateCommonResponse> => {
+    try {
+      const response = await axiosInstance.post<ApiCreateCommonResponse>(
+        "/exhibition",
         credentials
       );
       return response.data;
@@ -126,6 +143,16 @@ export const createFormApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  getExhibition: async (id: string): Promise<ExhibitionSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionSingleResponse>(
+        `/exhibition/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
   getCompany: async (id: string): Promise<CompanySingleResponse> => {
     try {
       const response = await axiosInstance.get<CompanySingleResponse>(
@@ -194,6 +221,20 @@ export const createFormApi = {
     try {
       const response = await axiosInstance.put<AddVenueResponseProps>(
         `/venue/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while adding company ${error}`);
+    }
+  },
+  updateExhibition: async (
+    id: string,
+    credentials: AddExhibitionCredentials
+  ): Promise<ExhibitionsListResponse> => {
+    try {
+      const response = await axiosInstance.put<ExhibitionsListResponse>(
+        `/exhibition/${id}`,
         credentials
       );
       return response.data;

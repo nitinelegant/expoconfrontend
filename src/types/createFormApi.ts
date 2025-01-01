@@ -102,7 +102,6 @@ export interface AddVenueResponseProps {
 }
 
 export interface AddConferenceCredentials {
-  con_type_id: number;
   con_fullname: string;
   con_shortname: string;
   con_sd: string; // ISO date string
@@ -122,6 +121,31 @@ export interface AddConferenceCredentials {
   con_nassociation_id: number | null;
   con_hassociation_id: number | null;
 }
+export interface AddExhibitionCredentials {
+  expo_fullname: string;
+  expo_shortname: string;
+  expo_sd: string;
+  expo_ed: string;
+  month_id: number;
+  year_id: number;
+  expo_time: string;
+  fee_id: string; // Replace with `string` if not using mongoose
+  expo_city: string;
+  state_id: number;
+  venue_id: string; // Replace with `string` if not using mongoose
+  expo_website: string;
+  expo_logo: string;
+  expo_frequency: string;
+  company_id: string; // Replace with `string` if not using mongoose
+  expo_segment_id: string;
+  expo_eprofile: string;
+  expo_vprofile: string;
+}
+export interface ContactChanges {
+  date: string; // ISO date string
+  type: string; // e.g., "update", "create"
+  fields: string[]; // Array of field names
+}
 
 export interface AddKeyConferenceResponseProps {
   message: string;
@@ -136,5 +160,9 @@ export interface AddStaffCredentials {
 }
 
 export interface AddStaffResponseProps {
+  message: string;
+}
+
+export interface ApiCreateCommonResponse {
   message: string;
 }

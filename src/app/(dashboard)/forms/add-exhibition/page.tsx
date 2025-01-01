@@ -14,6 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
+  companyTypes,
   eventTypes,
   months,
   segmentTypes,
@@ -26,18 +27,22 @@ import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import TimeSelector from "@/components/TimeSelector";
+import { createFormApi } from "@/api/createFormApi";
+import { useToast } from "@/hooks/use-toast";
+import { Loader } from "@/components/ui/loader";
 
 const ExhibitionForm = () => {
   const today = new Date();
-  // const router = useRouter();
+  today.setHours(0, 0, 0, 0);
+  const { toast } = useToast();
+  const router = useRouter();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
-  const keyContactId = searchParams.get("id");
+  const exhibitionId = searchParams.get("id");
   const isEditMode = Boolean(searchParams.get("id"));
-
-  today.setHours(0, 0, 0, 0);
+  const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
   const formik = useFormik({
@@ -58,7 +63,7 @@ const ExhibitionForm = () => {
       logo: null,
       frequency: "",
       exhibitionOrganizer: "",
-      segment: "",
+      exhibitionType: "",
       exhibitorProfile: "",
       visitorProfile: "",
     },
@@ -168,45 +173,135 @@ const ExhibitionForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      segment: Yup.string().required("Exhibition Type is required"),
+      exhibitionType: Yup.string().required("Exhibition Type is required"),
+      exhibitionOrganizer: Yup.string().required("Exhibition Type is required"),
     }),
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const {
+          eventType,
+          eventFullName,
+          eventShortName,
+          startDate,
+          endDate,
+          timings,
+          year,
+          state,
+          city,
+          exhibitionType,
+          website,
+          venue,
+          entryFees,
+          frequency,
+          month,
+          exhibitionOrganizer,
+          exhibitorProfile,
+          visitorProfile,
+        } = values;
+        const payload = {
+          expo_type_id: parseInt(eventType),
+          expo_fullname: eventFullName,
+          expo_shortname: eventShortName,
+          expo_sd: startDate,
+          expo_ed: endDate,
+          month_id: parseInt(month),
+          year_id: parseInt(year),
+          expo_time: timings,
+          fee_id: Number(entryFees),
+          expo_city: city,
+          state_id: parseInt(state),
+          venue_id: venue,
+          expo_website: website,
+          expo_logo: "",
+          expo_frequency: frequency,
+          company_id: exhibitionOrganizer,
+          expo_segment_id: exhibitionType,
+          expo_eprofile: exhibitorProfile,
+          expo_vprofile: visitorProfile,
+        };
+
+        if (isEditMode) {
+          const response = await createFormApi.updateExhibition(
+            exhibitionId as string,
+            payload
+          );
+          if (response) {
+            toast({
+              title: "Exhibition Updated Successfully!",
+              description: "The exhibition has been updated successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
+        } else {
+          const response = await createFormApi.addExhibition(payload);
+          if (response) {
+            console.log("submitting vlaues", response);
+            toast({
+              title: "Conference Added Successfully!",
+              description:
+                "The conference has been added successfully. You can view it in the conference list.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
+        }
+        if (window.history.length > 1) {
+          router.back(); // Navigates to the previous page
+        } else {
+          router.push("/"); // Fallback: Navigate to the home page
+        }
+      } catch (error) {
+        toast({
+          title: "Add Exhibition Failed",
+          description:
+            "Failed to add exhibition. Please check your fields and try again.",
+          duration: 2500,
+          variant: "error",
+        });
+        console.log(`error while submitting form`, error);
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
-
-  useEffect(() => {
-    if (!initialLoading) {
-      // Use a short timeout to ensure the component has fully rendered
-      const focusTimer = setTimeout(() => {
-        if (firstInputRef.current) {
-          firstInputRef.current.focus();
-        }
-      }, 100);
-
-      return () => clearTimeout(focusTimer);
-    }
-  }, [initialLoading]);
 
   useEffect(() => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        // await Promise.all([fetchCompany(), fetchAssociation()]);
         if (isEditMode) {
-          // const { keyContact } = await createFormApi.getKeyContact(
-          //   keyContactId as string
-          // );
-          // console.log("contactData", keyContact);
-          // formik.setValues({
-          //   fullName: keyContact?.contact_name,
-          //   mobile: keyContact?.contact_mobile,
-          //   email: keyContact?.contact_email,
-          //   state: keyContact?.state_id?.toString(),
-          //   company: keyContact?.contact_organizer_id,
-          //   venue: keyContact?.contact_venue_id,
-          //   association: keyContact?.contact_association_id,
-          // });
+          const { exhibition } = await createFormApi.getExhibition(
+            exhibitionId as string
+          );
+          console.log("exhibition", exhibition);
+          if (exhibition) {
+            formik.setValues(
+              {
+                ...formik.values,
+                eventType: exhibition?.expo_type_id?.toString(),
+                eventFullName: exhibition?.expo_fullname,
+                eventShortName: exhibition?.expo_shortname,
+                startDate: exhibition?.expo_sd,
+                endDate: exhibition?.expo_ed,
+                timings: exhibition?.expo_time,
+                year: exhibition?.year_id?.toString(),
+                state: exhibition?.state_id?.toString(),
+                city: exhibition?.expo_city,
+                exhibitionType: exhibition?.expo_segment_id?.toString(),
+                website: exhibition?.expo_website,
+                venue: exhibition?.venue_id,
+                frequency: exhibition?.expo_frequency,
+                month: exhibition?.month_id?.toString(),
+                exhibitionOrganizer: exhibition?.company_id?.toString(),
+                exhibitorProfile: exhibition?.expo_eprofile,
+                visitorProfile: exhibition?.expo_vprofile,
+                entryFees: exhibition?.fee_id,
+              },
+              false
+            );
+          }
         }
       } catch (error) {
         console.error("Error initializing data:", error);
@@ -221,7 +316,22 @@ const ExhibitionForm = () => {
     };
 
     initializeData();
-  }, [isEditMode, keyContactId]);
+  }, [isEditMode, exhibitionId]);
+
+  useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
+
+  if (initialLoading || isLoading) return <Loader size="medium" />;
 
   const handleLogoChange = (event) => {
     const file = event.currentTarget.files?.[0];
@@ -267,40 +377,42 @@ const ExhibitionForm = () => {
       <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add Exhibition</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {isEditMode ? "Update" : "Add"} Exhibition
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="eventType">Event Type*</Label>
+                <Label htmlFor="state" className="text-gray-900">
+                  Event Type*
+                </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("eventType", value)
                   }
+                  defaultValue={formik.values.eventType}
                 >
                   <SelectTrigger
-                    ref={firstInputRef}
-                    tabIndex={1}
+                    tabIndex={3}
+                    aria-required="true"
                     className={
-                      formik.touched.eventType && formik.errors.eventType
-                        ? "border-red-500 text-black"
-                        : "text-black"
+                      formik.touched.state && formik.errors.state
+                        ? "border-red-500 text-black capitalize"
+                        : "text-black capitalize"
                     }
                   >
-                    <SelectValue
-                      placeholder="Select Event Type"
-                      className="text-black"
-                    />
+                    <SelectValue placeholder="Select State" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {eventTypes.map((type) => (
+                  <SelectContent className="bg-white text-black">
+                    {eventTypes.map((state) => (
                       <SelectItem
-                        key={type}
-                        value={type}
-                        className="hover:cursor-pointer"
+                        key={state.id}
+                        value={state.id.toString()}
+                        className=" text-black hover:cursor-pointer capitalize"
                       >
-                        {type}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -360,6 +472,7 @@ const ExhibitionForm = () => {
                     formik.setFieldValue("startDate", "");
                     formik.setFieldValue("endDate", "");
                   }}
+                  defaultValue={formik.values.year}
                 >
                   <SelectTrigger
                     tabIndex={4}
@@ -376,7 +489,7 @@ const ExhibitionForm = () => {
                     {years.map((year) => (
                       <SelectItem
                         key={year}
-                        value={year}
+                        value={year.toString()}
                         className="hover:cursor-pointer"
                       >
                         {year}
@@ -396,6 +509,7 @@ const ExhibitionForm = () => {
                     formik.setFieldValue("startDate", "");
                     formik.setFieldValue("endDate", "");
                   }}
+                  defaultValue={formik.values.month}
                 >
                   <SelectTrigger
                     tabIndex={5}
@@ -436,7 +550,17 @@ const ExhibitionForm = () => {
                   type="date"
                   id="startDate"
                   tabIndex={6}
-                  {...formik.getFieldProps("startDate")}
+                  value={
+                    formik.values.startDate
+                      ? new Date(formik.values.startDate)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) => {
+                    formik.setFieldValue("startDate", e.target.value);
+                  }}
+                  // {...formik.getFieldProps("startDate")}
                   className={cn(
                     formik.touched.startDate &&
                       formik.errors.startDate &&
@@ -452,11 +576,6 @@ const ExhibitionForm = () => {
                       : undefined
                   }
                 />
-                {formik.touched.startDate && formik.errors.startDate && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.startDate}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-2">
@@ -465,7 +584,16 @@ const ExhibitionForm = () => {
                   type="date"
                   id="endDate"
                   tabIndex={7}
-                  {...formik.getFieldProps("endDate")}
+                  value={
+                    formik.values.endDate
+                      ? new Date(formik.values.endDate)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) => {
+                    formik.setFieldValue("endDate", e.target.value);
+                  }}
                   className={cn(
                     formik.touched.endDate &&
                       formik.errors.endDate &&
@@ -496,7 +624,11 @@ const ExhibitionForm = () => {
                   type="number"
                   id="entryFees"
                   tabIndex={9}
-                  {...formik.getFieldProps("entryFees")}
+                  value={formik.values.entryFees}
+                  onChange={(e) => {
+                    formik.setFieldValue("entryFees", e.target.value);
+                  }}
+                  // {...formik.getFieldProps("entryFees")}
                   className={
                     formik.touched.entryFees && formik.errors.entryFees
                       ? "border-red-500"
@@ -528,31 +660,32 @@ const ExhibitionForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="state">State*</Label>
+                <Label htmlFor="state" className="text-gray-900">
+                  State*
+                </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("state", value)
                   }
+                  defaultValue={formik.values.state}
                 >
                   <SelectTrigger
-                    tabIndex={11}
+                    tabIndex={3}
+                    aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
-                        ? "border-red-500 text-black"
-                        : "text-black"
+                        ? "border-red-500 text-black capitalize"
+                        : "text-black capitalize"
                     }
                   >
-                    <SelectValue
-                      placeholder="Select State"
-                      className="text-black"
-                    />
+                    <SelectValue placeholder="Select State" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state.id}
                         value={state.id.toString()}
-                        className="hover:cursor-pointer"
+                        className=" text-black hover:cursor-pointer capitalize"
                       >
                         {state.name}
                       </SelectItem>
@@ -644,29 +777,60 @@ const ExhibitionForm = () => {
                 <Label htmlFor="exhibitionOrganizer">
                   Exhibition Organizer
                 </Label>
-                <Input
-                  id="exhibitionOrganizer"
-                  tabIndex={16}
-                  {...formik.getFieldProps("exhibitionOrganizer")}
-                />
+                <Select
+                  onValueChange={(value) =>
+                    formik.setFieldValue("exhibitionOrganizer", value)
+                  }
+                  defaultValue={formik.values.exhibitionOrganizer}
+                >
+                  <SelectTrigger
+                    tabIndex={17}
+                    className={
+                      formik.touched.exhibitionOrganizer &&
+                      formik.errors.exhibitionOrganizer
+                        ? "border-red-500 text-black"
+                        : "text-black"
+                    }
+                  >
+                    <SelectValue placeholder="Select conference organizer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {companyTypes?.map((item) => (
+                      <SelectItem
+                        key={item.id}
+                        value={item.id.toString()}
+                        className="hover:cursor-pointer"
+                      >
+                        {item.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {formik.touched.exhibitionOrganizer &&
+                  formik.errors.exhibitionOrganizer && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.exhibitionOrganizer}
+                    </p>
+                  )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="segment">Exhibition Type</Label>
                 <Select
                   onValueChange={(value) =>
-                    formik.setFieldValue("segment", value)
+                    formik.setFieldValue("exhibitionType", value)
                   }
                 >
                   <SelectTrigger
                     tabIndex={17}
                     className={
-                      formik.touched.segment && formik.errors.segment
+                      formik.touched.exhibitionType &&
+                      formik.errors.exhibitionType
                         ? "border-red-500 text-black"
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select conference segment" />
+                    <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((item) => (
@@ -680,11 +844,12 @@ const ExhibitionForm = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.segment && formik.errors.segment && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.segment}
-                  </p>
-                )}
+                {formik.touched.exhibitionType &&
+                  formik.errors.exhibitionType && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.exhibitionType}
+                    </p>
+                  )}
               </div>
             </div>
 
@@ -708,8 +873,13 @@ const ExhibitionForm = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full bg-primary" tabIndex={22}>
-              Submit
+            <Button
+              type="submit"
+              className="w-full bg-primary"
+              tabIndex={22}
+              disabled={isLoading}
+            >
+              {isEditMode ? "Update" : "Add"} Exhibition
             </Button>
           </form>
         </CardContent>

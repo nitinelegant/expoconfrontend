@@ -95,6 +95,34 @@ export interface KeyContactSingleResponse {
   message: string;
   keyContact: KeyContact;
 }
+export interface ExhibitionSingleResponse {
+  message: string;
+  exhibition: Exhibition;
+}
+
+interface Exhibition {
+  expo_type_id: number;
+  expo_fullname: string;
+  expo_shortname: string;
+  expo_sd: string;
+  expo_ed: string;
+  month_id: number;
+  year_id: number;
+  expo_time: string;
+  fee_id: number;
+  expo_city: string;
+  state_id: number;
+  venue_id: string;
+  expo_website: string;
+  expo_logo: string;
+  expo_frequency: string;
+  company_id: string;
+  expo_segment_id: number;
+  expo_eprofile: string;
+  expo_vprofile: string;
+  status: "pending" | "approved" | "rejected";
+  changes: AssociationChange;
+}
 
 export interface AssociationProps {
   _id: string;
@@ -127,7 +155,7 @@ export interface ConferenceProps {
   month_id: string;
   year_id: string;
   con_time: string; // Conference time
-  fee_id: string;
+  fee_id: number;
   con_city: string;
   state_id: number;
   venue_id: string;
@@ -219,6 +247,9 @@ export interface VenueDeleteResponse {
   message: string;
 }
 export interface ConferenceDeleteResponse {
+  message: string;
+}
+export interface DeleteApiResponse {
   message: string;
 }
 export interface ApproveResponse {
@@ -317,7 +348,7 @@ export interface ConferenceDetailsProps {
   month_id: string;
   year_id: string;
   con_time: string;
-  fee_id: string;
+  fee_id: number;
   con_city: string;
   state_id: string;
   venue_id: string;
@@ -338,4 +369,37 @@ export interface ConferenceDetailsProps {
 export interface ConferenceChanges {
   fields: []; // Replace `any` with the type of items in the `fields` array if known
   _id: string;
+}
+
+export interface ExhibitionProps {
+  _id: string;
+  expo_type_id: number;
+  expo_fullname: string;
+  expo_shortname: string;
+  expo_sd: string; // ISO date string
+  expo_ed: string; // ISO date string
+  month_id: number;
+  year_id: number;
+  expo_time: string;
+  fee_id: number;
+  expo_city: string;
+  state_id: number;
+  venue_id: string;
+  expo_website: string;
+  expo_logo: string;
+  expo_frequency: string;
+  company_id: string;
+  expo_segment_id: number;
+  expo_eprofile: string;
+  expo_vprofile: string;
+  status: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
+
+export interface ExhibitionsListResponse {
+  exhibitions: ExhibitionProps[];
+  hasMore: boolean;
+  currentPage: number;
+  totalPages: number;
 }

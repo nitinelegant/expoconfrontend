@@ -20,24 +20,18 @@ import {
   statesAndUnionTerritories,
   years,
 } from "@/constants/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import TimeSelector from "@/components/TimeSelector";
 
 const ExhibitionForm = () => {
   const today = new Date();
-  const router = useRouter();
+  // const router = useRouter();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const keyContactId = searchParams.get("id");

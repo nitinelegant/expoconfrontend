@@ -15,39 +15,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   associationTypes,
+  companyTypes,
   months,
   segmentTypes,
   statesAndUnionTerritories,
   years,
 } from "@/constants/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Clock } from "lucide-react";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { useEffect, useRef, useState } from "react";
-import { listApi } from "@/api/listApi";
-import { AssociationProps, CompanyProps } from "@/types/listTypes";
-import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
+import TimeSelector from "@/components/TimeSelector";
 import { createFormApi } from "@/api/createFormApi";
+import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 
 const ConferenceForm = () => {
-  const firstInputRef = useRef<HTMLInputElement>(null);
-
-  const router = useRouter();
-  const { toast } = useToast();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const [companies, setcompanies] = useState<CompanyProps[]>([]);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
+  const { toast } = useToast();
+  const router = useRouter();
+  const firstInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const conferenceId = searchParams.get("id");
   const isEditMode = Boolean(searchParams.get("id"));
@@ -72,10 +63,9 @@ const ConferenceForm = () => {
       logo: null,
       frequency: "",
       conferenceOrganizer: "",
-      segment: "",
-      exhibitorProfile: "",
-      visitorProfile: "",
+      conferenceSegment: "",
       nationalAssociation: "",
+      hostingChapter: "",
     },
     validationSchema: Yup.object({
       eventType: Yup.string().required("Event Type is required"),
@@ -183,38 +173,38 @@ const ConferenceForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      segment: Yup.string().required("Exhibition Type is required"),
+      conferenceSegment: Yup.string().required("Exhibition Type is required"),
+      conferenceOrganizer: Yup.string().required("Exhibition Type is required"),
       nationalAssociation: Yup.string().required(
         "National Association is required"
-      ),
-      conferenceOrganizer: Yup.string().required(
-        "Conference Organizer is required"
       ),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
+
         const {
           eventType,
           eventFullName,
           eventShortName,
+          year,
+          month,
           startDate,
           endDate,
           timings,
-          year,
-          state,
-          city,
-          conferenceOrganizer,
-          segment,
-          website,
-          venue,
           entryFees,
+          city,
+          state,
+          venue,
+          website,
+          logo = "",
           frequency,
-          month,
+          conferenceOrganizer,
+          conferenceSegment,
           nationalAssociation,
+          hostingChapter = 1,
         } = values;
         const payload = {
-          con_type_id: parseInt(eventType),
           con_fullname: eventFullName,
           con_shortname: eventShortName,
           con_sd: startDate,
@@ -229,20 +219,26 @@ const ConferenceForm = () => {
           con_website: website,
           con_logo: "",
           con_frequency: frequency,
-          company_id: conferenceOrganizer,
-          con_segment_id: parseInt(segment),
+          company_id: parseInt(conferenceOrganizer),
+          con_segment_id: parseInt(conferenceSegment),
           con_nassociation_id: parseInt(nationalAssociation),
-          con_hassociation_id: parseInt(segment),
+          con_hassociation_id: 1, //hostingChapter
+          con_type_id: parseInt(eventType),
         };
 
         if (isEditMode) {
-          await createFormApi.updateVenue(conferenceId as string, payload);
-          toast({
-            title: "Venue Updated Successfully!",
-            description: "The venue has been updated successfully.",
-            duration: 3000,
-            variant: "success",
-          });
+          const response = await createFormApi.updateConference(
+            conferenceId as string,
+            payload
+          );
+          if (response) {
+            toast({
+              title: "Conference Updated Successfully!",
+              description: "The conference has been updated successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         } else {
           const response = await createFormApi.addConference(payload);
           if (response) {
@@ -255,14 +251,17 @@ const ConferenceForm = () => {
               variant: "success",
             });
           }
-
-          router.push("/records/conference");
+        }
+        if (window.history.length > 1) {
+          router.back(); // Navigates to the previous page
+        } else {
+          router.push("/"); // Fallback: Navigate to the home page
         }
       } catch (error) {
         toast({
           title: "Add Conference Failed",
           description:
-            "Failed to add conference. Please check your credentials and try again.",
+            "Failed to add conference. Please check your fields and try again.",
           duration: 2500,
           variant: "error",
         });
@@ -272,7 +271,6 @@ const ConferenceForm = () => {
       }
     },
   });
-
   useEffect(() => {
     if (!initialLoading) {
       // Use a short timeout to ensure the component has fully rendered
@@ -286,63 +284,48 @@ const ConferenceForm = () => {
     }
   }, [initialLoading]);
 
-  const fetchCompany = async () => {
-    try {
-      const { companies } = await listApi.getCompanies();
-      if (companies?.length > 0) setcompanies(companies);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const fetchAssociation = async () => {
-    try {
-      const { associations } = await listApi.getAssociation();
-      if (associations?.length > 0) setAssociations(associations);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        await Promise.all([fetchCompany(), fetchAssociation()]);
         if (isEditMode) {
           const { conference } = await createFormApi.getConference(
             conferenceId as string
           );
-          console.log("contactData", conference);
-          formik.setValues({
-            eventType: conference?.con_type_id?.toString(),
-            eventFullName: conference?.con_fullname,
-            eventShortName: conference?.con_shortname,
-            startDate: conference?.con_sd,
-            endDate: conference?.con_ed,
-            month: conference?.month_id,
-            year: conference?.year_id,
-            timings: conference?.con_time,
-            entryFees: conference?.fee_id,
-            city: conference?.con_city,
-            state: conference?.state_id?.toString(),
-            venue: conference?.venue_id,
-            website: conference?.con_website,
-            logo: null,
-            frequency: conference?.con_frequency,
-            conferenceOrganizer: conference?.company_id,
-            segment: conference?.con_segment_id,
-            exhibitorProfile: "",
-            visitorProfile: "",
-            nationalAssociation: conference?.con_hassociation_id,
-          });
+          console.log("exhibition", conference);
+          if (conference) {
+            formik.setValues(
+              {
+                ...formik.values,
+                eventType: conference.con_type_id?.toString(),
+                eventFullName: conference.con_fullname,
+                eventShortName: conference.con_shortname,
+                startDate: conference.con_sd,
+                endDate: conference.con_ed,
+                timings: conference.con_time,
+                year: conference.year_id?.toString(),
+                state: conference.state_id?.toString(),
+                city: conference.con_city,
+                conferenceSegment: conference?.con_segment_id?.toString(),
+                website: conference.con_website,
+                venue: conference.venue_id?.toString(),
+                entryFees: conference.fee_id?.toString(),
+                frequency: conference.con_frequency,
+                month: conference.month_id?.toString(),
+                nationalAssociation: conference.con_nassociation_id?.toString(),
+                conferenceOrganizer: conference.company_id?.toString(),
+              },
+              false
+            );
+          }
         }
       } catch (error) {
         console.error("Error initializing data:", error);
-        toast({
-          title: "Error Loading Data",
-          description: "Failed to load data. Please try again.",
-          variant: "error",
-        });
+        // toast({
+        //   title: "Error Loading Data",
+        //   description: "Failed to load contact information. Please try again.",
+        //   variant: "error",
+        // });
       } finally {
         setInitialLoading(false);
       }
@@ -353,17 +336,17 @@ const ConferenceForm = () => {
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
-  // const handleLogoChange = (event) => {
-  //   const file = event.currentTarget.files?.[0];
-  //   formik.setFieldValue("logo", file);
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setLogoPreview(reader.result);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
+  const handleLogoChange = (event) => {
+    const file = event.currentTarget.files?.[0];
+    formik.setFieldValue("logo", file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Generate time options for the time picker
   const generateTimeOptions = () => {
@@ -377,6 +360,8 @@ const ConferenceForm = () => {
     }
     return times;
   };
+
+  const handleResultFound = () => {};
 
   const timeOptions = generateTimeOptions();
   const todayStr = today.toISOString().split("T")[0];
@@ -395,40 +380,43 @@ const ConferenceForm = () => {
       <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add Conference</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {isEditMode ? "Update" : "Add"} Conference
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="eventType">Event Type*</Label>
+                <Label htmlFor="state" className="text-gray-900">
+                  Event Type*
+                </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("eventType", value)
                   }
+                  defaultValue={formik.values.eventType}
                 >
                   <SelectTrigger
+                    tabIndex={3}
                     ref={firstInputRef}
-                    tabIndex={1}
+                    aria-required="true"
                     className={
-                      formik.touched.eventType && formik.errors.eventType
-                        ? "border-red-500 text-black"
-                        : "text-black"
+                      formik.touched.state && formik.errors.state
+                        ? "border-red-500 text-black capitalize"
+                        : "text-black capitalize"
                     }
                   >
-                    <SelectValue
-                      placeholder="Select Event Type"
-                      className="text-black"
-                    />
+                    <SelectValue placeholder="Select event" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {associationTypes.map((item) => (
+                  <SelectContent className="bg-white text-black">
+                    {associationTypes.map((state) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
-                        className="hover:cursor-pointer"
+                        key={state.id}
+                        value={state.id.toString()}
+                        className=" text-black hover:cursor-pointer capitalize"
                       >
-                        {item.name}
+                        {state.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -488,6 +476,7 @@ const ConferenceForm = () => {
                     formik.setFieldValue("startDate", "");
                     formik.setFieldValue("endDate", "");
                   }}
+                  defaultValue={formik.values.year}
                 >
                   <SelectTrigger
                     tabIndex={4}
@@ -504,7 +493,7 @@ const ConferenceForm = () => {
                     {years.map((year) => (
                       <SelectItem
                         key={year}
-                        value={year}
+                        value={year.toString()}
                         className="hover:cursor-pointer"
                       >
                         {year}
@@ -524,6 +513,7 @@ const ConferenceForm = () => {
                     formik.setFieldValue("startDate", "");
                     formik.setFieldValue("endDate", "");
                   }}
+                  defaultValue={formik.values.month}
                 >
                   <SelectTrigger
                     tabIndex={5}
@@ -563,7 +553,18 @@ const ConferenceForm = () => {
                 <Input
                   type="date"
                   id="startDate"
-                  {...formik.getFieldProps("startDate")}
+                  tabIndex={6}
+                  value={
+                    formik.values.startDate
+                      ? new Date(formik.values.startDate)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) => {
+                    formik.setFieldValue("startDate", e.target.value);
+                  }}
+                  // {...formik.getFieldProps("startDate")}
                   className={cn(
                     formik.touched.startDate &&
                       formik.errors.startDate &&
@@ -578,13 +579,7 @@ const ConferenceForm = () => {
                         )
                       : undefined
                   }
-                  tabIndex={6}
                 />
-                {formik.touched.startDate && formik.errors.startDate && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.startDate}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-2">
@@ -592,7 +587,17 @@ const ConferenceForm = () => {
                 <Input
                   type="date"
                   id="endDate"
-                  {...formik.getFieldProps("endDate")}
+                  tabIndex={7}
+                  value={
+                    formik.values.endDate
+                      ? new Date(formik.values.endDate)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) => {
+                    formik.setFieldValue("endDate", e.target.value);
+                  }}
                   className={cn(
                     formik.touched.endDate &&
                       formik.errors.endDate &&
@@ -607,7 +612,6 @@ const ConferenceForm = () => {
                         )
                       : undefined
                   }
-                  tabIndex={7}
                 />
                 {formik.touched.endDate && formik.errors.endDate && (
                   <p className="text-sm text-red-600">
@@ -616,49 +620,7 @@ const ConferenceForm = () => {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="time">Timings</Label>
-                <Popover>
-                  <PopoverTrigger asChild className="bg-white text-black">
-                    <Button
-                      variant="outline"
-                      tabIndex={8}
-                      className={cn(
-                        "w-full justify-start text-left font-normal text-black",
-                        !formik.values.timings && "text-black",
-                        formik.touched.timings &&
-                          formik.errors.timings &&
-                          "border-red-500"
-                      )}
-                    >
-                      <Clock className="mr-2 h-4 w-4 text-black" />
-                      {formik.values.timings || "Select time"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="max-w-56 p-0 bg-white">
-                    <div className="h-64 overflow-y-auto p-2">
-                      {timeOptions.map((time) => (
-                        <Button
-                          key={time}
-                          variant="ghost"
-                          className="w-full justify-start text-black bg-white"
-                          onClick={() => {
-                            formik.setFieldValue("timings", time);
-                            formik.setFieldTouched("timings", true);
-                          }}
-                        >
-                          {time}
-                        </Button>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                {formik.touched.timings && formik.errors.timings && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.timings}
-                  </p>
-                )}
-              </div>
+              <TimeSelector formik={formik} timeOptions={timeOptions} />
 
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees* (₹)</Label>
@@ -666,7 +628,11 @@ const ConferenceForm = () => {
                   type="number"
                   id="entryFees"
                   tabIndex={9}
-                  {...formik.getFieldProps("entryFees")}
+                  value={formik.values.entryFees}
+                  onChange={(e) => {
+                    formik.setFieldValue("entryFees", e.target.value);
+                  }}
+                  // {...formik.getFieldProps("entryFees")}
                   className={
                     formik.touched.entryFees && formik.errors.entryFees
                       ? "border-red-500"
@@ -698,31 +664,32 @@ const ConferenceForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="state">State*</Label>
+                <Label htmlFor="state" className="text-gray-900">
+                  State*
+                </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("state", value)
                   }
+                  defaultValue={formik.values.state}
                 >
                   <SelectTrigger
-                    tabIndex={11}
+                    tabIndex={3}
+                    aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black capitalize"
                         : "text-black capitalize"
                     }
                   >
-                    <SelectValue
-                      placeholder="Select State"
-                      className="text-black"
-                    />
+                    <SelectValue placeholder="Select State" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {statesAndUnionTerritories.map((state) => (
                       <SelectItem
                         key={state.id}
                         value={state.id.toString()}
-                        className="hover:cursor-pointer capitalize"
+                        className=" text-black hover:cursor-pointer capitalize"
                       >
                         {state.name}
                       </SelectItem>
@@ -735,12 +702,13 @@ const ConferenceForm = () => {
               </div>
               <VenueSearch
                 value={formik.values.venue}
+                onChange={(value) => {
+                  formik.setFieldValue("venue", value);
+                  formik.setFieldTouched("venue", true, false);
+                }}
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
-                onChange={(value) =>
-                  formik.handleChange({ target: { name: "venue", value } })
-                }
                 tabIndex={12}
               />
 
@@ -748,7 +716,7 @@ const ConferenceForm = () => {
                 label="Website"
                 placeholder="Enter website URL"
                 id="website"
-                onResultFound={() => {}}
+                onResultFound={handleResultFound}
                 debounceTime={600}
                 value={formik.values.website}
                 onChange={(value) => {
@@ -761,7 +729,6 @@ const ConferenceForm = () => {
                 apiEndpoint="company"
                 tabIndex={13}
               />
-
               {/* <div className="space-y-2">
                 <Label htmlFor="website">Website*</Label>
                 <Input
@@ -790,6 +757,7 @@ const ConferenceForm = () => {
                   tabIndex={14}
                   accept="image/*"
                   className="cursor-pointer"
+                  onChange={handleLogoChange}
                 />
                 {/* {logoPreview && (
                   <img
@@ -808,15 +776,16 @@ const ConferenceForm = () => {
                   {...formik.getFieldProps("frequency")}
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="conferenceOrganizer">
-                  {" "}
                   Conference Organizer PCO
                 </Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("conferenceOrganizer", value)
                   }
+                  defaultValue={formik.values.conferenceOrganizer}
                 >
                   <SelectTrigger
                     tabIndex={17}
@@ -830,13 +799,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select conference organizer" />
                   </SelectTrigger>
                   <SelectContent>
-                    {companies?.map((item) => (
+                    {companyTypes?.map((item) => (
                       <SelectItem
-                        key={item._id}
-                        value={item._id}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {item.company_name}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -849,33 +818,24 @@ const ConferenceForm = () => {
                   )}
               </div>
 
-              {/* <div className="space-y-2">
-                <Label htmlFor="conferenceOrganizer">
-                  Conference Organizer PCO
-                </Label>
-                <Input
-                  id="conferenceOrganizer"
-                  tabIndex={16}
-                  {...formik.getFieldProps("conferenceOrganizer")}
-                />
-              </div> */}
-
               <div className="space-y-2">
                 <Label htmlFor="segment">Conference Segment</Label>
                 <Select
                   onValueChange={(value) =>
-                    formik.setFieldValue("segment", value)
+                    formik.setFieldValue("conferenceSegment", value)
                   }
+                  defaultValue={formik.values.conferenceSegment}
                 >
                   <SelectTrigger
                     tabIndex={17}
                     className={
-                      formik.touched.segment && formik.errors.segment
+                      formik.touched.conferenceSegment &&
+                      formik.errors.conferenceSegment
                         ? "border-red-500 text-black"
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select conference segment" />
+                    <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((item) => (
@@ -889,11 +849,12 @@ const ConferenceForm = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.segment && formik.errors.segment && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.segment}
-                  </p>
-                )}
+                {formik.touched.conferenceSegment &&
+                  formik.errors.conferenceSegment && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.conferenceSegment}
+                    </p>
+                  )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="segment">National Association</Label>
@@ -901,9 +862,10 @@ const ConferenceForm = () => {
                   onValueChange={(value) =>
                     formik.setFieldValue("nationalAssociation", value)
                   }
+                  defaultValue={formik.values.nationalAssociation}
                 >
                   <SelectTrigger
-                    tabIndex={18}
+                    tabIndex={17}
                     className={
                       formik.touched.nationalAssociation &&
                       formik.errors.nationalAssociation
@@ -911,16 +873,16 @@ const ConferenceForm = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select conference segment" />
+                    <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {associations?.map((item) => (
+                    {segmentTypes.map((item) => (
                       <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
+                        key={item.id}
+                        value={item.id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {item.association_name}
+                        {item.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -936,18 +898,19 @@ const ConferenceForm = () => {
                 <Label htmlFor="segment">Hosting Chapter</Label>
                 <Select
                   onValueChange={(value) =>
-                    formik.setFieldValue("segment", value)
+                    formik.setFieldValue("hostingChapter", value)
                   }
                 >
                   <SelectTrigger
-                    tabIndex={19}
+                    tabIndex={17}
                     className={
-                      formik.touched.segment && formik.errors.segment
+                      formik.touched.hostingChapter &&
+                      formik.errors.hostingChapter
                         ? "border-red-500 text-black"
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select conference segment" />
+                    <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((item) => (
@@ -961,32 +924,13 @@ const ConferenceForm = () => {
                     ))}
                   </SelectContent>
                 </Select>
-                {formik.touched.segment && formik.errors.segment && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.segment}
-                  </p>
-                )}
+                {formik.touched.hostingChapter &&
+                  formik.errors.hostingChapter && (
+                    <p className="text-sm text-red-600">
+                      {formik.errors.hostingChapter}
+                    </p>
+                  )}
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
-              <Textarea
-                id="exhibitorProfile"
-                tabIndex={20}
-                {...formik.getFieldProps("exhibitorProfile")}
-                className="text-black"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="visitorProfile">Visitor Profile</Label>
-              <Textarea
-                id="visitorProfile"
-                tabIndex={21}
-                {...formik.getFieldProps("visitorProfile")}
-                className="text-black"
-              />
             </div>
 
             <Button
@@ -995,7 +939,7 @@ const ConferenceForm = () => {
               tabIndex={22}
               disabled={isLoading}
             >
-              Submit
+              {isEditMode ? "Update" : "Add"} Conference
             </Button>
           </form>
         </CardContent>

@@ -102,6 +102,7 @@ export interface AddVenueResponseProps {
 }
 
 export interface AddConferenceCredentials {
+  con_type_id: number;
   con_fullname: string;
   con_shortname: string;
   con_sd: string; // ISO date string
@@ -109,17 +110,17 @@ export interface AddConferenceCredentials {
   month_id: number | null;
   year_id: number | null;
   con_time: string;
-  fee_id: number | null;
+  fee_id: number;
   con_city: string;
   state_id: number | null;
   venue_id: string | null;
   con_website: string;
   con_logo: string;
   con_frequency: string;
-  company_id: string | null;
-  con_segment_id: number | null;
-  con_nassociation_id: number | null;
-  con_hassociation_id: number | null;
+  company_id: number;
+  con_segment_id: number;
+  con_nassociation_id: number;
+  con_hassociation_id: number;
 }
 export interface AddExhibitionCredentials {
   expo_fullname: string;

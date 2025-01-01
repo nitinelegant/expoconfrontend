@@ -18,6 +18,7 @@ import {
 import {
   AssociationSingleResponse,
   CompanySingleResponse,
+  ConferenceListResponse,
   ConferenceSingleResponse,
   ExhibitionSingleResponse,
   ExhibitionsListResponse,
@@ -251,6 +252,20 @@ export const createFormApi = {
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  updateConference: async (
+    id: string,
+    credentials: AddConferenceCredentials
+  ): Promise<ConferenceListResponse> => {
+    try {
+      const response = await axiosInstance.put<ConferenceListResponse>(
+        `/conference/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while adding company ${error}`);
     }
   },
 };

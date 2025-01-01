@@ -2,19 +2,25 @@
 import React, { useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
-import { AssociationProps, AssociationsListResponse } from "@/types/listTypes";
+import {
+  ApproveResponse,
+  AssociationProps,
+  AssociationsListResponse,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import { approvalApi } from "@/api/approvalApi";
+import { useToast } from "@/hooks/use-toast";
 
 const Association = () => {
+  const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
   // const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [rerenderData, setRerenderData] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
     string | null
@@ -35,18 +41,63 @@ const Association = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedExhibitionId(id);
-    setIsDeleteDialogOpen(true);
+  const handleAction = async (id: string, action: string) => {
+    try {
+      setIsLoading(true);
+      const isApproved = action === "approve" ? true : false;
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `keycontact/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          }.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const columns: Column<AssociationProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: ({ changes }) => {
+        return (
+          <span
+            className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
+              changes.type === "create"
+                ? "text-green-600"
+                : changes.type === "update"
+                ? "text-[#d87225]"
+                : "text-[#d1202a]"
+            }`}
+          >
+            {changes.type}
+          </span>
+        );
+      },
+    },
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
 
@@ -63,54 +114,19 @@ const Association = () => {
         );
       },
     },
-    {
-      header: "Type",
-      accessorKey: "status",
-      cell: (venue) => (
-        <span
-          className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue?.changes?.type === "create"
-              ? "bg-green-100 text-green-600"
-              : venue.status === "rejected"
-              ? "bg-red-50 text-red-600"
-              : "bg-yellow-100 text-yellow-600"
-          }`}
-        >
-          {venue?.changes?.type || "Pending"}
-        </span>
-      ),
-    },
+
     {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <SquarePen />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
-            >
-              <Trash2 className="text-red-600" />
-            </Button>
-          </div>
-        );
-      },
-    },
-
-    {
-      header: "",
-      accessorKey: "_id",
-      cell: () => {
-        return (
-          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               className="bg-primary text-white"
               size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
+              disabled={isLoading}
             >
               <h1>Approve</h1>
             </Button>
@@ -119,6 +135,8 @@ const Association = () => {
               variant="ghost"
               size="sm"
               className="border border-primary text-primary"
+              disabled={isLoading}
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
             </Button>

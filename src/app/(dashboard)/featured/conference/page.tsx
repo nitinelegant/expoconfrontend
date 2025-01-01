@@ -16,8 +16,10 @@ import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import formatDateToYear from "@/utils/common";
 import { featureApi } from "@/api/featureApi";
+import { useRouter } from "next/navigation";
 
 const Venue = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [conferences, setConferences] = useState<ConferenceProps[]>([]);
@@ -114,7 +116,13 @@ const Venue = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-conference?id=${cellItem._id}`)
+              }
+            >
               <SquarePen />
             </Button>
             <Button

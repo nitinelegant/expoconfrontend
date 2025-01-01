@@ -4,7 +4,11 @@ import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { withAuth } from "@/utils/withAuth";
 import { useToast } from "@/hooks/use-toast";
-import { ConferenceListResponse, ConferenceProps } from "@/types/listTypes";
+import {
+  ApproveResponse,
+  ConferenceListResponse,
+  ConferenceProps,
+} from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
@@ -15,7 +19,7 @@ const Venue = () => {
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [conferences, setConferences] = useState<ConferenceProps[]>([]);
-
+  const [rerenderData, setRerenderData] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedExhibitionId, setSelectedExhibitionId] = useState<
@@ -42,13 +46,64 @@ const Venue = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [rerenderData]);
 
   if (isLoading) {
     return <Loader size="medium" />;
   }
 
+  const handleAction = async (id: string, action: string) => {
+    try {
+      setIsLoading(true);
+      const isApproved = action === "approve" ? true : false;
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `keycontact/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          }.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const columns: Column<ConferenceProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: ({ changes }) => {
+        if (!changes) return null;
+        return (
+          <span
+            className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
+              changes?.type === "create"
+                ? "text-green-600"
+                : changes.type === "update"
+                ? "text-[#d87225]"
+                : "text-[#d1202a]"
+            }`}
+          >
+            {changes?.type}
+          </span>
+        );
+      },
+    },
     { header: "Conference Name", accessorKey: "con_shortname" },
     {
       header: "Start Date",
@@ -100,17 +155,18 @@ const Venue = () => {
         </span>
       ),
     },
-
     {
       header: "Action",
       accessorKey: "_id",
-      cell: () => {
+      cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               className="bg-primary text-white"
               size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
+              disabled={isLoading}
             >
               <h1>Approve</h1>
             </Button>
@@ -119,6 +175,8 @@ const Venue = () => {
               variant="ghost"
               size="sm"
               className="border border-primary text-primary"
+              disabled={isLoading}
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
             </Button>

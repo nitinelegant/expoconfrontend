@@ -139,6 +139,7 @@ export interface ConferenceProps {
   con_nassociation_id: string;
   con_hassociation_id: string;
   status: string; // e.g., "pending"
+  changes: AssociationChange; // Nested structure for change details
 }
 
 export interface ConferenceListResponse {

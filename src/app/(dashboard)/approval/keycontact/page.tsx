@@ -51,14 +51,36 @@ const KeyContact = () => {
     return <Loader size="medium" />;
   }
 
-  const handleAction = async (id: string, action: string) => {
+  const handleAction = async (
+    id: string,
+    action: string,
+    actionType: string
+  ) => {
     try {
       setIsLoading(true);
       const isApproved = action === "approve" ? true : false;
+
+      if (actionType === "create" && action === "reject") {
+        const { message }: ApproveResponse = await approvalApi.deleteApproval(
+          `keycontact/${id}`
+        );
+        if (message) {
+          toast({
+            title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+            description: `You have successfully ${
+              isApproved ? "approved" : "reject"
+            } the key contact.`,
+            duration: 1500,
+            variant: isApproved ? "success" : "error",
+          });
+          setRerenderData(!rerenderData);
+        }
+        return;
+      }
+
       const { message }: ApproveResponse = await approvalApi.approveOrReject(
         `keycontact/${id}/${action}`
       );
-
       if (message) {
         toast({
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
@@ -93,9 +115,9 @@ const KeyContact = () => {
             className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
               changes.type === "create"
                 ? "text-green-600"
-                : changes.type === "updates"
-                ? "text-[#d87225]"
-                : "text-[#d1202a]"
+                : changes.type === "update"
+                ? "text-statuscolorupdate"
+                : "text-statuscolorreject"
             }`}
           >
             {changes.type}
@@ -103,6 +125,7 @@ const KeyContact = () => {
         );
       },
     },
+
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
@@ -149,7 +172,9 @@ const KeyContact = () => {
               variant="outline"
               className="bg-primary text-white"
               size="sm"
-              onClick={() => handleAction(cellItem._id, "approve")}
+              onClick={() =>
+                handleAction(cellItem._id, "approve", cellItem.changes.type)
+              }
               disabled={isLoading}
             >
               <h1>Approve</h1>
@@ -160,7 +185,9 @@ const KeyContact = () => {
               size="sm"
               className="border border-primary text-primary"
               disabled={isLoading}
-              onClick={() => handleAction(cellItem._id, "reject")}
+              onClick={() =>
+                handleAction(cellItem._id, "reject", cellItem.changes.type)
+              }
             >
               Reject
             </Button>

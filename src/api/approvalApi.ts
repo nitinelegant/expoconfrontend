@@ -67,4 +67,12 @@ export const approvalApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  deleteApproval: async (url: string): Promise<ApproveResponse> => {
+    try {
+      const response = await axiosInstance.delete<ApproveResponse>(`${url}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
 };

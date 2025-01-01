@@ -6,6 +6,8 @@
   --background: #ffffff;
   --foreground: #171717;
   --primary: #395b99;
+  --statuscolorupdate: #d87225;
+  --statuscolorreject: #d1202a;
   font-family: var(--font-inter);
 }
 

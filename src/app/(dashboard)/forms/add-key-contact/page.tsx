@@ -2,7 +2,7 @@
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,7 @@ const KeyContactForm = () => {
   const searchParams = useSearchParams();
   const keyContactId = searchParams.get("id");
   const isEditMode = Boolean(searchParams.get("id"));
+  const firstInputRef = useRef<HTMLInputElement>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -110,6 +111,19 @@ const KeyContactForm = () => {
   });
 
   useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
+
+  useEffect(() => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
@@ -181,8 +195,9 @@ const KeyContactForm = () => {
                   Full Name*
                 </Label>
                 <Input
-                  id="fullName"
+                  ref={firstInputRef}
                   tabIndex={1}
+                  id="fullName"
                   {...formik.getFieldProps("fullName")}
                   className={
                     formik.touched.fullName && formik.errors.fullName
@@ -320,6 +335,7 @@ const KeyContactForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
+                tabIndex={6}
               />
             </div>
 

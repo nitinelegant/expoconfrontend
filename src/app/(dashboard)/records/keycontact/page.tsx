@@ -13,14 +13,15 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { STAFF } from "@/constants/auth";
+import { useSegments } from "@/hooks/useSegments";
 
 const KeyContact = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { isLoading: loading, data } = useSegments();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [keyContacts, setKeyContacts] = useState<KeyContactProps[]>([]);
@@ -51,7 +52,7 @@ const KeyContact = () => {
     fetchData();
   }, [rerenderData]);
 
-  if (isLoading) {
+  if (isLoading || loading) {
     return <Loader size="medium" />;
   }
 
@@ -71,10 +72,7 @@ const KeyContact = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {
-              statesAndUnionTerritories.find((x) => x.id === state.state_id)
-                ?.name
-            }
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -85,14 +83,14 @@ const KeyContact = () => {
       cell: (status) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            status.status === "approved"
+            status?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : status.status === "rejected"
+              : status.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {status.status}
+          {status.adminStatus}
         </span>
       ),
     },
@@ -100,7 +98,7 @@ const KeyContact = () => {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
-        if (user === STAFF && cellItem.status === "pending") return null;
+        if (user === STAFF && cellItem.adminStatus === "pending") return null;
         return (
           <div className="flex items-center space-x-2">
             <Button
@@ -112,7 +110,7 @@ const KeyContact = () => {
             >
               <SquarePen />
             </Button>
-            {cellItem.status !== "approved" && (
+            {cellItem.adminStatus !== "approved" && (
               <Button
                 variant="ghost"
                 size="icon"

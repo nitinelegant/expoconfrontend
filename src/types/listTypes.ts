@@ -63,8 +63,8 @@ export interface KeyContactProps {
   changes: ContactChanges;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
-
-  status: "approved" | "pending" | "rejected";
+  status: "active" | "inactive";
+  adminStatus: "approved" | "pending" | "rejected";
 }
 export interface ContactChanges {
   date: string; // ISO date string

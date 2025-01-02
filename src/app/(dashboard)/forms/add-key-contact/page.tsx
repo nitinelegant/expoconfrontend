@@ -15,7 +15,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { createFormApi } from "@/api/createFormApi";
@@ -24,8 +23,11 @@ import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import VenueSearch from "@/components/VenueSearch";
+import { useSegments } from "@/hooks/useSegments";
 
 const KeyContactForm = () => {
+  const { data } = useSegments();
+
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -55,21 +57,23 @@ const KeyContactForm = () => {
       ),
       email: Yup.string().email("Must be a valid email"),
       state: Yup.string(),
-      company: Yup.string().required("Company is required"),
-      venue: Yup.string().required("Venue is required"),
-      association: Yup.string().required("Association is required"),
+      company: Yup.string(),
+      venue: Yup.string(),
+      association: Yup.string(),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
+        const { fullName, mobile, email, state, company, venue, association } =
+          values;
         const payload = {
-          contact_name: values.fullName,
-          contact_mobile: values.mobile,
-          contact_email: values.email,
-          state_id: parseInt(values.state),
-          contact_organizer_id: values.company,
-          contact_venue_id: values.venue,
-          contact_association_id: values.association,
+          contact_name: fullName,
+          contact_mobile: mobile,
+          contact_email: email,
+          state_id: state,
+          contact_organizer_id: company,
+          contact_venue_id: venue,
+          contact_association_id: association,
         };
         if (isEditMode) {
           await createFormApi.updateKeyContact(keyContactId as string, payload);
@@ -272,10 +276,10 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent>
-                    {statesAndUnionTerritories.map((state) => (
+                    {data?.state_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
+                        key={state._id}
+                        value={state._id.toString()}
                         className="hover:cursor-pointer capitalize"
                       >
                         {state.name}

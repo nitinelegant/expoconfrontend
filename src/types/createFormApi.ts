@@ -47,7 +47,7 @@ export interface AddKeyContactCredentials {
   contact_name: string;
   contact_mobile: string;
   contact_email: string;
-  state_id: number;
+  state_id: string;
   contact_organizer_id?: string; // Optional, if applicable
   contact_venue_id?: string; // Optional, if applicable
   contact_association_id?: string; // Optional, if applicable

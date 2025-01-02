@@ -130,7 +130,7 @@ const StaffOnBoardForm = () => {
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
             <CardTitle>Staff Registration</CardTitle>
-            <CardDescription>
+            <CardDescription className="pt-1">
               Add staff details to create account
             </CardDescription>
           </CardHeader>
@@ -239,7 +239,7 @@ const StaffOnBoardForm = () => {
                   className="w-full bg-primary"
                   disabled={isLoading}
                 >
-                  {isEditMode ? "Update" : "Submit"}
+                  {isEditMode ? "Update" : "Create"} Staff
                 </Button>
               </div>
             </form>

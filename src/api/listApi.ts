@@ -48,10 +48,19 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getKeyContact: async (): Promise<KeyContactListResponse> => {
+  getKeyContacts: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<KeyContactListResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
-        "/keycontact/list"
+        "/keycontact/list",
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {

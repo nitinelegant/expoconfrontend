@@ -1,26 +1,29 @@
 "use client";
-import React, { useCallback } from "react";
-import axios from "axios";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { useToast } from "@/hooks/use-toast";
-import { KeyContactDeleteResponse, KeyContactProps } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
+import {
+  DeleteApiResponse,
+  KeyContactListResponse,
+  KeyContactProps,
+} from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { STAFF } from "@/constants/auth";
-import { axiosInstance } from "@/lib/axios";
+import { listApi } from "@/api/listApi";
 
 const KeyContact = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [rerenderData, setRerenderData] = useState(false);
 
   const handleDeleteClick = (id: string) => {
     setSelectedId(id);
@@ -88,28 +91,38 @@ const KeyContact = () => {
     },
   ];
 
-  const fetchData = useCallback(async (page: number, searchTerm: string) => {
-    try {
-      const response = await axiosInstance.get("/keycontact/list", {
-        params: { page, keyword: searchTerm },
-      });
-      return {
-        data: response.data.keyContacts,
-        totalItems: response.data.totalPages * 10, // Assuming 10 items per page
-        currentPage: response.data.currentPage,
-        totalPages: response.data.totalPages,
-      };
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error;
-    }
-  }, []);
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
+      try {
+        const { keyContacts, totalPages, currentPage }: KeyContactListResponse =
+          await listApi.getKeyContacts({ page, searchTerm });
+
+        return {
+          data: keyContacts,
+          totalItems: totalPages * 5,
+          currentPage: currentPage,
+          totalPages: totalPages,
+        };
+      } catch (error) {
+        toast({
+          title: "Failed to fetch data",
+          description: "Error while fetching key contacts. Please try again.",
+          duration: 1500,
+          variant: "error",
+        });
+        throw error;
+      }
+    },
+    [rerenderData]
+  );
 
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        const { data } = await axios.delete(`/api/key-contacts/${selectedId}`);
-        if (data.message) {
+        const { message }: DeleteApiResponse = await listApi.deleteApi(
+          `/keycontact/${selectedId}`
+        );
+        if (message) {
           setIsDeleteDialogOpen(false);
           setSelectedId(null);
           toast({
@@ -118,8 +131,7 @@ const KeyContact = () => {
             duration: 1500,
             variant: "success",
           });
-          // Refresh the data
-          // You might want to add a way to refresh the DataTable here
+          setRerenderData((prev) => !prev);
         }
       } else {
         toast({

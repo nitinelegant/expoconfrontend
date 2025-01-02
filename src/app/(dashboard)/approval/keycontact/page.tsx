@@ -13,10 +13,13 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
+
 import { approvalApi } from "@/api/approvalApi";
+import { useSegments } from "@/hooks/useSegments";
 
 const KeyContact = () => {
+  const { data } = useSegments();
+
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [keyContacts, setKeyContacts] = useState<KeyContactProps[]>([]);
@@ -51,32 +54,28 @@ const KeyContact = () => {
     return <Loader size="medium" />;
   }
 
-  const handleAction = async (
-    id: string,
-    action: string,
-    actionType: string
-  ) => {
+  const handleAction = async (id: string, action: string) => {
     try {
       setIsLoading(true);
       const isApproved = action === "approve" ? true : false;
 
-      if (actionType === "create" && action === "reject") {
-        const { message }: ApproveResponse = await approvalApi.deleteApproval(
-          `keycontact/${id}`
-        );
-        if (message) {
-          toast({
-            title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-            description: `You have successfully ${
-              isApproved ? "approved" : "reject"
-            } the key contact.`,
-            duration: 1500,
-            variant: isApproved ? "success" : "error",
-          });
-          setRerenderData(!rerenderData);
-        }
-        return;
-      }
+      // if (actionType === "create" && action === "reject") {
+      //   const { message }: ApproveResponse = await approvalApi.deleteApproval(
+      //     `keycontact/${id}`
+      //   );
+      //   if (message) {
+      //     toast({
+      //       title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+      //       description: `You have successfully ${
+      //         isApproved ? "approved" : "reject"
+      //       } the key contact.`,
+      //       duration: 1500,
+      //       variant: isApproved ? "success" : "error",
+      //     });
+      //     setRerenderData(!rerenderData);
+      //   }
+      //   return;
+      // }
 
       const { message }: ApproveResponse = await approvalApi.approveOrReject(
         `keycontact/${id}/${action}`
@@ -84,9 +83,7 @@ const KeyContact = () => {
       if (message) {
         toast({
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          } the key contact.`,
+          description: `${message}`,
           duration: 1500,
           variant: isApproved ? "success" : "error",
         });
@@ -95,7 +92,7 @@ const KeyContact = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while approving key contact. Please try again.",
+        description: "Error while changing status. Please try again.",
         duration: 1500,
         variant: "error",
       });
@@ -135,10 +132,7 @@ const KeyContact = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {
-              statesAndUnionTerritories.find((x) => x.id === state.state_id)
-                ?.name
-            }
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -147,17 +141,17 @@ const KeyContact = () => {
     {
       header: "Status",
       accessorKey: "status",
-      cell: (venue) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.status === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : venue.status === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.status}
+          {item?.adminStatus}
         </span>
       ),
     },
@@ -172,9 +166,7 @@ const KeyContact = () => {
               variant="outline"
               className="bg-primary text-white"
               size="sm"
-              onClick={() =>
-                handleAction(cellItem._id, "approve", cellItem.changes.type)
-              }
+              onClick={() => handleAction(cellItem._id, "approve")}
               disabled={isLoading}
             >
               <h1>Approve</h1>
@@ -185,9 +177,7 @@ const KeyContact = () => {
               size="sm"
               className="border border-primary text-primary"
               disabled={isLoading}
-              onClick={() =>
-                handleAction(cellItem._id, "reject", cellItem.changes.type)
-              }
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
             </Button>

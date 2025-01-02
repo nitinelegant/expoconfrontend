@@ -33,7 +33,8 @@ export interface CompanyProps {
   company_featured: boolean;
   company_user_id: number;
   company_password: string;
-  status: "approved" | "pending" | "rejected";
+  status: "active" | "inactive";
+  adminStatus: "approved" | "pending" | "rejected";
   changes: ContactChanges;
 }
 export interface VenueListResponse {

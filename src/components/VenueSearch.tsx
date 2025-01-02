@@ -169,7 +169,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="venue">Venue*</Label>
+      <Label htmlFor="venue">Venue</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

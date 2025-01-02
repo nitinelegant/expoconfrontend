@@ -24,8 +24,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
+import { useSegments } from "@/hooks/useSegments";
 
 const CompanyForm = () => {
+  const { data } = useSegments();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { toast } = useToast();
@@ -91,7 +93,7 @@ const CompanyForm = () => {
           company_name: companyName,
           company_type_id: parseInt(companyType),
           company_city: city,
-          state_id: parseInt(state),
+          state_id: state,
           company_address: address,
           company_phone: phone,
           company_website: website,
@@ -332,11 +334,11 @@ const CompanyForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {statesAndUnionTerritories.map((state) => (
+                    {data?.state_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
-                        className=" text-black hover:cursor-pointer capitalize"
+                        key={state._id}
+                        value={state._id.toString()}
+                        className="hover:cursor-pointer capitalize"
                       >
                         {state.name}
                       </SelectItem>

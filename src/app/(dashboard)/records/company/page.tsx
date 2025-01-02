@@ -15,9 +15,11 @@ import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { statesAndUnionTerritories } from "@/constants/form";
 import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
 
 const Company = () => {
   const { toast } = useToast();
+  const { data } = useSegments();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
@@ -61,7 +63,7 @@ const Company = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state.state_id]?.name}
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -72,14 +74,14 @@ const Company = () => {
       cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item.status === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : item.status === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.status}
+          {item?.adminStatus}
         </span>
       ),
     },

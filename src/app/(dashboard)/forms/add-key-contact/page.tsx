@@ -27,7 +27,6 @@ import { useSegments } from "@/hooks/useSegments";
 
 const KeyContactForm = () => {
   const { data } = useSegments();
-
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -297,7 +296,7 @@ const KeyContactForm = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="company" className="text-gray-900">
-                  Company*
+                  Company
                 </Label>
                 <Select
                   onValueChange={(value) =>
@@ -347,7 +346,7 @@ const KeyContactForm = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="association" className="text-gray-900">
-                  Association*
+                  Association
                 </Label>
                 <Select
                   onValueChange={(value) =>

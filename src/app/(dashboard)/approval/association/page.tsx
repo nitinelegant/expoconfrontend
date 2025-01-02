@@ -86,14 +86,14 @@ const Association = () => {
         return (
           <span
             className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
-              changes.type === "create"
+              changes?.type === "create"
                 ? "text-green-600"
-                : changes.type === "update"
+                : changes?.type === "update"
                 ? "text-[#d87225]"
                 : "text-[#d1202a]"
             }`}
           >
-            {changes.type}
+            {changes?.type}
           </span>
         );
       },

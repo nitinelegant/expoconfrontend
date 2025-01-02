@@ -206,7 +206,9 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
               </CommandEmpty>
             )}
             {!loading && !searchError && venues.length === 0 && (
-              <CommandEmpty>No venues found.</CommandEmpty>
+              <CommandEmpty className="text-black">
+                No venues found.
+              </CommandEmpty>
             )}
             <CommandGroup className="bg-white max-h-64 overflow-auto">
               {venues.map((venue, index) => (

@@ -109,7 +109,7 @@ const Dashboard = () => {
             </div>
             <div>{/* <SavingsWidget /> */}</div>
           </div>
-          <TransactionsTable />
+          {/* <TransactionsTable /> */}
         </main>
       </div>
     </div>

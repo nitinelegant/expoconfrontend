@@ -145,7 +145,7 @@ export default function DashboardLayout({
         },
         {
           href: "/approval/keycontact",
-          text: "KeyContact",
+          text: "Key Contact",
           visible: ["admin"],
         },
         { href: "#", text: "Job", visible: ["admin"] },

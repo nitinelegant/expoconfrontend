@@ -13,13 +13,12 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 
 const Company = () => {
-  const { toast } = useToast();
   const { data } = useSegments();
+  const { toast } = useToast();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);

@@ -32,7 +32,7 @@ export interface AddKeyContactResponseProps {
 export interface AddCompanyCredentials {
   company_name: string;
   company_city: string;
-  state_id: number;
+  state_id: string;
   company_address: string;
   company_phone: string;
   company_website: string;
@@ -41,7 +41,6 @@ export interface AddCompanyCredentials {
   company_featured: boolean;
   company_user_id: string;
   company_password: string;
-  status: string;
 }
 export interface AddKeyContactCredentials {
   contact_name: string;

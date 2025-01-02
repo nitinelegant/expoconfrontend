@@ -15,7 +15,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { companyTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
@@ -25,10 +24,13 @@ import { useEffect, useRef, useState } from "react";
 import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
 import { useSegments } from "@/hooks/useSegments";
+import ImageUploader from "@/components/ImageUploader";
 
 const CompanyForm = () => {
   const { data } = useSegments();
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -36,6 +38,7 @@ const CompanyForm = () => {
   const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -71,6 +74,7 @@ const CompanyForm = () => {
         .email("Invalid email address")
         .required("Email is required"),
       password: Yup.string().min(8, "Password must be at least 8 characters"),
+      logo: Yup.string(),
     }),
     onSubmit: async (values) => {
       try {
@@ -83,7 +87,7 @@ const CompanyForm = () => {
           phone,
           website,
           googleMapLink,
-          logo = "",
+          logo,
           featured,
           email,
           password,
@@ -91,7 +95,7 @@ const CompanyForm = () => {
         } = values;
         const payload = {
           company_name: companyName,
-          company_type_id: parseInt(companyType),
+          company_type_id: companyType,
           company_city: city,
           state_id: state,
           company_address: address,
@@ -102,7 +106,6 @@ const CompanyForm = () => {
           company_featured: featured,
           company_user_id: email,
           company_password: password,
-          status: featured ? "pending" : "pending",
         };
         if (isEditMode) {
           const response = await createFormApi.updateCompany(
@@ -181,7 +184,7 @@ const CompanyForm = () => {
             phone: company?.company_phone,
             website: company?.company_website,
             googleMapLink: company?.company_map,
-            logo: "",
+            logo: company?.company_logo,
             featured: company?.company_featured,
             email: company?.company_user_id,
             password: "",
@@ -210,9 +213,16 @@ const CompanyForm = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // setLogoPreview(reader.result as string);
+        setLogoPreview(reader.result as string); // Set the preview URL
       };
       reader.readAsDataURL(file);
+    }
+  };
+  const handleRemoveLogo = () => {
+    formik.setFieldValue("logo", null); // Clear the formik logo field
+    setLogoPreview(null); // Remove the preview
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -276,10 +286,10 @@ const CompanyForm = () => {
                     />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {companyTypes.map((item) => (
+                    {data?.company_type_id?.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="text-black hover:cursor-pointer"
                       >
                         {item.name}
@@ -453,27 +463,16 @@ const CompanyForm = () => {
                   )}
               </div>
 
-              <div className="space-y-2 text-black">
-                <Label htmlFor="logo" className="text-gray-900">
-                  Upload Logo
-                </Label>
-                <Input
-                  id="logo"
-                  name="logo"
-                  type="file"
-                  tabIndex={9}
-                  onChange={handleLogoChange}
-                  className="cursor-pointer bg-white text-black"
-                  accept="image/*"
-                />
-                {/* {logoPreview && (
-                  <img
-                    src={logoPreview}
-                    alt="Logo Preview"
-                    className="mt-2 h-20 w-auto rounded-md"
-                  />
-                )} */}
-              </div>
+              <ImageUploader
+                name="logo"
+                label="Upload Logo"
+                setFieldValue={formik.setFieldValue}
+                setFieldError={formik.setFieldError}
+                setFieldTouched={formik.setFieldTouched}
+                error={formik.errors.logo}
+                touched={formik.touched.logo}
+                initialPreview={formik.values.logo}
+              />
             </div>
 
             <div className="flex items-center space-x-2">

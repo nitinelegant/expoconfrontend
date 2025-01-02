@@ -152,7 +152,10 @@ export function DataTable<T>({
                   </TableCell>
                 )}
                 {columns.map((column) => (
-                  <TableCell key={column.header} className="max-w-[200px]">
+                  <TableCell
+                    key={column.header}
+                    className="max-w-[400px] p-2 m-2"
+                  >
                     {column.cell
                       ? column.cell(item)
                       : (item[column.accessorKey] as React.ReactNode)}

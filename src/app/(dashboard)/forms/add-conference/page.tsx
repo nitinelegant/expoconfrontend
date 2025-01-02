@@ -11,16 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  associationTypes,
-  companyTypes,
-  months,
-  segmentTypes,
-  statesAndUnionTerritories,
-  years,
-} from "@/constants/form";
+import { months, segmentTypes } from "@/constants/form";
 import { cn } from "@/lib/utils";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
@@ -32,11 +24,15 @@ import TimeSelector from "@/components/TimeSelector";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
+import { useSegments } from "@/hooks/useSegments";
+import ImageUploader from "@/components/ImageUploader";
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 
 const ConferenceForm = () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
   const { toast } = useToast();
+  const { data } = useSegments();
   const router = useRouter();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
@@ -60,7 +56,7 @@ const ConferenceForm = () => {
       state: "",
       venue: "",
       website: "",
-      logo: null,
+      logo: "",
       frequency: "",
       conferenceOrganizer: "",
       conferenceSegment: "",
@@ -173,11 +169,10 @@ const ConferenceForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      conferenceSegment: Yup.string().required("Exhibition Type is required"),
-      conferenceOrganizer: Yup.string().required("Exhibition Type is required"),
-      nationalAssociation: Yup.string().required(
-        "National Association is required"
-      ),
+      conferenceSegment: Yup.string(),
+      conferenceOrganizer: Yup.string(),
+      nationalAssociation: Yup.string(),
+      logo: Yup.string(),
     }),
     onSubmit: async (values) => {
       try {
@@ -197,7 +192,7 @@ const ConferenceForm = () => {
           state,
           venue,
           website,
-          logo = "",
+          logo,
           frequency,
           conferenceOrganizer,
           conferenceSegment,
@@ -210,20 +205,22 @@ const ConferenceForm = () => {
           con_sd: startDate,
           con_ed: endDate,
           month_id: parseInt(month),
-          year_id: parseInt(year),
+          year_id: data?.year_id.find(
+            (x) => parseInt(x.name) === parseInt(year)
+          )?._id,
           con_time: timings,
           fee_id: parseInt(entryFees),
           con_city: city,
-          state_id: parseInt(state),
+          state_id: state,
           venue_id: venue,
           con_website: website,
-          con_logo: "",
+          con_logo: logo ? logo : "",
           con_frequency: frequency,
-          company_id: parseInt(conferenceOrganizer),
-          con_segment_id: parseInt(conferenceSegment),
-          con_nassociation_id: parseInt(nationalAssociation),
-          con_hassociation_id: 1, //hostingChapter
-          con_type_id: parseInt(eventType),
+          company_id: conferenceOrganizer,
+          con_segment_id: conferenceSegment,
+          con_nassociation_id: nationalAssociation,
+          con_hassociation_id: nationalAssociation, //hostingChapter
+          con_type_id: eventType,
         };
 
         if (isEditMode) {
@@ -292,7 +289,13 @@ const ConferenceForm = () => {
           const { conference } = await createFormApi.getConference(
             conferenceId as string
           );
-          console.log("exhibition", conference);
+          console.log(
+            "exhibition",
+            conference,
+            data?.year_id?.find(
+              (x) => x?._id?.toString() === conference?.year_id
+            )?.name
+          );
           if (conference) {
             formik.setValues(
               {
@@ -303,7 +306,9 @@ const ConferenceForm = () => {
                 startDate: conference.con_sd,
                 endDate: conference.con_ed,
                 timings: conference.con_time,
-                year: conference.year_id?.toString(),
+                year: data?.year_id
+                  ?.find((x) => x?._id?.toString() === conference?.year_id)
+                  ?.name?.toString(),
                 state: conference.state_id?.toString(),
                 city: conference.con_city,
                 conferenceSegment: conference?.con_segment_id?.toString(),
@@ -314,6 +319,7 @@ const ConferenceForm = () => {
                 month: conference.month_id?.toString(),
                 nationalAssociation: conference.con_nassociation_id?.toString(),
                 conferenceOrganizer: conference.company_id?.toString(),
+                logo: conference.con_logo,
               },
               false
             );
@@ -335,18 +341,6 @@ const ConferenceForm = () => {
   }, [isEditMode, conferenceId]);
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
-
-  const handleLogoChange = (event) => {
-    const file = event.currentTarget.files?.[0];
-    formik.setFieldValue("logo", file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // setLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   // Generate time options for the time picker
   const generateTimeOptions = () => {
@@ -398,9 +392,9 @@ const ConferenceForm = () => {
                   defaultValue={formik.values.eventType}
                 >
                   <SelectTrigger
-                    tabIndex={3}
-                    ref={firstInputRef}
-                    aria-required="true"
+                    tabIndex={1}
+                    // ref={firstInputRef}
+                    // aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black capitalize"
@@ -410,13 +404,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select event" />
                   </SelectTrigger>
                   <SelectContent className="bg-white text-black">
-                    {associationTypes.map((state) => (
+                    {data?.association_type_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
+                        key={state._id}
+                        value={state._id.toString()}
                         className=" text-black hover:cursor-pointer capitalize"
                       >
-                        {state.name}
+                        {state?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -490,13 +484,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select Year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year) => (
+                    {data?.year_id?.map((year) => (
                       <SelectItem
-                        key={year}
-                        value={year.toString()}
+                        key={year._id}
+                        value={year?.name?.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {year}
+                        {year?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -685,10 +679,10 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {statesAndUnionTerritories.map((state) => (
+                    {data?.state_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
+                        key={state._id}
+                        value={state._id.toString()}
                         className=" text-black hover:cursor-pointer capitalize"
                       >
                         {state.name}
@@ -749,24 +743,16 @@ const ConferenceForm = () => {
                 )}
               </div> */}
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">Upload Event Logo</Label>
-                <Input
-                  id="logo"
-                  type="file"
-                  tabIndex={14}
-                  accept="image/*"
-                  className="cursor-pointer"
-                  onChange={handleLogoChange}
-                />
-                {/* {logoPreview && (
-                  <img
-                    src={logoPreview}
-                    alt="Logo Preview"
-                    className="mt-2 h-20 w-auto rounded-md"
-                  />
-                )} */}
-              </div>
+              <ImageUploader
+                name="logo"
+                label="Upload Event Logo"
+                setFieldValue={formik.setFieldValue}
+                setFieldError={formik.setFieldError}
+                setFieldTouched={formik.setFieldTouched}
+                error={formik.errors.logo}
+                touched={formik.touched.logo}
+                initialPreview={formik.values.logo}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="frequency">Frequency</Label>
@@ -799,10 +785,10 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select conference organizer" />
                   </SelectTrigger>
                   <SelectContent>
-                    {companyTypes?.map((item) => (
+                    {data?.company_type_id?.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
                         {item.name}
@@ -838,10 +824,10 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((item) => (
+                    {data?.con_segment_id?.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
                         {item.name}
@@ -876,10 +862,10 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((item) => (
+                    {data?.con_segment_id?.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
                         {item.name}

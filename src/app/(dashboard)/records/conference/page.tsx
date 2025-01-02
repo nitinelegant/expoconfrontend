@@ -13,11 +13,12 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
 import formatDateToYear from "@/utils/common";
 import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
 
 const Venue = () => {
+  const { data } = useSegments();
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -84,10 +85,7 @@ const Venue = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {
-              statesAndUnionTerritories.find((x) => x.id === state.state_id)
-                ?.name
-            }
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -95,17 +93,17 @@ const Venue = () => {
     {
       header: "Status",
       accessorKey: "status",
-      cell: (venue) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.status === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : venue.status === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.status}
+          {item?.adminStatus === "approved" ? item.status : item?.adminStatus}
         </span>
       ),
     },

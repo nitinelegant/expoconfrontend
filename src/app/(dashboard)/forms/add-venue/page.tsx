@@ -15,7 +15,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { useEffect, useRef, useState } from "react";
@@ -24,10 +23,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
+import { useSegments } from "@/hooks/useSegments";
+import ImageUploader from "@/components/ImageUploader";
 
 const VenueForm = () => {
   const firstInputRef = useRef<HTMLInputElement>(null);
-
+  const { data } = useSegments();
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -45,8 +46,8 @@ const VenueForm = () => {
       phone: "",
       website: "",
       googleMapLink: "",
-      logo: null,
-      layout: null,
+      logo: "",
+      layout: "",
       featured: false,
     },
     validationSchema: Yup.object({
@@ -54,16 +55,17 @@ const VenueForm = () => {
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
       address: Yup.string().required("Address is required"),
-      phone: Yup.string()
-        .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
-        .required("Phone number is required"),
+      phone: Yup.string().matches(
+        /^\d{10}$/,
+        "Phone number must be exactly 10 digits"
+      ),
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
       googleMapLink: Yup.string()
         .required("Google Map link is required")
         .url("Must be a valid URL"),
-      logo: Yup.mixed().required("Venue photo is required"),
+      logo: Yup.string().required("Venue photo is required"),
 
       featured: Yup.boolean(),
     }),
@@ -78,19 +80,21 @@ const VenueForm = () => {
           featured,
           website,
           googleMapLink,
+          logo,
+          layout,
         } = values;
         setIsLoading(true);
 
         const payload = {
           venue_name: venue,
           venue_city: city,
-          state_id: parseInt(state),
+          state_id: state,
           venue_address: address,
           venue_phone: phone,
           venue_website: website,
           venue_map: googleMapLink,
-          venue_photo: "",
-          venue_layout: "",
+          venue_photo: logo,
+          venue_layout: layout,
           venue_featured: featured,
         };
         if (isEditMode) {
@@ -159,8 +163,8 @@ const VenueForm = () => {
             phone: venue?.venue_phone,
             website: venue?.venue_website,
             googleMapLink: venue?.venue_map,
-            logo: null,
-            layout: null,
+            logo: venue?.venue_photo,
+            layout: venue?.venue_layout,
             featured: venue?.venue_featured,
           });
         }
@@ -277,11 +281,11 @@ const VenueForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {statesAndUnionTerritories.map((state) => (
+                    {data?.state_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
-                        className=" text-black hover:cursor-pointer capitalize"
+                        key={state._id}
+                        value={state._id.toString()}
+                        className="hover:cursor-pointer capitalize"
                       >
                         {state.name}
                       </SelectItem>
@@ -334,7 +338,7 @@ const VenueForm = () => {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <SearchInput
-                label="Website"
+                label="Website*"
                 placeholder="Enter website URL"
                 id="website"
                 onResultFound={() => {}}
@@ -395,7 +399,29 @@ const VenueForm = () => {
                   )}
               </div>
 
-              <div className="space-y-2 text-black">
+              <ImageUploader
+                name="logo"
+                label="Upload Venue Photo*"
+                setFieldValue={formik.setFieldValue}
+                setFieldError={formik.setFieldError}
+                setFieldTouched={formik.setFieldTouched}
+                error={formik.errors.logo}
+                touched={formik.touched.logo}
+                initialPreview={formik.values.logo}
+                required={true}
+              />
+              <ImageUploader
+                name="layout"
+                label="Upload Venue Layout"
+                setFieldValue={formik.setFieldValue}
+                setFieldError={formik.setFieldError}
+                setFieldTouched={formik.setFieldTouched}
+                error={formik.errors.layout}
+                touched={formik.touched.layout}
+                initialPreview={formik.values.layout}
+              />
+
+              {/* <div className="space-y-2 text-black">
                 <Label htmlFor="logo" className="text-gray-900">
                   Upload Venue Photo*
                 </Label>
@@ -415,9 +441,9 @@ const VenueForm = () => {
                 {formik.touched.logo && formik.errors.logo && (
                   <p className="text-sm text-red-600">{formik.errors.logo}</p>
                 )}
-              </div>
+              </div> */}
 
-              <div className="space-y-2 text-black">
+              {/* <div className="space-y-2 text-black">
                 <Label htmlFor="layout" className="text-gray-900">
                   Upload Venue Layout
                 </Label>
@@ -433,7 +459,7 @@ const VenueForm = () => {
                 {formik.touched.layout && formik.errors.layout && (
                   <p className="text-sm text-red-600">{formik.errors.layout}</p>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center space-x-2">

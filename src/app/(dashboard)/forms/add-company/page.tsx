@@ -38,7 +38,6 @@ const CompanyForm = () => {
   const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues: {
@@ -206,25 +205,6 @@ const CompanyForm = () => {
   }, [isEditMode, companyId]);
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
-
-  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files?.[0];
-    formik.setFieldValue("logo", file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string); // Set the preview URL
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleRemoveLogo = () => {
-    formik.setFieldValue("logo", null); // Clear the formik logo field
-    setLogoPreview(null); // Remove the preview
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
 
   const handleResultFound = () => {};
 

@@ -13,13 +13,14 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
 import formatDateToYear from "@/utils/common";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { useSegments } from "@/hooks/useSegments";
 
 const Venue = () => {
   const { toast } = useToast();
+  const { data } = useSegments();
   const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [expConferences, setConferences] = useState<ExpConferenceProps[]>([]);
@@ -86,10 +87,7 @@ const Venue = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {
-              statesAndUnionTerritories.find((x) => x.id === state.state_id)
-                ?.name
-            }
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -97,17 +95,17 @@ const Venue = () => {
     {
       header: "Status",
       accessorKey: "status",
-      cell: (venue) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.status === "approved"
+            item?.status === "active"
               ? "bg-green-100 text-green-600"
-              : venue.status === "rejected"
-              ? "bg-red-50 text-red-600"
+              : item.status === "inactive"
+              ? "bg-red-50 text-statuscolorreject"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.status}
+          {item.status}
         </span>
       ),
     },

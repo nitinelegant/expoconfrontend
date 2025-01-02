@@ -75,7 +75,7 @@ export interface AssociationResponseProps {
 export interface AddVenueCredentials {
   venue_name: string;
   venue_city: string;
-  state_id: number;
+  state_id: string;
   venue_address: string;
   venue_phone: string;
   venue_website?: string;
@@ -101,25 +101,25 @@ export interface AddVenueResponseProps {
 }
 
 export interface AddConferenceCredentials {
-  con_type_id: number;
+  con_type_id: string;
   con_fullname: string;
   con_shortname: string;
   con_sd: string; // ISO date string
   con_ed: string; // ISO date string
   month_id: number | null;
-  year_id: number | null;
+  year_id: string | null;
   con_time: string;
   fee_id: number;
   con_city: string;
-  state_id: number | null;
+  state_id: string;
   venue_id: string | null;
   con_website: string;
   con_logo: string;
   con_frequency: string;
-  company_id: number;
-  con_segment_id: number;
-  con_nassociation_id: number;
-  con_hassociation_id: number;
+  company_id: string;
+  con_segment_id: string;
+  con_nassociation_id: string;
+  con_hassociation_id: string;
 }
 export interface AddExhibitionCredentials {
   expo_fullname: string;

@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { associationTypes, statesAndUnionTerritories } from "@/constants/form";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -23,10 +22,11 @@ import { useEffect, useRef, useState } from "react";
 import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
 import { Loader } from "@/components/ui/loader";
+import { useSegments } from "@/hooks/useSegments";
 
 const AssociationForm = () => {
   const firstInputRef = useRef<HTMLInputElement>(null);
-
+  const { data } = useSegments();
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -69,9 +69,9 @@ const AssociationForm = () => {
           association_website: website,
           association_name: associationName,
           association_city: city,
-          state_id: parseInt(state),
+          state_id: state,
           association_address: address,
-          association_type_id: parseInt(associationType),
+          association_type_id: associationType,
         };
         if (isEditMode) {
           await createFormApi.updateAssociation(
@@ -191,7 +191,7 @@ const AssociationForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
-                apiEndpoint="company"
+                apiEndpoint="association"
               />
               {/* <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">
@@ -281,10 +281,10 @@ const AssociationForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent>
-                    {statesAndUnionTerritories.map((state) => (
+                    {data?.state_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
+                        key={state._id}
+                        value={state._id.toString()}
                         className="hover:cursor-pointer capitalize"
                       >
                         {state.name}
@@ -341,10 +341,10 @@ const AssociationForm = () => {
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {associationTypes.map((item) => (
+                  {data?.association_type_id?.map((item) => (
                     <SelectItem
-                      key={item.id}
-                      value={item.id.toString()}
+                      key={item._id}
+                      value={item._id.toString()}
                       className="hover:cursor-pointer"
                     >
                       {item.name}

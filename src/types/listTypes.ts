@@ -136,7 +136,8 @@ export interface AssociationProps {
   changes: AssociationChange; // Nested structure for change details
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
-  status: "approved" | "pending" | "rejected";
+  status: "active" | "inactive";
+  adminStatus: "approved" | "pending" | "rejected";
 }
 
 export interface AssociationsListResponse {

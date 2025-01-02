@@ -39,6 +39,9 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem(USER);
       window.location.href = "/";
     }
+    if (error.response?.status === 403) {
+      window.location.href = "/unauthorized";
+    }
 
     return Promise.reject(error);
   }

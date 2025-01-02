@@ -13,10 +13,11 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
 import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
 
 const Association = () => {
+  const { data } = useSegments();
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -54,7 +55,6 @@ const Association = () => {
   const columns: Column<AssociationProps>[] = [
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
-
     { header: "Address", accessorKey: "association_address" },
     { header: "Website", accessorKey: "association_website" },
     {
@@ -63,10 +63,7 @@ const Association = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {
-              statesAndUnionTerritories.find((x) => x.id === state.state_id)
-                ?.name
-            }
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -77,12 +74,12 @@ const Association = () => {
       cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item.status === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.status === "approved" ? "Acitve" : "Pending"}
+          {item.adminStatus === "approved" ? "Acitve" : "Pending"}
         </span>
       ),
     },

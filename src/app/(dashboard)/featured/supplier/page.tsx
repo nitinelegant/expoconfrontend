@@ -163,7 +163,7 @@ const Supplier = () => {
       <DataTable
         columns={columns}
         data={companies}
-        title="Featured Organizer"
+        title="Featured Supplier"
         itemsPerPage={5}
         searchField="company_name"
       />

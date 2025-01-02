@@ -1,6 +1,10 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { ADMIN } from "@/constants/auth";
 import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { authApi } from "@/api/authApi";
+import { User } from "@/types/authTypes";
 
 interface HeaderProps {
   title: string;
@@ -8,6 +12,32 @@ interface HeaderProps {
 
 export function Header({ title }: HeaderProps) {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentUser, setcurrentUser] = useState({});
+
+  useEffect(() => {
+    fetchMe();
+  }, []);
+  const fetchMe = async () => {
+    try {
+      setIsLoading(true);
+      const user: User = await authApi.getCurrentUser();
+      if (user) setcurrentUser(user);
+      console.log("user", user);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while fetching user",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <header className="border-b bg-white px-6 py-3">
       <div className="flex items-center justify-between">

@@ -57,17 +57,17 @@ const StaffList = () => {
   const columns: Column<StaffProps>[] = [
     { header: "Staff Name", accessorKey: "user_fullname" },
     { header: "Email", accessorKey: "user_email" },
-    {
-      header: "Role",
-      accessorKey: "user_role",
-      cell: (user) => (
-        <span
-          className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold`}
-        >
-          {user.user_role === 1 ? "Adming" : "Staff"}
-        </span>
-      ),
-    },
+    // {
+    //   header: "Role",
+    //   accessorKey: "user_role",
+    //   cell: (user) => (
+    //     <span
+    //       className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold`}
+    //     >
+    //       {user.user_role === 1 ? "Adming" : "Staff"}
+    //     </span>
+    //   ),
+    // },
     {
       header: "Status",
       accessorKey: "user_status",

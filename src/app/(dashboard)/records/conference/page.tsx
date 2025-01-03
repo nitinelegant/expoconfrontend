@@ -182,6 +182,7 @@ const Conference = () => {
         viewAllLink="/forms/add-conference"
         addButtonTitle="Add Conference"
         itemsPerPage={10}
+        startingUrl="conference"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

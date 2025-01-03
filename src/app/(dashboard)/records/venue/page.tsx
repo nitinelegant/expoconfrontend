@@ -164,6 +164,7 @@ const Venue = () => {
         viewAllLink="/forms/add-venue"
         addButtonTitle="Add Venue"
         itemsPerPage={5}
+        startingUrl="venue"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

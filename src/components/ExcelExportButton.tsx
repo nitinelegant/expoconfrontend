@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { FileSpreadsheetIcon } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 
 interface ExcelExportButtonProps {
@@ -18,6 +18,7 @@ interface ExcelExportButtonProps {
   onExportStart?: () => void;
   onExportComplete?: () => void;
   onError?: (error: Error) => void;
+  url: string;
 }
 const getArrayFromResponse = (data) => {
   const staticKeys = ["currentPage", "hasMore", "totalPages", "message"];
@@ -31,18 +32,18 @@ const ExcelExportButton = ({
   variant = "default",
   size = "default",
   disabled = false,
-  className = "",
   showIcon = true,
   label = "Export to Excel",
   onExportStart,
   onExportComplete,
   onError,
+  url,
 }: ExcelExportButtonProps) => {
   const [loading, setLoading] = useState(false);
   const handleExport = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/${fileName}/list?limit=1000`);
+      const response = await axiosInstance.get(`/${url}/list?limit=1000`);
       const arrayData = getArrayFromResponse(response.data);
       console.log("response", response.data);
       if (Array.isArray(arrayData)) {
@@ -98,9 +99,9 @@ const ExcelExportButton = ({
       variant={variant}
       size={size}
       disabled={disabled || !data?.length || loading}
-      className={className}
+      className={"bg-[#1e744b]"}
     >
-      {showIcon && <Download className="mr-2 h-4 w-4 text-white" />}
+      {showIcon && <FileSpreadsheetIcon className="mr-2 h-4 w-4 text-white" />}
       <p className="text-white font-bold">{label}</p>
     </Button>
   );

@@ -164,6 +164,7 @@ const KeyContact = () => {
         viewAllLink="/forms/add-key-contact"
         addButtonTitle="Add Key Contact"
         itemsPerPage={10}
+        startingUrl="keycontact"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

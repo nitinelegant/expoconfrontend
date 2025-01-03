@@ -45,6 +45,7 @@ interface DataTableProps<T> {
   showCheckbox?: boolean;
   addButtonTitle?: string;
   itemsPerPage?: number;
+  startingUrl?: string;
 }
 
 export function DataTable<T>({
@@ -56,6 +57,7 @@ export function DataTable<T>({
   showCheckbox = false,
   addButtonTitle,
   itemsPerPage = 10,
+  startingUrl,
 }: DataTableProps<T>) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
@@ -216,7 +218,7 @@ export function DataTable<T>({
                 {addButtonTitle}
               </Button>
             )}
-            {data.length > 0 && (
+            {data.length > 0 && startingUrl && (
               <ExcelExportButton
                 data={data}
                 fileName={title}
@@ -224,6 +226,7 @@ export function DataTable<T>({
                 onExportComplete={() => console.log("Export completed!")}
                 onError={(error) => console.error("Export failed:", error)}
                 className="bg-primary"
+                url={startingUrl}
               />
             )}
           </div>

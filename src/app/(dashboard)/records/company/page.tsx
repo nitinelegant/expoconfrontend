@@ -165,6 +165,7 @@ const Company = () => {
         viewAllLink="/forms/add-company"
         addButtonTitle="Add Company"
         itemsPerPage={10}
+        startingUrl="company"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

@@ -188,6 +188,7 @@ const Exhibition = () => {
         viewAllLink="/forms/add-exhibition"
         addButtonTitle="Add Exhibition"
         itemsPerPage={10}
+        startingUrl="exhibition"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

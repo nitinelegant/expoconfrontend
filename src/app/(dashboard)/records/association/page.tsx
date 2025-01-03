@@ -169,6 +169,7 @@ const Association = () => {
         viewAllLink="/forms/add-association"
         addButtonTitle="Add Association"
         itemsPerPage={10}
+        startingUrl="association"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

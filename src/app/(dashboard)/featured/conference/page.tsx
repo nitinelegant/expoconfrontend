@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -11,47 +11,49 @@ import {
   ConferenceListResponse,
   ConferenceProps,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
 import formatDateToYear from "@/utils/common";
-import { featureApi } from "@/api/featureApi";
 import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 
-const Venue = () => {
-  const router = useRouter();
+const Conference = () => {
+  const { data } = useSegments();
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [conferences, setConferences] = useState<ConferenceProps[]>([]);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { conferences }: ConferenceListResponse =
-          await featureApi.getFeaturedConferences();
-        if (conferences?.length > 0) setConferences(conferences);
+        const { conferences, totalPages, currentPage }: ConferenceListResponse =
+          await listApi.getConference({
+            page,
+            searchTerm,
+          });
+
+        return {
+          data: conferences,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
-          duration: 1000,
+          title: "Failed to fetch data",
+          description: "Error while fetching key contacts. Please try again.",
+          duration: 1500,
           variant: "error",
         });
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
+    },
+    [rerenderData]
+  );
 
   const handleDeleteClick = (id: string) => {
     setSelectedId(id);
@@ -85,10 +87,7 @@ const Venue = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {
-              statesAndUnionTerritories.find((x) => x.id === state.state_id)
-                ?.name
-            }
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
@@ -96,17 +95,17 @@ const Venue = () => {
     {
       header: "Status",
       accessorKey: "status",
-      cell: (venue) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.status === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : venue.status === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.status}
+          {item?.adminStatus === "approved" ? item.status : item?.adminStatus}
         </span>
       ),
     },
@@ -140,7 +139,6 @@ const Venue = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
         const { message }: ConferenceDeleteResponse =
           await listApi.deleteConference(selectedId);
 
@@ -149,7 +147,7 @@ const Venue = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully deleted the venue.",
+            description: "You have successfully deleted the conference.",
             duration: 1500,
             variant: "success",
           });
@@ -158,7 +156,7 @@ const Venue = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected venue.",
+          description: "Id is missing from the selected conference.",
           duration: 1500,
           variant: "destructive",
         });
@@ -166,30 +164,31 @@ const Venue = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting venue. Please try again.",
+        description: "Error while deleting conference. Please try again.",
         duration: 1500,
         variant: "error",
       });
       console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={conferences}
+        fetchData={fetchData}
         title="Featured Conference"
-        itemsPerPage={10}
-        searchField="con_shortname"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleConfirmDeletion}
         title="Delete Item"
-        description="Are you sure you want to delete this item? This action is irreversible."
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
         confirmButtonText="Yes, Delete"
         cancelButtonText="No, Cancel"
       />
@@ -197,4 +196,4 @@ const Venue = () => {
   );
 };
 
-export default withAuth(Venue, { requiredRole: ["admin", "staff"] });
+export default withAuth(Conference, { requiredRole: ["admin", "staff"] });

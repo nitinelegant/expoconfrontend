@@ -160,7 +160,6 @@ const Venue = () => {
         columns={columns}
         fetchData={fetchData}
         title="Featured Venue"
-        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

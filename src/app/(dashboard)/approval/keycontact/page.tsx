@@ -162,7 +162,6 @@ const KeyContact = () => {
         columns={columns}
         fetchData={fetchData}
         title="Approve Key Contact"
-        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

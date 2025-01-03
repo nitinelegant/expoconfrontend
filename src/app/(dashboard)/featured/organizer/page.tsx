@@ -17,8 +17,9 @@ import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { featureApi } from "@/api/featureApi";
 
-const Company = () => {
+const Organizer = () => {
   const { data } = useSegments();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -31,7 +32,7 @@ const Company = () => {
     async (page: number, searchTerm: string) => {
       try {
         const { companies, totalPages, currentPage }: CompanyListResponse =
-          await listApi.getCompanies({ page, searchTerm });
+          await featureApi.getFeaturedCompany({ page, searchTerm });
 
         return {
           data: companies,
@@ -52,7 +53,7 @@ const Company = () => {
     [rerenderData]
   );
   const columns: Column<CompanyProps>[] = [
-    { header: "Company Name", accessorKey: "company_name" },
+    { header: "Name", accessorKey: "company_name" },
     { header: "City", accessorKey: "company_city" },
     { header: "Address", accessorKey: "company_address" },
     { header: "Website", accessorKey: "company_website" },
@@ -161,7 +162,6 @@ const Company = () => {
         columns={columns}
         fetchData={fetchData}
         title="Featured Organizer"
-        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
@@ -180,4 +180,4 @@ const Company = () => {
   );
 };
 
-export default withAuth(Company, { requiredRole: ["admin", "staff"] });
+export default withAuth(Organizer, { requiredRole: ["admin", "staff"] });

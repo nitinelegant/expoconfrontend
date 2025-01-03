@@ -451,7 +451,7 @@ const VenueForm = () => {
                 tabIndex={10}
               />
               <Label htmlFor="featured" className="text-gray-900">
-                Featured*
+                Featured
               </Label>
             </div>
 

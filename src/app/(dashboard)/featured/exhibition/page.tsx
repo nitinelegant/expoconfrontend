@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { featureApi } from "@/api/featureApi";
 
 const Exhibition = () => {
   const { data } = useSegments();
@@ -36,7 +37,7 @@ const Exhibition = () => {
           exhibitions,
           totalPages,
           currentPage,
-        }: ExhibitionsListResponse = await listApi.getExhibition({
+        }: ExhibitionsListResponse = await featureApi.getFeaturedExhibition({
           page,
           searchTerm,
         });

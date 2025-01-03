@@ -27,6 +27,7 @@ import { Loader } from "@/components/ui/loader";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -63,6 +64,7 @@ const ExhibitonForm = () => {
       exhibitionType: "",
       exhibitorProfile: "",
       visitorProfile: "",
+      featured: false,
     },
     validationSchema: Yup.object({
       eventType: Yup.string().required("Event Type is required"),
@@ -173,6 +175,7 @@ const ExhibitonForm = () => {
       exhibitionType: Yup.string(),
       exhibitionOrganizer: Yup.string(),
       logo: Yup.string(),
+      featured: Yup.boolean(),
     }),
     onSubmit: async (values) => {
       try {
@@ -198,6 +201,7 @@ const ExhibitonForm = () => {
           exhibitionType,
           exhibitorProfile,
           visitorProfile,
+          featured,
         } = values;
         const payload = {
           year_id: data?.year_id
@@ -222,6 +226,7 @@ const ExhibitonForm = () => {
           expo_segment_id: exhibitionType,
           expo_eprofile: exhibitorProfile,
           expo_vprofile: visitorProfile,
+          expp_featured: featured,
         };
 
         if (isEditMode) {
@@ -820,26 +825,38 @@ const ExhibitonForm = () => {
                     </p>
                   )}
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
+              <Textarea
+                id="exhibitorProfile"
+                tabIndex={20}
+                {...formik.getFieldProps("exhibitorProfile")}
+                className="text-black"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
-                <Textarea
-                  id="exhibitorProfile"
-                  tabIndex={20}
-                  {...formik.getFieldProps("exhibitorProfile")}
-                  className="text-black"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="visitorProfile">Visitor Profile</Label>
-                <Textarea
-                  id="visitorProfile"
-                  tabIndex={21}
-                  {...formik.getFieldProps("visitorProfile")}
-                  className="text-black"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="visitorProfile">Visitor Profile</Label>
+              <Textarea
+                id="visitorProfile"
+                tabIndex={21}
+                {...formik.getFieldProps("visitorProfile")}
+                className="text-black"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="featured"
+                checked={formik.values.featured}
+                onCheckedChange={(checked) =>
+                  formik.setFieldValue("featured", checked)
+                }
+                tabIndex={10}
+              />
+              <Label htmlFor="featured" className="text-gray-900">
+                Featured
+              </Label>
             </div>
 
             <Button

@@ -204,7 +204,7 @@ export function DataTable<T>({
             {viewAllLink && (
               <Button
                 variant="link"
-                className="text-white-600 font-bold bg-primary hover:no-underline"
+                className="text-white font-bold bg-primary hover:no-underline"
                 onClick={(e) => handleNavigation(viewAllLink, e)}
               >
                 <PlusIcon className="mr-2 h-4 w-4" />
@@ -258,7 +258,10 @@ export function DataTable<T>({
                     </TableCell>
                   )}
                   {columns.map((column) => (
-                    <TableCell key={column.header} className="max-w-[400px]">
+                    <TableCell
+                      key={column.header}
+                      className="max-w-[400px] text-black"
+                    >
                       {column.cell
                         ? column.cell(item)
                         : (item[column.accessorKey] as React.ReactNode)}

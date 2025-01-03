@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { featureApi } from "@/api/featureApi";
 
 const Conference = () => {
   const { data } = useSegments();
@@ -31,7 +32,7 @@ const Conference = () => {
     async (page: number, searchTerm: string) => {
       try {
         const { conferences, totalPages, currentPage }: ConferenceListResponse =
-          await listApi.getConference({
+          await featureApi.getFeaturedConferences({
             page,
             searchTerm,
           });

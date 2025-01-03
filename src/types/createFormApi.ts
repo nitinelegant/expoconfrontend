@@ -120,6 +120,7 @@ export interface AddConferenceCredentials {
   con_segment_id: string;
   con_nassociation_id: string;
   con_hassociation_id: string;
+  con_featured: boolean;
 }
 export interface AddExhibitionCredentials {
   expo_fullname: string;

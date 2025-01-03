@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -62,6 +63,7 @@ const ConferenceForm = () => {
       conferenceSegment: "",
       nationalAssociation: "",
       hostingChapter: "",
+      featured: false,
     },
     validationSchema: Yup.object({
       eventType: Yup.string().required("Event Type is required"),
@@ -173,6 +175,7 @@ const ConferenceForm = () => {
       conferenceOrganizer: Yup.string(),
       nationalAssociation: Yup.string(),
       logo: Yup.string(),
+      featured: Yup.boolean(),
     }),
     onSubmit: async (values) => {
       try {
@@ -197,6 +200,7 @@ const ConferenceForm = () => {
           conferenceOrganizer,
           conferenceSegment,
           nationalAssociation,
+          featured,
         } = values;
         const payload = {
           con_fullname: eventFullName,
@@ -220,6 +224,7 @@ const ConferenceForm = () => {
           con_nassociation_id: nationalAssociation,
           con_hassociation_id: nationalAssociation, //hostingChapter
           con_type_id: eventType,
+          con_featured: featured,
         };
 
         if (isEditMode) {
@@ -373,7 +378,7 @@ const ConferenceForm = () => {
       <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-2xl font-bold text-black">
             {isEditMode ? "Update" : "Add"} Conference
           </CardTitle>
         </CardHeader>
@@ -900,11 +905,25 @@ const ConferenceForm = () => {
                   )}
               </div>
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="featured"
+                checked={formik.values.featured}
+                onCheckedChange={(checked) =>
+                  formik.setFieldValue("featured", checked)
+                }
+                className="text-white"
+                tabIndex={18}
+              />
+              <Label htmlFor="featured" className="text-gray-900">
+                Featured
+              </Label>
+            </div>
 
             <Button
               type="submit"
-              className="w-full bg-primary"
-              tabIndex={22}
+              className="w-full bg-primary text-white"
+              tabIndex={19}
               disabled={isLoading}
             >
               {isEditMode ? "Update" : "Add"} Conference

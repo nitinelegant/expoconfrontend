@@ -2,27 +2,21 @@
 import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  VenueProps,
-  VenueListResponse,
   VenueDeleteResponse,
   StaffListResponse,
   StaffProps,
 } from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { useRouter } from "next/navigation";
-import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 
 const Staff = () => {
-  const { data } = useSegments();
   const { toast } = useToast();
-  const router = useRouter();
   const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);

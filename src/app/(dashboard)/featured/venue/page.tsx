@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { featureApi } from "@/api/featureApi";
 
 const Venue = () => {
   const { data } = useSegments();
@@ -30,7 +31,7 @@ const Venue = () => {
     async (page: number, searchTerm: string) => {
       try {
         const { venues, totalPages, currentPage }: VenueListResponse =
-          await listApi.getVenues({
+          await featureApi.getFeaturedVanues({
             page,
             searchTerm,
           });

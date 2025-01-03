@@ -8,7 +8,7 @@ import { axiosInstance } from "@/lib/axios";
 interface ImageUploaderProps {
   name: string;
   label: string;
-  setFieldValue: (field: string, value: any) => void;
+  setFieldValue: (field: string, value: string) => void;
   setFieldError: (field: string, message: string | undefined) => void;
   setFieldTouched: (field: string, isTouched?: boolean) => void;
   initialPreview?: string;

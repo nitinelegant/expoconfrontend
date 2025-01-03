@@ -197,7 +197,6 @@ const ConferenceForm = () => {
           conferenceOrganizer,
           conferenceSegment,
           nationalAssociation,
-          hostingChapter = 1,
         } = values;
         const payload = {
           con_fullname: eventFullName,

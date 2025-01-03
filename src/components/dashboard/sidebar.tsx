@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import { LogOut, ChevronDown, ChevronUp } from "lucide-react";
-import { SidebarProps, MenuLink, MenuSection } from "../../types/sidebar";
+import { LogOut } from "lucide-react";
+import { SidebarProps } from "../../types/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "@/public/assets/images/logo.png";

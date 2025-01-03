@@ -1,5 +1,4 @@
 "use client";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,8 +28,6 @@ import ImageUploader from "@/components/ImageUploader";
 const CompanyForm = () => {
   const { data } = useSegments();
   const firstInputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();

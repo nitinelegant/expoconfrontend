@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
@@ -13,11 +13,9 @@ import {
 } from "@/types/listTypes";
 import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { useRouter } from "next/navigation";
 
 const StaffList = () => {
   const { toast } = useToast();
-  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [users, setUsers] = useState<StaffProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);

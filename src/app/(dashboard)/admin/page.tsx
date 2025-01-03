@@ -2,10 +2,9 @@
 import { listApi } from "@/api/listApi";
 import { Overview } from "@/components/dashboard/overview";
 import { Statistics } from "@/components/dashboard/statistics";
-import { TransactionsTable } from "@/components/dashboard/transactionsTable";
 import { Loader } from "@/components/ui/loader";
 import { useAuth } from "@/context/AuthContext";
-import { StaffListResponse, StaffProps } from "@/types/listTypes";
+import { StaffListResponse } from "@/types/listTypes";
 import { userSection } from "@/types/sidebar";
 import { withAuth } from "@/utils/withAuth";
 import { useRouter } from "next/navigation";
@@ -16,8 +15,6 @@ const Dashboard = () => {
   const { toast } = useToast();
   const router = useRouter();
   const { isAuthenticated, loading } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [users, setUsers] = useState<StaffProps[]>([]);
   const [overviewSection, setOverviewSection] = useState<userSection[]>([
     {
       name: "Users",

@@ -185,29 +185,6 @@ const VenueForm = () => {
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
-  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files?.[0];
-    formik.setFieldValue("logo", file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleUploadLayout = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.currentTarget.files?.[0];
-    formik.setFieldValue("layout", file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <BackButton />

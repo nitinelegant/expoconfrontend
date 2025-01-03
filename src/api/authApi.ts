@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
-import { User, UserResponse } from "@/types/authTypes";
+import { UserResponse } from "@/types/authTypes";
 
 interface LoginResponse {
   accessToken: string;

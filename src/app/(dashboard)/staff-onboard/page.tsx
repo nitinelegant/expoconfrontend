@@ -16,14 +16,6 @@ import BackButton from "@/components/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createFormApi } from "@/api/createFormApi";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Prefix } from "@/constants/form";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
 

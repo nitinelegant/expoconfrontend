@@ -1,5 +1,4 @@
 import { axiosInstance } from "@/lib/axios";
-import { ExhibitionApprovalListResponse } from "@/types/approvalTypes";
 import {
   ApproveResponse,
   AssociationsListResponse,

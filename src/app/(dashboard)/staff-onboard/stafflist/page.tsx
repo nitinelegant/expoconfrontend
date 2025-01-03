@@ -165,4 +165,4 @@ const Staff = () => {
   );
 };
 
-export default withAuth(Staff, { requiredRole: ["admin", "staff"] });
+export default withAuth(Staff, { requiredRole: ["admin"] });

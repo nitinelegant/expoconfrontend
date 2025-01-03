@@ -206,4 +206,4 @@ const Company = () => {
   );
 };
 
-export default withAuth(Company, { requiredRole: ["admin", "staff"] });
+export default withAuth(Company, { requiredRole: ["admin"] });

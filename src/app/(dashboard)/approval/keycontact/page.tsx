@@ -204,4 +204,4 @@ const KeyContact = () => {
   );
 };
 
-export default withAuth(KeyContact, { requiredRole: ["admin", "staff"] });
+export default withAuth(KeyContact, { requiredRole: ["admin"] });

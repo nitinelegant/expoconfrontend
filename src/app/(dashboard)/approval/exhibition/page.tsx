@@ -229,4 +229,4 @@ const Exhibition = () => {
   );
 };
 
-export default withAuth(Exhibition, { requiredRole: ["admin", "staff"] });
+export default withAuth(Exhibition, { requiredRole: ["admin"] });

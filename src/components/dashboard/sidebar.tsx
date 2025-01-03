@@ -13,16 +13,36 @@ export function Sidebar({ menuSections }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [activeLink, setActiveLink] = useState<string | null>(null);
 
   const toggleMenu = useCallback((itemText: string) => {
     setOpenMenus((prev) => ({ ...prev, [itemText]: !prev[itemText] }));
   }, []);
 
   const handleNavigation = useCallback(
-    (href: string) => {
-      router.push(href);
+    async (href: string) => {
+      // Don't navigate if we're already on the page or already navigating
+      if (pathname === href || isNavigating) return;
+
+      try {
+        setIsNavigating(true);
+        setActiveLink(href);
+
+        // Use a timeout to ensure the loading state is visible
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Perform the navigation
+        await router.push(href);
+      } finally {
+        // Reset states after a short delay to ensure smooth transition
+        setTimeout(() => {
+          setIsNavigating(false);
+          setActiveLink(null);
+        }, 300);
+      }
     },
-    [router]
+    [router, pathname, isNavigating]
   );
 
   const filteredSections = useMemo(
@@ -39,33 +59,46 @@ export function Sidebar({ menuSections }: SidebarProps) {
       </div>
       <nav className="flex-1 overflow-y-auto space-y-6 px-4 pb-4 mt-4">
         {filteredSections.map((section) => (
-          <SectionItem
-            key={section.name}
-            section={section}
-            isOpen={openMenus[section.name]}
-            toggleMenu={toggleMenu}
-            handleNavigation={handleNavigation}
-            pathname={pathname}
-          >
-            {section.links?.map((item) => (
-              <MenuItem
-                key={item.text}
-                item={item}
-                depth={0}
-                isOpen={openMenus[item.text]}
-                toggleMenu={toggleMenu}
-                handleNavigation={handleNavigation}
-                pathname={pathname}
-                user={user}
-              />
-            ))}
-          </SectionItem>
+          <div key={section.name} className="relative">
+            {isNavigating && section.mainLink === activeLink && (
+              <div className="absolute inset-0   rounded-lg" />
+            )}
+            <SectionItem
+              section={section}
+              isOpen={openMenus[section.name]}
+              toggleMenu={toggleMenu}
+              handleNavigation={handleNavigation}
+              pathname={pathname}
+              isActive={activeLink === section.mainLink}
+              isNavigating={isNavigating}
+            >
+              {section.links?.map((item) => (
+                <div key={item.text} className="relative">
+                  {isNavigating && item.href === activeLink && (
+                    <div className="absolute inset-0  rounded-lg" />
+                  )}
+                  <MenuItem
+                    item={item}
+                    depth={0}
+                    isOpen={openMenus[item.text]}
+                    toggleMenu={toggleMenu}
+                    handleNavigation={handleNavigation}
+                    pathname={pathname}
+                    user={user}
+                    isActive={activeLink === item.href}
+                    isNavigating={isNavigating}
+                  />
+                </div>
+              ))}
+            </SectionItem>
+          </div>
         ))}
       </nav>
       <div className="p-4 border-t">
         <button
           className="flex w-full items-center space-x-2 rounded-lg px-2 py-2 text-gray-600 hover:bg-gray-50 transition-colors duration-200"
           onClick={logout}
+          disabled={isNavigating}
         >
           <LogOut className="h-5 w-5" />
           <span>Log Out</span>

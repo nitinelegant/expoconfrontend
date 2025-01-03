@@ -1,3 +1,4 @@
+import { Loader } from "@/components/ui/loader";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { FC, useEffect, useState } from "react";
@@ -33,9 +34,8 @@ export const withAuth = (
     }, [user, router, loading]);
 
     if (loading || !isAuthorized) {
-      return null; // Optionally, display a spinner here
+      return <Loader />;
     }
-
     return <Component {...props} />;
   };
 

@@ -13,6 +13,9 @@ import {
   UserPlus,
   LayoutDashboard,
 } from "lucide-react";
+import { Suspense } from "react";
+import { Loader } from "@/components/ui/loader";
+
 export default function DashboardLayout({
   children,
 }: Readonly<{
@@ -206,9 +209,11 @@ export default function DashboardLayout({
       <div className="flex-1 flex flex-col">
         <Header title="Dashboard" />
         <div className="relative flex-1">
-          <main className="absolute inset-0 overflow-y-auto p-4">
-            {children}
-          </main>
+          <Suspense fallback={<Loader />}>
+            <main className="absolute inset-0 overflow-y-auto p-4">
+              {children}
+            </main>
+          </Suspense>
         </div>
       </div>
     </div>

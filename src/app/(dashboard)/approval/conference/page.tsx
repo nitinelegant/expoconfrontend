@@ -225,4 +225,4 @@ const Conference = () => {
   );
 };
 
-export default withAuth(Conference, { requiredRole: ["admin", "staff"] });
+export default withAuth(Conference, { requiredRole: ["admin"] });

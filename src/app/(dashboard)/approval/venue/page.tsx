@@ -211,4 +211,4 @@ const Venue = () => {
   );
 };
 
-export default withAuth(Venue, { requiredRole: ["admin", "staff"] });
+export default withAuth(Venue, { requiredRole: ["admin"] });

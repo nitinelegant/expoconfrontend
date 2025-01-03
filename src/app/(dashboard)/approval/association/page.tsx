@@ -210,4 +210,4 @@ const Association = () => {
   );
 };
 
-export default withAuth(Association, { requiredRole: ["admin", "staff"] });
+export default withAuth(Association, { requiredRole: ["admin"] });

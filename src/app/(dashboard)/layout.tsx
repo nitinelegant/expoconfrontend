@@ -210,7 +210,7 @@ export default function DashboardLayout({
         <Header title="Dashboard" />
         <div className="relative flex-1">
           <Suspense fallback={<Loader />}>
-            <main className="absolute inset-0 overflow-y-auto p-4">
+            <main className="absolute inset-0 overflow-y-auto p-4 ">
               {children}
             </main>
           </Suspense>

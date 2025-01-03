@@ -328,7 +328,7 @@ const VenueForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
-                apiEndpoint="company"
+                apiEndpoint="venue"
                 tabIndex={6}
               />
               {/* <div className="space-y-2">

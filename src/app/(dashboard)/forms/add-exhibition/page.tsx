@@ -721,7 +721,7 @@ const ExhibitonForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
-                apiEndpoint="company"
+                apiEndpoint="exhibition"
                 tabIndex={13}
               />
 

@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { createFormApi } from "@/api/createFormApi";
-import { AssociationProps, CompanyProps } from "@/types/listTypes";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import VenueSearch from "@/components/VenueSearch";

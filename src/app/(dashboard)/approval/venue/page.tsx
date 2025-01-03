@@ -144,11 +144,6 @@ const Venue = () => {
     },
   ];
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedId(id);
-    setIsDeleteDialogOpen(true);
-  };
-
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {

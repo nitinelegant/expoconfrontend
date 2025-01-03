@@ -6,7 +6,7 @@ import { Download } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 
 interface ExcelExportButtonProps {
-  data: any[];
+  data: [];
   fileName?: string;
   sheetName?: string;
   variant?: "default" | "secondary" | "outline" | "ghost";
@@ -19,7 +19,7 @@ interface ExcelExportButtonProps {
   onExportComplete?: () => void;
   onError?: (error: Error) => void;
 }
-const getArrayFromResponse = (data: any) => {
+const getArrayFromResponse = (data) => {
   const staticKeys = ["currentPage", "hasMore", "totalPages", "message"];
   const arrayKey = Object.keys(data).find((key) => !staticKeys.includes(key));
   return arrayKey ? data[arrayKey] : [];

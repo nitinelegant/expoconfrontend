@@ -2,7 +2,6 @@
 import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +13,6 @@ import {
 } from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import formatDateToYear from "@/utils/common";
-import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
@@ -24,7 +22,6 @@ const Exhibition = () => {
   const { data } = useSegments();
   const { toast } = useToast();
   const { user } = useAuth();
-  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);

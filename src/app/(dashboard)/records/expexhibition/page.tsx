@@ -64,7 +64,7 @@ const ExpExhibiton = () => {
   };
 
   const columns: Column<ExhibitionProps>[] = [
-    { header: "Conference Name", accessorKey: "expo_shortname" },
+    { header: "Name", accessorKey: "expo_shortname" },
     {
       header: "Start Date",
       accessorKey: "expo_sd",
@@ -101,14 +101,14 @@ const ExpExhibiton = () => {
       cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item?.adminStatus === "approved"
+            item?.status === "active"
               ? "bg-green-100 text-green-600"
-              : item.adminStatus === "rejected"
-              ? "bg-red-50 text-red-600"
+              : item.status === "inactive"
+              ? "bg-gray-200  text-gray-600" //text-statuscolorreject
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.adminStatus === "approved" ? item.status : item?.adminStatus}
+          {item.status}
         </span>
       ),
     },

@@ -16,7 +16,7 @@ import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
-import { ADMIN } from "@/constants/auth";
+import { ADMIN, STAFF } from "@/constants/auth";
 
 const Association = () => {
   const { data } = useSegments();
@@ -81,10 +81,12 @@ const Association = () => {
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
             item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
+              : item.adminStatus === "rejected"
+              ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.adminStatus === "approved" ? "Acitve" : "Pending"}
+          {item.adminStatus === "approved" ? "Active" : item.adminStatus}
         </span>
       ),
     },
@@ -92,6 +94,7 @@ const Association = () => {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
+        if (user === STAFF && cellItem.adminStatus === "pending") return null;
         return (
           <div className="flex items-center space-x-2">
             <Button

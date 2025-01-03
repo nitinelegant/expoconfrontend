@@ -2,7 +2,6 @@
 import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
@@ -10,9 +9,9 @@ import {
   VenueProps,
   VenueListResponse,
   VenueDeleteResponse,
+  ApproveResponse,
 } from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
@@ -21,7 +20,6 @@ import { approvalApi } from "@/api/approvalApi";
 const Venue = () => {
   const { data } = useSegments();
   const { toast } = useToast();
-  const router = useRouter();
   const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
@@ -54,6 +52,36 @@ const Venue = () => {
     },
     [rerenderData]
   );
+
+  const handleAction = async (id: string, action: string) => {
+    try {
+      const isApproved = action === "approve" ? true : false;
+
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `venue/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          } the venue.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving venue. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+    }
+  };
   const columns: Column<VenueProps>[] = [
     { header: "Venue Name", accessorKey: "venue_name" },
     { header: "City", accessorKey: "venue_city" },
@@ -94,18 +122,21 @@ const Venue = () => {
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push(`/forms/add-venue?id=${cellItem._id}`)}
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
             >
-              <SquarePen />
+              <h1>Approve</h1>
             </Button>
+
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
+              size="sm"
+              className="border border-primary text-primary"
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
-              <Trash2 className="text-red-600" />
+              Reject
             </Button>
           </div>
         );

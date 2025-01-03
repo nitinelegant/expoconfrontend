@@ -19,7 +19,7 @@ export const approvalApi = {
   }): Promise<ExhibitionsListResponse> => {
     try {
       const response = await axiosInstance.get<ExhibitionsListResponse>(
-        "/association/approval",
+        "/exhibition/approval",
         {
           params: { page, keyword: searchTerm },
         }

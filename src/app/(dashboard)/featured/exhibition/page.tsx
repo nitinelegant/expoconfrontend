@@ -66,7 +66,7 @@ const Exhibition = () => {
   };
 
   const columns: Column<ExhibitionProps>[] = [
-    { header: "Conference Name", accessorKey: "expo_shortname" },
+    { header: "Name", accessorKey: "expo_shortname" },
     {
       header: "Start Date",
       accessorKey: "expo_sd",

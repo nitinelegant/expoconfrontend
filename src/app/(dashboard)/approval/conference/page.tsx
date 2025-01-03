@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  ApproveResponse,
   ConferenceDeleteResponse,
   ConferenceListResponse,
   ConferenceProps,
@@ -56,13 +57,38 @@ const Conference = () => {
     [rerenderData]
   );
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedId(id);
-    setIsDeleteDialogOpen(true);
+  const handleAction = async (id: string, action: string) => {
+    try {
+      const isApproved = action === "approve" ? true : false;
+
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `conference/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          } the conference.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving conference. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+    }
   };
 
   const columns: Column<ConferenceProps>[] = [
-    { header: "Conference Name", accessorKey: "con_shortname" },
+    { header: "Name", accessorKey: "con_shortname" },
     {
       header: "Start Date",
       accessorKey: "con_sd",
@@ -117,20 +143,21 @@ const Conference = () => {
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                router.push(`/forms/add-conference?id=${cellItem._id}`)
-              }
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
             >
-              <SquarePen />
+              <h1>Approve</h1>
             </Button>
+
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
+              size="sm"
+              className="border border-primary text-primary"
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
-              <Trash2 className="text-red-600" />
+              Reject
             </Button>
           </div>
         );

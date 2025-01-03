@@ -85,7 +85,7 @@ const KeyContact = () => {
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {status.adminStatus}
+          {status.adminStatus === "approved" ? "Active" : status.adminStatus}
         </span>
       ),
     },

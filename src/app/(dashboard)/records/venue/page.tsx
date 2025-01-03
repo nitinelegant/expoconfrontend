@@ -15,7 +15,7 @@ import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
-import { ADMIN } from "@/constants/auth";
+import { ADMIN, STAFF } from "@/constants/auth";
 
 const Venue = () => {
   const { data } = useSegments();
@@ -90,6 +90,7 @@ const Venue = () => {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
+        if (user === STAFF && cellItem.adminStatus === "pending") return null;
         return (
           <div className="flex items-center space-x-2">
             <Button

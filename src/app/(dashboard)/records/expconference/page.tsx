@@ -62,7 +62,7 @@ const Venue = () => {
   };
 
   const columns: Column<ExpConferenceProps>[] = [
-    { header: "Conference Name", accessorKey: "con_shortname" },
+    { header: "Name", accessorKey: "con_shortname" },
     {
       header: "Start Date",
       accessorKey: "con_sd",
@@ -102,7 +102,7 @@ const Venue = () => {
             item?.status === "active"
               ? "bg-green-100 text-green-600"
               : item.status === "inactive"
-              ? "bg-red-50 text-statuscolorreject"
+              ? "bg-gray-200  text-gray-600" //text-statuscolorreject
               : "bg-yellow-100 text-yellow-600"
           }`}
         >

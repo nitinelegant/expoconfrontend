@@ -16,7 +16,7 @@ import formatDateToYear from "@/utils/common";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
-import { ADMIN } from "@/constants/auth";
+import { ADMIN, STAFF } from "@/constants/auth";
 
 const Conference = () => {
   const { data } = useSegments();
@@ -61,7 +61,7 @@ const Conference = () => {
   };
 
   const columns: Column<ConferenceProps>[] = [
-    { header: "Conference Name", accessorKey: "con_shortname" },
+    { header: "Name", accessorKey: "con_shortname" },
     {
       header: "Start Date",
       accessorKey: "con_sd",
@@ -113,6 +113,7 @@ const Conference = () => {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
+        if (user === STAFF && cellItem.adminStatus === "pending") return null;
         return (
           <div className="flex items-center space-x-2">
             <Button

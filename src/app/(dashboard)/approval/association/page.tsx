@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  ApproveResponse,
   AssociationDeleteResponse,
   AssociationProps,
   AssociationsListResponse,
@@ -58,6 +59,36 @@ const Association = () => {
     },
     [rerenderData]
   );
+
+  const handleAction = async (id: string, action: string) => {
+    try {
+      const isApproved = action === "approve" ? true : false;
+
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `association/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          } the association.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving association. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+    }
+  };
   const columns: Column<AssociationProps>[] = [
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
@@ -96,31 +127,27 @@ const Association = () => {
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                router.push(`/forms/add-association?id=${cellItem._id}`)
-              }
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
             >
-              <SquarePen />
+              <h1>Approve</h1>
             </Button>
+
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => handleDeleteClick(cellItem._id)}
+              size="sm"
+              className="border border-primary text-primary"
+              onClick={() => handleAction(cellItem._id, "reject")}
             >
-              <Trash2 className="text-red-600" />
+              Reject
             </Button>
           </div>
         );
       },
     },
   ];
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedId(id);
-    setIsDeleteDialogOpen(true);
-  };
 
   const handleConfirmDeletion = async () => {
     try {

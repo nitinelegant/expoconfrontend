@@ -61,7 +61,7 @@ const Conference = () => {
   };
 
   const columns: Column<ConferenceProps>[] = [
-    { header: "Conference Name", accessorKey: "con_shortname" },
+    { header: "Name", accessorKey: "con_shortname" },
     {
       header: "Start Date",
       accessorKey: "con_sd",

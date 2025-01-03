@@ -15,7 +15,7 @@ import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { STAFF } from "@/constants/auth";
+import { ADMIN, STAFF } from "@/constants/auth";
 import { useSegments } from "@/hooks/useSegments";
 
 const KeyContact = () => {
@@ -178,7 +178,11 @@ const KeyContact = () => {
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleConfirmDeletion}
         title="Delete Item"
-        description="Are you sure you want to delete this item? This action is irreversible."
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
         confirmButtonText="Yes, Delete"
         cancelButtonText="No, Cancel"
       />

@@ -15,10 +15,13 @@ import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 
 const Company = () => {
   const { data } = useSegments();
   const { toast } = useToast();
+  const { user } = useAuth();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
@@ -173,7 +176,11 @@ const Company = () => {
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleConfirmDeletion}
         title="Delete Item"
-        description="Are you sure you want to delete this item? This action is irreversible."
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
         confirmButtonText="Yes, Delete"
         cancelButtonText="No, Cancel"
       />

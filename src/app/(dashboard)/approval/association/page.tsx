@@ -1,106 +1,66 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
+import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
+import { listApi } from "@/api/listApi";
+import { useToast } from "@/hooks/use-toast";
 import {
-  ApproveResponse,
+  AssociationDeleteResponse,
   AssociationProps,
   AssociationsListResponse,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
+
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-import { statesAndUnionTerritories } from "@/constants/form";
+import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 import { approvalApi } from "@/api/approvalApi";
-import { useToast } from "@/hooks/use-toast";
 
 const Association = () => {
+  const { data } = useSegments();
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
-  // const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { associations }: AssociationsListResponse =
-          await approvalApi.getAssociationApproval();
-        if (associations?.length > 0) setAssociations(associations);
-        // setTotalPages(response.totalPages);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
-
-  const handleAction = async (id: string, action: string) => {
-    try {
-      setIsLoading(true);
-      const isApproved = action === "approve" ? true : false;
-      const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `keycontact/${id}/${action}`
-      );
-      if (message) {
-        toast({
-          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          }.`,
-          duration: 1500,
-          variant: isApproved ? "success" : "error",
+        const {
+          associations,
+          totalPages,
+          currentPage,
+        }: AssociationsListResponse = await approvalApi.getAssociationApproval({
+          page,
+          searchTerm,
         });
-        setRerenderData(!rerenderData);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error while approving key contact. Please try again.",
-        duration: 1500,
-        variant: "error",
-      });
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  const columns: Column<AssociationProps>[] = [
-    {
-      header: "Type",
-      accessorKey: "changes",
-      cell: ({ changes }) => {
-        return (
-          <span
-            className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
-              changes?.type === "create"
-                ? "text-green-600"
-                : changes?.type === "update"
-                ? "text-[#d87225]"
-                : "text-[#d1202a]"
-            }`}
-          >
-            {changes?.type}
-          </span>
-        );
-      },
+        return {
+          data: associations,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
+        };
+      } catch (error) {
+        toast({
+          title: "Failed to fetch data",
+          description: "Error while fetching association. Please try again.",
+          duration: 1500,
+          variant: "error",
+        });
+        throw error;
+      }
     },
+    [rerenderData]
+  );
+  const columns: Column<AssociationProps>[] = [
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
-
     { header: "Address", accessorKey: "association_address" },
     { header: "Website", accessorKey: "association_website" },
     {
@@ -109,12 +69,26 @@ const Association = () => {
       cell: (state) => {
         return (
           <span className="capitalize">
-            {statesAndUnionTerritories[state.state_id]?.name}
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
           </span>
         );
       },
     },
-
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: (item) => (
+        <span
+          className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            item?.adminStatus === "approved"
+              ? "bg-green-100 text-green-600"
+              : "bg-yellow-100 text-yellow-600"
+          }`}
+        >
+          {item.adminStatus === "approved" ? "Acitve" : "Pending"}
+        </span>
+      ),
+    },
     {
       header: "Action",
       accessorKey: "_id",
@@ -122,50 +96,86 @@ const Association = () => {
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="outline"
-              className="bg-primary text-white"
-              size="sm"
-              onClick={() => handleAction(cellItem._id, "approve")}
-              disabled={isLoading}
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-association?id=${cellItem._id}`)
+              }
             >
-              <h1>Approve</h1>
+              <SquarePen />
             </Button>
-
             <Button
               variant="ghost"
-              size="sm"
-              className="border border-primary text-primary"
-              disabled={isLoading}
-              onClick={() => handleAction(cellItem._id, "reject")}
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem._id)}
             >
-              Reject
+              <Trash2 className="text-red-600" />
             </Button>
           </div>
         );
       },
     },
   ];
-  const handleConfirmDeletion = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        const { message }: AssociationDeleteResponse =
+          await listApi.deleteAssociation(selectedId);
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully deleted the association.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected association.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting association. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+    }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={associations}
+        fetchData={fetchData}
         title="Approve Association"
         itemsPerPage={10}
-        searchField="association_name"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleConfirmDeletion}
         title="Delete Item"
-        description="Are you sure you want to delete this item? This action is irreversible."
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
         confirmButtonText="Yes, Delete"
         cancelButtonText="No, Cancel"
       />

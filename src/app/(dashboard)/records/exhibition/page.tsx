@@ -19,7 +19,7 @@ import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 
-const Venue = () => {
+const Exhibition = () => {
   const { data } = useSegments();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -43,9 +43,9 @@ const Venue = () => {
 
         return {
           data: exhibitions,
-          totalItems: totalPages * 5,
-          currentPage: currentPage,
-          totalPages: totalPages,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
         };
       } catch (error) {
         toast({
@@ -205,4 +205,4 @@ const Venue = () => {
   );
 };
 
-export default withAuth(Venue, { requiredRole: ["admin", "staff"] });
+export default withAuth(Exhibition, { requiredRole: ["admin", "staff"] });

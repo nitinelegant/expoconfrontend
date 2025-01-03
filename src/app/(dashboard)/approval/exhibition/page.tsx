@@ -1,195 +1,205 @@
 "use client";
-import React, { FC, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
-
-interface Transaction {
-  id: string;
-  eventName: string;
-  organigerName: string;
-  start: string;
-  end: string;
-  status: string;
-}
-interface DeleteConfirmationDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-}
-
-const transactions: Transaction[] = [
-  {
-    id: "1",
-    eventName: "Alcazar Events",
-    organigerName: "Nitin Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Pending",
-  },
-  {
-    id: "2",
-    eventName: "Maruti Events",
-    organigerName: "Rohit Singh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Pending",
-  },
-  {
-    id: "3",
-    eventName: "Honda Events",
-    organigerName: "Muzzamil Shaikh",
-    start: "23 Oct",
-    end: "24 Oct",
-    status: "Pending",
-  },
-
-  // Add more transactions to test pagination
-  ...Array.from({ length: 20 }, (_, i) => ({
-    id: `${i + 4}`,
-    eventName: `Event ${i + 4}`,
-    organigerName: `Organizer ${i + 4}`,
-    start: `Start ${i + 4}`,
-    end: `End ${i + 4}`,
-    status: ["Pending", "Pending", "Pending"][Math.floor(Math.random() * 3)],
-  })),
-];
-
-const DeleteConfirmationDialog: FC<DeleteConfirmationDialogProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-}) => (
-  <Dialog open={isOpen} onOpenChange={onClose}>
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogDescription>
-          Are you sure you want to delete this exhibition? This action cannot be
-          undone.
-        </DialogDescription>
-      </DialogHeader>
-      <DialogFooter>
-        <Button
-          variant="destructive"
-          onClick={onClose}
-          className=" text-background"
-        >
-          Cancel
-        </Button>
-        {/* <Button
-          variant="destructive"
-          onClick={onConfirm}
-          className="outline outline-red-500 text-red-500"
-        >
-          Delete
-        </Button> */}
-        <Button
-          variant="default"
-          onClick={onConfirm}
-          className=" text-white bg-[#FF0000]"
-        >
-          Delete
-        </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
-);
+import { listApi } from "@/api/listApi";
+import { useToast } from "@/hooks/use-toast";
+import {
+  DeleteApiResponse,
+  ExhibitionProps,
+  ExhibitionsListResponse,
+} from "@/types/listTypes";
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import formatDateToYear from "@/utils/common";
+import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
+import { approvalApi } from "@/api/approvalApi";
 
 const Exhibition = () => {
+  const { data } = useSegments();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedExhibitionId, setSelectedExhibitionId] = useState<
-    string | null
-  >(null);
+  const [rerenderData, setRerenderData] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const handleDeleteConfirm = () => {
-    // Implement the delete logic here
-    console.log(`Deleting exhibition with id: ${selectedExhibitionId}`);
-    setIsDeleteDialogOpen(false);
-    setSelectedExhibitionId(null);
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
+      try {
+        const {
+          exhibitions,
+          totalPages,
+          currentPage,
+        }: ExhibitionsListResponse = await approvalApi.getExhibitionApproval({
+          page,
+          searchTerm,
+        });
+
+        return {
+          data: exhibitions,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
+        };
+      } catch (error) {
+        toast({
+          title: "Failed to fetch data",
+          description: "Error while fetching key contacts. Please try again.",
+          duration: 1500,
+          variant: "error",
+        });
+        throw error;
+      }
+    },
+    [rerenderData]
+  );
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setIsDeleteDialogOpen(true);
   };
-  const columns: Column<Transaction>[] = [
-    { header: "Event Name", accessorKey: "eventName" },
-    { header: "Organizer Name", accessorKey: "organigerName" },
-    { header: "Start Date", accessorKey: "start" },
-    { header: "End Date", accessorKey: "end" },
+
+  const columns: Column<ExhibitionProps>[] = [
+    { header: "Conference Name", accessorKey: "expo_shortname" },
+    {
+      header: "Start Date",
+      accessorKey: "expo_sd",
+      cell: (state) => {
+        return (
+          <span className="capitalize">{formatDateToYear(state.expo_sd)}</span>
+        );
+      },
+    },
+    {
+      header: "End Date",
+      accessorKey: "expo_ed",
+      cell: (state) => {
+        return (
+          <span className="capitalize">{formatDateToYear(state.expo_ed)}</span>
+        );
+      },
+    },
+    { header: "City", accessorKey: "expo_city" },
+    {
+      header: "State",
+      accessorKey: "state_id",
+      cell: (state) => {
+        return (
+          <span className="capitalize">
+            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Status",
       accessorKey: "status",
-      cell: (transaction) => (
+      cell: (item) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            transaction.status === "Active"
+          className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : transaction.status === "Pending"
-              ? "bg-yellow-50 text-yellow-600"
-              : "bg-gray-100 text-gray-600"
+              : item.adminStatus === "rejected"
+              ? "bg-red-50 text-red-600"
+              : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {transaction.status}
+          {item.adminStatus === "approved" ? item.status : item?.adminStatus}
         </span>
       ),
     },
-
     {
-      header: "",
-      accessorKey: "id",
-      cell: () => {
+      header: "Action",
+      accessorKey: "_id",
+      cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
-            {/* <Button variant="ghost" size="icon">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-exhibition?id=${cellItem._id}`)
+              }
+            >
               <SquarePen />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => handleDeleteClick(cellItem.id)}
+              onClick={() => handleDeleteClick(cellItem._id)}
             >
               <Trash2 className="text-red-600" />
-            </Button> */}
-            <Button
-              variant="outline"
-              className="bg-primary text-white"
-              size="sm"
-            >
-              <h1>Approve</h1>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="border border-primary text-primary"
-            >
-              Reject
             </Button>
           </div>
         );
       },
     },
   ];
+  const handleConfirmDeletion = async () => {
+    try {
+      if (selectedId) {
+        const { message }: DeleteApiResponse = await listApi.deleteApi(
+          `/exhibition/${selectedId}`
+        );
+
+        if (message) {
+          setIsDeleteDialogOpen(false);
+          setSelectedId(null);
+          toast({
+            title: "Delete Successful",
+            description: "You have successfully deleted the exhibition.",
+            duration: 1500,
+            variant: "success",
+          });
+          setRerenderData(!rerenderData);
+        }
+      } else {
+        toast({
+          title: "Failed to fetch Id",
+          description: "Id is missing from the selected exhibition.",
+          duration: 1500,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while deleting exhibition. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+    }
+  };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={transactions}
-        title="Exhibition Approval"
-        itemsPerPage={5}
+        fetchData={fetchData}
+        title="Approve Exhibition"
+        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleDeleteConfirm}
+        onConfirm={handleConfirmDeletion}
+        title="Delete Item"
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
+        confirmButtonText="Yes, Delete"
+        cancelButtonText="No, Cancel"
       />
     </div>
   );
 };
 
-export default withAuth(Exhibition, { requiredRole: ["admin"] });
+export default withAuth(Exhibition, { requiredRole: ["admin", "staff"] });

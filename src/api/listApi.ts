@@ -117,7 +117,7 @@ export const listApi = {
   }): Promise<KeyContactListResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
-        "/keycontact/list",
+        "/keycontact/list?limit=10",
         {
           params: { page, keyword: searchTerm },
         }
@@ -136,7 +136,7 @@ export const listApi = {
   }): Promise<CompanyListResponse> => {
     try {
       const response = await axiosInstance.get<CompanyListResponse>(
-        "/company/list",
+        "/company/list?limit=10",
         {
           params: { page, keyword: searchTerm },
         }

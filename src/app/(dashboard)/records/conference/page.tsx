@@ -18,7 +18,7 @@ import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 
-const Venue = () => {
+const Conference = () => {
   const { data } = useSegments();
   const { toast } = useToast();
   const router = useRouter();
@@ -38,9 +38,9 @@ const Venue = () => {
 
         return {
           data: conferences,
-          totalItems: totalPages * 5,
-          currentPage: currentPage,
-          totalPages: totalPages,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
         };
       } catch (error) {
         toast({
@@ -147,7 +147,7 @@ const Venue = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully deleted the venue.",
+            description: "You have successfully deleted the conference.",
             duration: 1500,
             variant: "success",
           });
@@ -156,7 +156,7 @@ const Venue = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected venue.",
+          description: "Id is missing from the selected conference.",
           duration: 1500,
           variant: "destructive",
         });
@@ -164,7 +164,7 @@ const Venue = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting venue. Please try again.",
+        description: "Error while deleting conference. Please try again.",
         duration: 1500,
         variant: "error",
       });
@@ -199,4 +199,4 @@ const Venue = () => {
   );
 };
 
-export default withAuth(Venue, { requiredRole: ["admin", "staff"] });
+export default withAuth(Conference, { requiredRole: ["admin", "staff"] });

@@ -1,131 +1,67 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
+import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ApproveResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
-
-import { approvalApi } from "@/api/approvalApi";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN, STAFF } from "@/constants/auth";
 import { useSegments } from "@/hooks/useSegments";
+import { approvalApi } from "@/api/approvalApi";
 
 const KeyContact = () => {
-  const { data } = useSegments();
-
+  const { user } = useAuth();
   const { toast } = useToast();
+  const { data } = useSegments();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [keyContacts, setKeyContacts] = useState<KeyContactProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [rerenderData, setRerenderData] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { keyContacts }: KeyContactListResponse =
-          await approvalApi.getKeyContactApproval();
-        setKeyContacts(keyContacts);
-        // setTotalPages(response.totalPages);
+        const { keyContacts, totalPages, currentPage }: KeyContactListResponse =
+          await approvalApi.getKeyContactApproval({ page, searchTerm });
+
+        return {
+          data: keyContacts,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
+          title: "Failed to fetch data",
+          description: "Error while fetching key contacts. Please try again.",
           duration: 1500,
           variant: "error",
         });
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
+    },
+    [rerenderData]
+  );
 
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
-
-  const handleAction = async (id: string, action: string) => {
-    try {
-      setIsLoading(true);
-      const isApproved = action === "approve" ? true : false;
-
-      // if (actionType === "create" && action === "reject") {
-      //   const { message }: ApproveResponse = await approvalApi.deleteApproval(
-      //     `keycontact/${id}`
-      //   );
-      //   if (message) {
-      //     toast({
-      //       title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-      //       description: `You have successfully ${
-      //         isApproved ? "approved" : "reject"
-      //       } the key contact.`,
-      //       duration: 1500,
-      //       variant: isApproved ? "success" : "error",
-      //     });
-      //     setRerenderData(!rerenderData);
-      //   }
-      //   return;
-      // }
-
-      const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `keycontact/${id}/${action}`
-      );
-      if (message) {
-        toast({
-          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `${message}`,
-          duration: 1500,
-          variant: isApproved ? "success" : "error",
-        });
-        setRerenderData(!rerenderData);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error while changing status. Please try again.",
-        duration: 1500,
-        variant: "error",
-      });
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setIsDeleteDialogOpen(true);
   };
 
   const columns: Column<KeyContactProps>[] = [
-    {
-      header: "Type",
-      accessorKey: "changes",
-      cell: ({ changes }) => {
-        return (
-          <span
-            className={`uppercase inline-flex items-center rounded-full px-2 py-1 text-xs font-bold ${
-              changes.type === "create"
-                ? "text-green-600"
-                : changes.type === "update"
-                ? "text-statuscolorupdate"
-                : "text-statuscolorreject"
-            }`}
-          >
-            {changes.type}
-          </span>
-        );
-      },
-    },
-
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
+
     {
       header: "State",
       accessorKey: "state_id",
@@ -137,50 +73,48 @@ const KeyContact = () => {
         );
       },
     },
-
     {
       header: "Status",
       accessorKey: "status",
-      cell: (item) => (
+      cell: (status) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item?.adminStatus === "approved"
+            status?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : item?.adminStatus === "rejected"
+              : status.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item?.adminStatus}
+          {status.adminStatus}
         </span>
       ),
     },
-
     {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
+        if (user === STAFF && cellItem.adminStatus === "pending") return null;
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="outline"
-              className="bg-primary text-white"
-              size="sm"
-              onClick={() => handleAction(cellItem._id, "approve")}
-              disabled={isLoading}
-            >
-              <h1>Approve</h1>
-            </Button>
-
-            <Button
               variant="ghost"
-              size="sm"
-              className="border border-primary text-primary"
-              disabled={isLoading}
-              onClick={() => handleAction(cellItem._id, "reject")}
+              size="icon"
+              onClick={() =>
+                router.push(`/forms/add-key-contact?id=${cellItem._id}`)
+              }
             >
-              Reject
+              <SquarePen />
             </Button>
+            {cellItem.adminStatus !== "approved" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeleteClick(cellItem._id)}
+              >
+                <Trash2 className="text-red-600" />
+              </Button>
+            )}
           </div>
         );
       },
@@ -189,7 +123,6 @@ const KeyContact = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
         const { message }: KeyContactDeleteResponse =
           await listApi.deleteKeyContact(selectedId);
 
@@ -198,7 +131,7 @@ const KeyContact = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully Deleted the key contact.",
+            description: "You have successfully eleted the key contact.",
             duration: 1500,
             variant: "success",
           });
@@ -221,24 +154,26 @@ const KeyContact = () => {
       });
       console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
+        fetchData={fetchData}
         title="Approve Key Contact"
-        data={keyContacts}
         itemsPerPage={10}
-        searchField={"contact_name"}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleConfirmDeletion}
         title="Delete Item"
-        description="Are you sure you want to delete this item? This action is irreversible."
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
         confirmButtonText="Yes, Delete"
         cancelButtonText="No, Cancel"
       />

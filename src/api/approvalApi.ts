@@ -5,54 +5,101 @@ import {
   AssociationsListResponse,
   CompanyListResponse,
   ConferenceListResponse,
+  ExhibitionsListResponse,
   KeyContactListResponse,
+  VenueListResponse,
 } from "@/types/listTypes";
 
 export const approvalApi = {
-  getExhibitionApproval: async (): Promise<ExhibitionApprovalListResponse> => {
+  getExhibitionApproval: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<ExhibitionsListResponse> => {
     try {
-      const response = await axiosInstance.get<ExhibitionApprovalListResponse>(
-        "/association/approval"
+      const response = await axiosInstance.get<ExhibitionsListResponse>(
+        "/association/approval",
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getConferenceApproval: async (): Promise<ConferenceListResponse> => {
+  getConferenceApproval: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<ConferenceListResponse> => {
     try {
       const response = await axiosInstance.get<ConferenceListResponse>(
-        `/conference/approval`
+        `/conference/approval?limit=10`,
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getAssociationApproval: async (): Promise<AssociationsListResponse> => {
+  getAssociationApproval: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<AssociationsListResponse> => {
     try {
       const response = await axiosInstance.get<AssociationsListResponse>(
-        `/association/approval`
+        `/association/approval?limit=10`,
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getCompanyApproval: async (): Promise<CompanyListResponse> => {
+  getCompanyApproval: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<CompanyListResponse> => {
     try {
       const response = await axiosInstance.get<CompanyListResponse>(
-        `/company/approval`
+        `/company/approval?limit=10`,
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getKeyContactApproval: async (): Promise<KeyContactListResponse> => {
+  getKeyContactApproval: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<KeyContactListResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
-        `/keycontact/approval`
+        `/keycontact/approval?limit=10`,
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {
@@ -70,6 +117,26 @@ export const approvalApi = {
   deleteApproval: async (url: string): Promise<ApproveResponse> => {
     try {
       const response = await axiosInstance.delete<ApproveResponse>(`${url}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+
+  getVenueApproval: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<VenueListResponse> => {
+    try {
+      const response = await axiosInstance.get<VenueListResponse>(
+        `/venue/approval?limit=10`,
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);

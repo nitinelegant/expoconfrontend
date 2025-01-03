@@ -15,7 +15,7 @@ export interface ExhibitionApprovalProps {
 
 export interface ExhibitionApprovalListResponse {
   message: string;
-  venues: ExhibitionApprovalProps[];
+  exhibition: ExhibitionApprovalProps[];
   hasMore: boolean;
   currentPage: number;
   totalPages: number;

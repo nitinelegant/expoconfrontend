@@ -7,22 +7,22 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  CompanyDeleteResponse,
-  CompanyListResponse,
-  CompanyProps,
+  VenueProps,
+  VenueListResponse,
+  VenueDeleteResponse,
 } from "@/types/listTypes";
-
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { approvalApi } from "@/api/approvalApi";
 
-const Company = () => {
+const Venue = () => {
   const { data } = useSegments();
   const { toast } = useToast();
-  const { user } = useAuth();
   const router = useRouter();
+  const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -30,11 +30,14 @@ const Company = () => {
   const fetchData = useCallback(
     async (page: number, searchTerm: string) => {
       try {
-        const { companies, totalPages, currentPage }: CompanyListResponse =
-          await listApi.getCompanies({ page, searchTerm });
+        const { venues, totalPages, currentPage }: VenueListResponse =
+          await approvalApi.getVenueApproval({
+            page,
+            searchTerm,
+          });
 
         return {
-          data: companies,
+          data: venues,
           totalItems: totalPages * 5 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
@@ -42,7 +45,7 @@ const Company = () => {
       } catch (error) {
         toast({
           title: "Failed to fetch data",
-          description: "Error while fetching company. Please try again.",
+          description: "Error while fetching association. Please try again.",
           duration: 1500,
           variant: "error",
         });
@@ -51,11 +54,11 @@ const Company = () => {
     },
     [rerenderData]
   );
-  const columns: Column<CompanyProps>[] = [
-    { header: "Company Name", accessorKey: "company_name" },
-    { header: "City", accessorKey: "company_city" },
-    { header: "Address", accessorKey: "company_address" },
-    { header: "Website", accessorKey: "company_website" },
+  const columns: Column<VenueProps>[] = [
+    { header: "Venue Name", accessorKey: "venue_name" },
+    { header: "City", accessorKey: "venue_city" },
+    { header: "Address", accessorKey: "venue_address" },
+    { header: "Website", accessorKey: "venue_website" },
     {
       header: "State",
       accessorKey: "state_id",
@@ -73,14 +76,14 @@ const Company = () => {
       cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item?.adminStatus === "approved"
+            item.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : item?.adminStatus === "rejected"
+              : item.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item?.adminStatus}
+          {item.adminStatus === "approved" ? item.status : item?.adminStatus}
         </span>
       ),
     },
@@ -93,9 +96,7 @@ const Company = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() =>
-                router.push(`/forms/add-company?id=${cellItem._id}`)
-              }
+              onClick={() => router.push(`/forms/add-venue?id=${cellItem._id}`)}
             >
               <SquarePen />
             </Button>
@@ -120,7 +121,7 @@ const Company = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        const { message }: CompanyDeleteResponse = await listApi.deleteCompany(
+        const { message }: VenueDeleteResponse = await listApi.deleteVenue(
           selectedId
         );
 
@@ -129,7 +130,7 @@ const Company = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully Deleted the company.",
+            description: "You have successfully deleted the venue.",
             duration: 1500,
             variant: "success",
           });
@@ -138,7 +139,7 @@ const Company = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected company.",
+          description: "Id is missing from the selected venue.",
           duration: 1500,
           variant: "destructive",
         });
@@ -146,7 +147,7 @@ const Company = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting company. Please try again.",
+        description: "Error while deleting venue. Please try again.",
         duration: 1500,
         variant: "error",
       });
@@ -154,16 +155,13 @@ const Company = () => {
     } finally {
     }
   };
-
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
         fetchData={fetchData}
-        title="Company"
-        viewAllLink="/forms/add-company"
-        addButtonTitle="Add Company"
-        itemsPerPage={10}
+        title="Approve Venue"
+        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
@@ -182,4 +180,4 @@ const Company = () => {
   );
 };
 
-export default withAuth(Company, { requiredRole: ["admin", "staff"] });
+export default withAuth(Venue, { requiredRole: ["admin", "staff"] });

@@ -134,6 +134,11 @@ export default function DashboardLayout({
           visible: ["admin"],
         },
         {
+          href: "/approval/venue",
+          text: "Venue",
+          visible: ["admin"],
+        },
+        {
           href: "/approval/association",
           text: "Association",
           visible: ["admin"],

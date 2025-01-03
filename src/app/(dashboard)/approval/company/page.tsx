@@ -58,14 +58,14 @@ const Company = () => {
       const isApproved = action === "approve" ? true : false;
 
       const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `keycontact/${id}/${action}`
+        `company/${id}/${action}`
       );
       if (message) {
         toast({
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
           description: `You have successfully ${
             isApproved ? "approved" : "reject"
-          } the key contact.`,
+          } the company.`,
           duration: 1500,
           variant: isApproved ? "success" : "error",
         });
@@ -74,7 +74,7 @@ const Company = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while approving key contact. Please try again.",
+        description: "Error while approving company. Please try again.",
         duration: 1500,
         variant: "error",
       });

@@ -376,7 +376,7 @@ const ExhibitonForm = () => {
       <BackButton />
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="text-2xl font-bold text-black">
             {isEditMode ? "Update" : "Add"} Exhibition
           </CardTitle>
         </CardHeader>
@@ -861,7 +861,7 @@ const ExhibitonForm = () => {
 
             <Button
               type="submit"
-              className="w-full bg-primary"
+              className="w-full bg-primary text-white"
               tabIndex={22}
               disabled={isLoading}
             >

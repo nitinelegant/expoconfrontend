@@ -104,10 +104,9 @@ const Staff = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        const { message }: VenueDeleteResponse = await listApi.deleteVenue(
+        const { message }: VenueDeleteResponse = await listApi.deleteStaff(
           selectedId
         );
-
         if (message) {
           setIsDeleteDialogOpen(false);
           setSelectedId(null);

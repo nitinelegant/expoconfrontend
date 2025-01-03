@@ -53,11 +53,6 @@ const KeyContact = () => {
     [rerenderData]
   );
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedId(id);
-    setIsDeleteDialogOpen(true);
-  };
-
   const handleAction = async (id: string, action: string) => {
     try {
       const isApproved = action === "approve" ? true : false;

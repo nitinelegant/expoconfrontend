@@ -1,5 +1,4 @@
 "use client";
-
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useEffect, useRef, useState } from "react";
@@ -19,7 +18,6 @@ import BackButton from "@/components/BackButton";
 import { withAuth } from "@/utils/withAuth";
 import { createFormApi } from "@/api/createFormApi";
 import { AssociationProps, CompanyProps } from "@/types/listTypes";
-import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import VenueSearch from "@/components/VenueSearch";
@@ -30,8 +28,6 @@ const KeyContactForm = () => {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const searchParams = useSearchParams();
   const keyContactId = searchParams.get("id");
@@ -130,7 +126,6 @@ const KeyContactForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        await Promise.all([fetchCompany(), fetchAssociation()]);
         if (isEditMode) {
           const { keyContact } = await createFormApi.getKeyContact(
             keyContactId as string
@@ -160,24 +155,6 @@ const KeyContactForm = () => {
 
     initializeData();
   }, [isEditMode, keyContactId]);
-
-  const fetchCompany = async () => {
-    try {
-      const { companies } = await listApi.getCompanies();
-      if (companies?.length > 0) setCompanies(companies);
-    } catch (error) {
-      console.error("Error fetching companies:", error);
-    }
-  };
-
-  const fetchAssociation = async () => {
-    try {
-      const { associations } = await listApi.getAssociation();
-      if (associations?.length > 0) setAssociations(associations);
-    } catch (error) {
-      console.error("Error fetching associations:", error);
-    }
-  };
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
@@ -315,13 +292,13 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select Company" />
                   </SelectTrigger>
                   <SelectContent>
-                    {companies?.map((item) => (
+                    {data?.company_type_id?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer capitalize"
                       >
-                        {item.company_name}
+                        {item?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -365,13 +342,13 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select Association" />
                   </SelectTrigger>
                   <SelectContent>
-                    {associations?.map((item) => (
+                    {data?.association_type_id?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer capitalize"
                       >
-                        {item.association_name}
+                        {item?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

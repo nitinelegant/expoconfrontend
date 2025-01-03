@@ -9,6 +9,7 @@
   --statuscolorupdate: #d87225;
   --statuscolorreject: #d1202a;
   font-family: var(--font-inter);
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,6 +23,10 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-inter), sans-serif;
+  overflow: hidden !important;
+}
+::-webkit-scrollbar {
+  display: none;  /* Hide scrollbar in WebKit-based browsers */
 }
 /* input file text css  */
 input[type="file"] {

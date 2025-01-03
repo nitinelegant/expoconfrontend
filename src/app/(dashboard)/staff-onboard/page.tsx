@@ -121,8 +121,8 @@ const StaffOnBoardForm = () => {
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
-            <CardTitle>Staff Registration</CardTitle>
-            <CardDescription className="pt-1">
+            <CardTitle className="text-black">Staff Registration</CardTitle>
+            <CardDescription className="pt-1 text-black">
               Add staff details to create account
             </CardDescription>
           </CardHeader>
@@ -228,8 +228,9 @@ const StaffOnBoardForm = () => {
 
                 <Button
                   type="submit"
-                  className="w-full bg-primary"
+                  className="w-full bg-primary text-white"
                   disabled={isLoading}
+                  
                 >
                   {isEditMode ? "Update" : "Create"} Staff
                 </Button>

@@ -127,10 +127,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         <div className="text-sm text-red-500">{error}</div>
       )}
       {preview && (
-        <div className="relative mt-2">
+        <div className="relative mt-2 border-none max-w-[80px]">
           <button
             type="button"
-            className="absolute top-0 left-0 bg-primary text-white rounded-full p-2 flex items-center justify-center hover:bg-primary/90 h-7 w-7"
+            className="border-none  absolute top-0 left-0 bg-primary text-white rounded-full p-2 flex items-center justify-center hover:bg-primary/90 h-7 w-7"
             onClick={handleRemoveImage}
             aria-label="Remove Image"
             tabIndex={tabIndex ? tabIndex + 1 : undefined}

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useDebounce } from "use-debounce";
 import {
   Table,
   TableBody,
@@ -28,55 +29,68 @@ export interface Column<T> {
 
 interface DataTableProps<T> {
   columns: Column<T>[];
-  data: T[];
+  fetchData: (
+    page: number,
+    searchTerm: string
+  ) => Promise<{
+    data: T[];
+    totalItems: number;
+    currentPage: number;
+    totalPages: number;
+  }>;
   title?: string;
   viewAllLink?: string;
   className?: string;
   showCheckbox?: boolean;
   addButtonTitle?: string;
   itemsPerPage?: number;
-  searchField?: keyof T; // New prop for specifying the search field
 }
 
 export function DataTable<T>({
   columns,
-  data,
+  fetchData,
   title,
   viewAllLink,
   className,
   showCheckbox = false,
   addButtonTitle,
   itemsPerPage = 10,
-  searchField, // Add this new prop
 }: DataTableProps<T>) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
+  const [data, setData] = useState<T[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredData = data.filter((item) => {
-    if (searchField) {
-      const fieldValue = item[searchField];
-      return (
-        typeof fieldValue === "string" &&
-        fieldValue.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await fetchData(currentPage, debouncedSearchTerm);
+      setData(result.data);
+      setTotalItems(result.totalItems);
+      setCurrentPage(result.currentPage);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
-    // If no searchField is specified, fall back to searching all fields
-    return Object.values(item).some(
-      (value) =>
-        typeof value === "string" &&
-        value.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  }, [currentPage, debouncedSearchTerm, fetchData]);
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleNavigation = (href: string, event: React.MouseEvent) => {
@@ -84,6 +98,91 @@ export function DataTable<T>({
     setTimeout(() => {
       router.push(href);
     }, 50);
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 7;
+    const ellipsis = (
+      <span key="ellipsis" className="text-black text-lg">
+        ...
+      </span>
+    );
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(
+          <Button
+            key={i}
+            variant={i === currentPage ? "default" : "outline"}
+            size="sm"
+            onClick={() => handlePageChange(i)}
+            className={`bg-white border-gray-200 text-gray-600 ${
+              i === currentPage ? "bg-primary text-white" : ""
+            }`}
+          >
+            {i}
+          </Button>
+        );
+      }
+    } else {
+      buttons.push(
+        <Button
+          key={1}
+          variant={1 === currentPage ? "default" : "outline"}
+          size="sm"
+          onClick={() => handlePageChange(1)}
+          className={`bg-white border-gray-200 text-gray-600 ${
+            1 === currentPage ? "bg-primary text-white" : ""
+          }`}
+        >
+          1
+        </Button>
+      );
+
+      if (currentPage > 3) {
+        buttons.push(ellipsis);
+      }
+
+      const start = Math.max(2, currentPage - 2);
+      const end = Math.min(totalPages - 1, currentPage + 2);
+
+      for (let i = start; i <= end; i++) {
+        buttons.push(
+          <Button
+            key={i}
+            variant={i === currentPage ? "default" : "outline"}
+            size="sm"
+            onClick={() => handlePageChange(i)}
+            className={`bg-white border-gray-200 text-gray-600 ${
+              i === currentPage ? "bg-primary text-white" : ""
+            }`}
+          >
+            {i}
+          </Button>
+        );
+      }
+
+      if (currentPage < totalPages - 2) {
+        buttons.push(ellipsis);
+      }
+
+      buttons.push(
+        <Button
+          key={totalPages}
+          variant={totalPages === currentPage ? "default" : "outline"}
+          size="sm"
+          onClick={() => handlePageChange(totalPages)}
+          className={`bg-white border-gray-200 text-gray-600 ${
+            totalPages === currentPage ? "bg-primary text-white" : ""
+          }`}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    return buttons;
   };
 
   return (
@@ -99,7 +198,7 @@ export function DataTable<T>({
                 placeholder="Search"
                 className="w-[300px] pl-8"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
               />
             </div>
             {viewAllLink && (
@@ -138,38 +237,43 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.map((item, index) => (
-              <TableRow
-                key={index}
-                className="hover:bg-gray-50 transition-colors text-background "
-              >
-                {showCheckbox && (
-                  <TableCell>
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300"
-                    />
-                  </TableCell>
-                )}
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.header}
-                    className="max-w-[400px] p-2 m-2"
-                  >
-                    {column.cell
-                      ? column.cell(item)
-                      : (item[column.accessorKey] as React.ReactNode)}
-                  </TableCell>
-                ))}
+            {isLoading ? (
+              <TableRow>
+                <TableCell>
+                  <p className="p-3 text-black">Loading...</p>
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              data?.map((item, index) => (
+                <TableRow
+                  key={index}
+                  className="hover:bg-gray-50 transition-colors text-background "
+                >
+                  {showCheckbox && (
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                    </TableCell>
+                  )}
+                  {columns.map((column) => (
+                    <TableCell key={column.header} className="max-w-[400px]">
+                      {column.cell
+                        ? column.cell(item)
+                        : (item[column.accessorKey] as React.ReactNode)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-700">
-            Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-            {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
-            {filteredData.length} entries
+            Showing {totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}{" "}
+            to {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
+            {totalItems} entries
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -181,19 +285,7 @@ export function DataTable<T>({
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={page === currentPage ? "default" : "outline"}
-                size="sm"
-                onClick={() => handlePageChange(page)}
-                className={`bg-white  border-gray-200 text-gray-600 ${
-                  page === currentPage ? "bg-primary text-white" : ""
-                }`}
-              >
-                {page}
-              </Button>
-            ))}
+            {renderPaginationButtons()}
             <Button
               variant="outline"
               size="sm"

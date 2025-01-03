@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -11,7 +11,6 @@ import {
   KeyContactListResponse,
   KeyContactProps,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -21,40 +20,36 @@ import { useSegments } from "@/hooks/useSegments";
 const KeyContact = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { isLoading: loading, data } = useSegments();
+  const { data } = useSegments();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [keyContacts, setKeyContacts] = useState<KeyContactProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [rerenderData, setRerenderData] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { keyContacts }: KeyContactListResponse =
-          await listApi.getKeyContact();
-        setKeyContacts(keyContacts);
-        // setTotalPages(response.totalPages);
+        const { keyContacts, totalPages, currentPage }: KeyContactListResponse =
+          await listApi.getKeyContacts({ page, searchTerm });
+
+        return {
+          data: keyContacts,
+          totalItems: totalPages * 5,
+          currentPage: currentPage,
+          totalPages: totalPages,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
+          title: "Failed to fetch data",
+          description: "Error while fetching key contacts. Please try again.",
           duration: 1500,
           variant: "error",
         });
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading || loading) {
-    return <Loader size="medium" />;
-  }
+    },
+    [rerenderData]
+  );
 
   const handleDeleteClick = (id: string) => {
     setSelectedId(id);
@@ -127,7 +122,6 @@ const KeyContact = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
         const { message }: KeyContactDeleteResponse =
           await listApi.deleteKeyContact(selectedId);
 
@@ -159,19 +153,17 @@ const KeyContact = () => {
       });
       console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={keyContacts}
+        fetchData={fetchData}
         title="Key Contact"
         viewAllLink="/forms/add-key-contact"
         addButtonTitle="Add Key Contact"
         itemsPerPage={10}
-        searchField={"contact_name"}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

@@ -18,36 +18,6 @@ import {
 } from "@/types/listTypes";
 
 export const listApi = {
-  getVenues: async (): Promise<VenueListResponse> => {
-    try {
-      const response = await axiosInstance.get<VenueListResponse>(
-        "/venue/list?limit=50"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
-  getAssociation: async (): Promise<AssociationsListResponse> => {
-    try {
-      const response = await axiosInstance.get<AssociationsListResponse>(
-        "/association/list?limit=50"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
-  getCompanies: async (): Promise<CompanyListResponse> => {
-    try {
-      const response = await axiosInstance.get<CompanyListResponse>(
-        "/company/list"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
   getKeyContact: async (): Promise<KeyContactListResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
@@ -58,46 +28,7 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getConference: async (): Promise<ConferenceListResponse> => {
-    try {
-      const response = await axiosInstance.get<ConferenceListResponse>(
-        "/conference/list"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
-  getExhibition: async (): Promise<ExhibitionsListResponse> => {
-    try {
-      const response = await axiosInstance.get<ExhibitionsListResponse>(
-        "/exhibition/list?limit=50"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
-  getExpExhibition: async (): Promise<ExhibitionsListResponse> => {
-    try {
-      const response = await axiosInstance.get<ExhibitionsListResponse>(
-        "/exhibition/expired?limit=50"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
-  getExpConference: async (): Promise<ExpConferenceListResponse> => {
-    try {
-      const response = await axiosInstance.get<ExpConferenceListResponse>(
-        "/conference/expired"
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(`Error while fetching data ${error}`);
-    }
-  },
+
   getStaff: async (): Promise<StaffListResponse> => {
     try {
       const response = await axiosInstance.get<StaffListResponse>(
@@ -171,6 +102,160 @@ export const listApi = {
   deleteApi: async (url: string): Promise<DeleteApiResponse> => {
     try {
       const response = await axiosInstance.delete<DeleteApiResponse>(`${url}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+
+  getKeyContacts: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<KeyContactListResponse> => {
+    try {
+      const response = await axiosInstance.get<KeyContactListResponse>(
+        "/keycontact/list",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getCompanies: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<CompanyListResponse> => {
+    try {
+      const response = await axiosInstance.get<CompanyListResponse>(
+        "/company/list",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getAssociation: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<AssociationsListResponse> => {
+    try {
+      const response = await axiosInstance.get<AssociationsListResponse>(
+        "/association/list?limit=50",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getVenues: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<VenueListResponse> => {
+    try {
+      const response = await axiosInstance.get<VenueListResponse>(
+        "/venue/list?limit=10",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getExpConference: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<ExpConferenceListResponse> => {
+    try {
+      const response = await axiosInstance.get<ExpConferenceListResponse>(
+        "/conference/expired",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getConference: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<ConferenceListResponse> => {
+    try {
+      const response = await axiosInstance.get<ConferenceListResponse>(
+        "/conference/list",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getExpExhibition: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<ExhibitionsListResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionsListResponse>(
+        "/exhibition/expired?limit=50",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+
+  getExhibition: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<ExhibitionsListResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionsListResponse>(
+        "/exhibition/list?limit=50",
+        {
+          params: { page, keyword: searchTerm },
+        }
+      );
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);

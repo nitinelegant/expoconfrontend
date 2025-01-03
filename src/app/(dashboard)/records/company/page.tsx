@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -11,7 +11,7 @@ import {
   CompanyListResponse,
   CompanyProps,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
+
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
@@ -24,36 +24,33 @@ const Company = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { companies }: CompanyListResponse = await listApi.getCompanies();
-        if (companies) setCompanies(companies);
-        // setTotalPages(response.totalPages);
+        const { companies, totalPages, currentPage }: CompanyListResponse =
+          await listApi.getCompanies({ page, searchTerm });
+
+        return {
+          data: companies,
+          totalItems: totalPages * 5,
+          currentPage: currentPage,
+          totalPages: totalPages,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
+          title: "Failed to fetch data",
+          description: "Error while fetching company. Please try again.",
           duration: 1500,
           variant: "error",
         });
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
+    },
+    [rerenderData]
+  );
   const columns: Column<CompanyProps>[] = [
     { header: "Company Name", accessorKey: "company_name" },
     { header: "City", accessorKey: "company_city" },
@@ -123,7 +120,6 @@ const Company = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
         const { message }: CompanyDeleteResponse = await listApi.deleteCompany(
           selectedId
         );
@@ -156,7 +152,6 @@ const Company = () => {
       });
       console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
 
@@ -164,12 +159,11 @@ const Company = () => {
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={companies}
-        title="Companies"
+        fetchData={fetchData}
+        title="Company"
         viewAllLink="/forms/add-company"
         addButtonTitle="Add Company"
-        itemsPerPage={5}
-        searchField="company_name"
+        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

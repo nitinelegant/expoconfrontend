@@ -372,7 +372,7 @@ const ExhibitonForm = () => {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
-            {isEditMode ? "Update" : "Add"} Conference
+            {isEditMode ? "Update" : "Add"} Exhibition
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -848,7 +848,7 @@ const ExhibitonForm = () => {
               tabIndex={22}
               disabled={isLoading}
             >
-              {isEditMode ? "Update" : "Add"} Conference
+              {isEditMode ? "Update" : "Add"} Exhibition
             </Button>
           </form>
         </CardContent>

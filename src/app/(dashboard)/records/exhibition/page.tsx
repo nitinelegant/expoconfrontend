@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -11,7 +11,7 @@ import {
   ExhibitionProps,
   ExhibitionsListResponse,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
+
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import formatDateToYear from "@/utils/common";
 import { useRouter } from "next/navigation";
@@ -25,36 +25,40 @@ const Venue = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [exhibition, setExhibition] = useState<ExhibitionProps[]>([]);
+
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { exhibitions }: ExhibitionsListResponse =
-          await listApi.getExhibition();
-        setExhibition(exhibitions);
+        const {
+          exhibitions,
+          totalPages,
+          currentPage,
+        }: ExhibitionsListResponse = await listApi.getExhibition({
+          page,
+          searchTerm,
+        });
+
+        return {
+          data: exhibitions,
+          totalItems: totalPages * 5,
+          currentPage: currentPage,
+          totalPages: totalPages,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
-          duration: 1000,
+          title: "Failed to fetch data",
+          description: "Error while fetching key contacts. Please try again.",
+          duration: 1500,
           variant: "error",
         });
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
+    },
+    [rerenderData]
+  );
 
   const handleDeleteClick = (id: string) => {
     setSelectedId(id);
@@ -140,7 +144,6 @@ const Venue = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
         const { message }: DeleteApiResponse = await listApi.deleteApi(
           `/exhibition/${selectedId}`
         );
@@ -173,19 +176,17 @@ const Venue = () => {
       });
       console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={exhibition}
+        fetchData={fetchData}
         title="Exhibition"
         viewAllLink="/forms/add-exhibition"
         addButtonTitle="Add Exhibition"
         itemsPerPage={10}
-        searchField="expo_shortname"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

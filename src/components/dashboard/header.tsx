@@ -15,8 +15,8 @@ export function Header({ title }: HeaderProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setcurrentUser] = useState({});
-  const { data } = useUser();
-  console.log("data", data);
+  // const { data } = useUser();
+  // console.log("data", data);
 
   return (
     <header className="border-b bg-white px-6 py-3">

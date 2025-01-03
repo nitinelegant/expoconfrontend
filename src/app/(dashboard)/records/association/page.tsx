@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -11,7 +11,7 @@ import {
   AssociationProps,
   AssociationsListResponse,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
+
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useSegments } from "@/hooks/useSegments";
@@ -23,39 +23,40 @@ const Association = () => {
   const { toast } = useToast();
   const router = useRouter();
   const { user } = useAuth();
-
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { associations }: AssociationsListResponse =
-          await listApi.getAssociation();
-        if (associations?.length > 0) setAssociations(associations);
-        // setTotalPages(response.totalPages);
+        const {
+          associations,
+          totalPages,
+          currentPage,
+        }: AssociationsListResponse = await listApi.getAssociation({
+          page,
+          searchTerm,
+        });
+
+        return {
+          data: associations,
+          totalItems: totalPages * 5,
+          currentPage: currentPage,
+          totalPages: totalPages,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
+          title: "Failed to fetch data",
+          description: "Error while fetching association. Please try again.",
           duration: 1500,
           variant: "error",
         });
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
+    },
+    [rerenderData]
+  );
   const columns: Column<AssociationProps>[] = [
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
@@ -123,7 +124,6 @@ const Association = () => {
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
         const { message }: AssociationDeleteResponse =
           await listApi.deleteAssociation(selectedId);
 
@@ -155,19 +155,17 @@ const Association = () => {
       });
       console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={associations}
+        fetchData={fetchData}
         title="Association"
         viewAllLink="/forms/add-association"
         addButtonTitle="Add Association"
         itemsPerPage={10}
-        searchField="association_name"
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

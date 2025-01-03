@@ -103,17 +103,17 @@ export function DataTable<T>({
   const renderPaginationButtons = () => {
     const buttons = [];
     const maxVisiblePages = 7;
-    const ellipsis = (
-      <span key="ellipsis" className="text-black text-lg">
-        ...
-      </span>
-    );
+
+    // Create unique, stable keys for ellipsis
+    const leftEllipsisKey = "ellipsis-left";
+    const rightEllipsisKey = "ellipsis-right";
+    const ellipsisElement = (key: string) => <span key={key}>...</span>;
 
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         buttons.push(
           <Button
-            key={i}
+            key={`page-${i}`}
             variant={i === currentPage ? "default" : "outline"}
             size="sm"
             onClick={() => handlePageChange(i)}
@@ -128,7 +128,7 @@ export function DataTable<T>({
     } else {
       buttons.push(
         <Button
-          key={1}
+          key="page-1"
           variant={1 === currentPage ? "default" : "outline"}
           size="sm"
           onClick={() => handlePageChange(1)}
@@ -141,7 +141,7 @@ export function DataTable<T>({
       );
 
       if (currentPage > 3) {
-        buttons.push(ellipsis);
+        buttons.push(ellipsisElement(leftEllipsisKey));
       }
 
       const start = Math.max(2, currentPage - 2);
@@ -150,7 +150,7 @@ export function DataTable<T>({
       for (let i = start; i <= end; i++) {
         buttons.push(
           <Button
-            key={i}
+            key={`page-${i}`}
             variant={i === currentPage ? "default" : "outline"}
             size="sm"
             onClick={() => handlePageChange(i)}
@@ -164,12 +164,12 @@ export function DataTable<T>({
       }
 
       if (currentPage < totalPages - 2) {
-        buttons.push(ellipsis);
+        buttons.push(ellipsisElement(rightEllipsisKey));
       }
 
       buttons.push(
         <Button
-          key={totalPages}
+          key={`page-${totalPages}`}
           variant={totalPages === currentPage ? "default" : "outline"}
           size="sm"
           onClick={() => handlePageChange(totalPages)}

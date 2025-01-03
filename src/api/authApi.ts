@@ -1,5 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
-import { User } from "@/types/authTypes";
+import { User, UserResponse } from "@/types/authTypes";
 
 interface LoginResponse {
   accessToken: string;
@@ -24,9 +24,9 @@ export const authApi = {
     }
   },
 
-  getCurrentUser: async (): Promise<User> => {
+  getCurrentUser: async (): Promise<UserResponse> => {
     try {
-      const response = await axiosInstance.get<User>("users/me");
+      const response = await axiosInstance.get<UserResponse>("users/me");
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);

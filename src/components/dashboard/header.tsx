@@ -1,8 +1,4 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { ADMIN } from "@/constants/auth";
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/hooks/useUser";
 
 interface HeaderProps {
@@ -10,13 +6,7 @@ interface HeaderProps {
 }
 
 export function Header({ title }: HeaderProps) {
-  const { user } = useAuth();
-  // const { data, isLoading: loading, error } = useUser();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentUser, setcurrentUser] = useState({});
-  // const { data } = useUser();
-  // console.log("data", data);
+  const { data } = useUser();
 
   return (
     <header className="border-b bg-white px-6 py-3">
@@ -45,12 +35,8 @@ export function Header({ title }: HeaderProps) {
               {/* <AvatarFallback>GA</AvatarFallback> */}
             </Avatar>
             <div className="text-sm">
-              <p className="font-medium">
-                {user === ADMIN ? "Admin" : "Staff"}
-              </p>
-              <p className="text-gray-500">
-                {`${user === ADMIN ? "Adming" : "Staff"}`}@gmail.com
-              </p>
+              <p className="font-medium">{data?.fullname}</p>
+              <p className="text-gray-500">{data?.email}</p>
             </div>
           </div>
         </div>

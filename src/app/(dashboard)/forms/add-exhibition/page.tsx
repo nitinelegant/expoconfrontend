@@ -390,8 +390,7 @@ const ExhibitonForm = () => {
                 >
                   <SelectTrigger
                     tabIndex={1}
-                    // ref={firstInputRef}
-                    // aria-required="true"
+                    ref={firstInputRef}
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black capitalize"
@@ -665,7 +664,7 @@ const ExhibitonForm = () => {
                   defaultValue={formik.values.state}
                 >
                   <SelectTrigger
-                    tabIndex={3}
+                    tabIndex={11}
                     aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
@@ -720,25 +719,6 @@ const ExhibitonForm = () => {
                 apiEndpoint="company"
                 tabIndex={13}
               />
-              {/* <div className="space-y-2">
-                <Label htmlFor="website">Website*</Label>
-                <Input
-                  id="website"
-                  type="url"
-                  tabIndex={13}
-                  {...formik.getFieldProps("website")}
-                  className={
-                    formik.touched.website && formik.errors.website
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.website && formik.errors.website && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.website}
-                  </p>
-                )}
-              </div> */}
 
               <ImageUploader
                 name="logo"
@@ -749,6 +729,7 @@ const ExhibitonForm = () => {
                 error={formik.errors.logo}
                 touched={formik.touched.logo}
                 initialPreview={formik.values.logo}
+                tabIndex={14}
               />
 
               <div className="space-y-2">

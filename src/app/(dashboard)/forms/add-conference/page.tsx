@@ -393,7 +393,7 @@ const ConferenceForm = () => {
                 >
                   <SelectTrigger
                     tabIndex={1}
-                    // ref={firstInputRef}
+                    ref={firstInputRef}
                     // aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
@@ -473,6 +473,7 @@ const ConferenceForm = () => {
                   defaultValue={formik.values.year}
                 >
                   <SelectTrigger
+                    id="year"
                     tabIndex={4}
                     className={cn(
                       "text-black",
@@ -668,7 +669,7 @@ const ConferenceForm = () => {
                   defaultValue={formik.values.state}
                 >
                   <SelectTrigger
-                    tabIndex={3}
+                    tabIndex={11}
                     aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
@@ -723,25 +724,6 @@ const ConferenceForm = () => {
                 apiEndpoint="conference"
                 tabIndex={13}
               />
-              {/* <div className="space-y-2">
-                <Label htmlFor="website">Website*</Label>
-                <Input
-                  id="website"
-                  type="url"
-                  tabIndex={13}
-                  {...formik.getFieldProps("website")}
-                  className={
-                    formik.touched.website && formik.errors.website
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.website && formik.errors.website && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.website}
-                  </p>
-                )}
-              </div> */}
 
               <ImageUploader
                 name="logo"
@@ -752,6 +734,7 @@ const ConferenceForm = () => {
                 error={formik.errors.logo}
                 touched={formik.touched.logo}
                 initialPreview={formik.values.logo}
+                tabIndex={14}
               />
 
               <div className="space-y-2">

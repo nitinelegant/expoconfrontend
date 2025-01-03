@@ -398,28 +398,6 @@ const CompanyForm = () => {
                 tabIndex={7}
               />
 
-              {/* <div className="space-y-2">
-                <Label htmlFor="website" className="text-gray-900">
-                  Website*
-                </Label>
-                <Input
-                  id="website"
-                  type="url"
-                  tabIndex={7}
-                  {...formik.getFieldProps("website")}
-                  className={
-                    formik.touched.website && formik.errors.website
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.website && formik.errors.website && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.website}
-                  </p>
-                )}
-              </div> */}
-
               <div className="space-y-2">
                 <Label htmlFor="googleMapLink" className="text-gray-900">
                   Google Map Link
@@ -452,6 +430,7 @@ const CompanyForm = () => {
                 error={formik.errors.logo}
                 touched={formik.touched.logo}
                 initialPreview={formik.values.logo}
+                tabIndex={9}
               />
             </div>
 

@@ -409,6 +409,7 @@ const VenueForm = () => {
                 touched={formik.touched.logo}
                 initialPreview={formik.values.logo}
                 required={true}
+                tabIndex={8}
               />
               <ImageUploader
                 name="layout"
@@ -419,6 +420,7 @@ const VenueForm = () => {
                 error={formik.errors.layout}
                 touched={formik.touched.layout}
                 initialPreview={formik.values.layout}
+                tabIndex={9}
               />
 
               {/* <div className="space-y-2 text-black">

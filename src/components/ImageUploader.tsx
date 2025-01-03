@@ -15,6 +15,7 @@ interface ImageUploaderProps {
   required?: boolean;
   error?: string;
   touched?: boolean;
+  tabIndex?: number;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -27,6 +28,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   required = false,
   error,
   touched,
+  tabIndex,
 }) => {
   const [preview, setPreview] = useState<string>(initialPreview || "");
   const [isUploading, setIsUploading] = useState(false);
@@ -118,6 +120,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         accept="image/*"
         disabled={isUploading}
         onBlur={() => setFieldTouched(name, true)}
+        tabIndex={tabIndex}
       />
       {isUploading && <div className="text-sm text-gray-500">Uploading...</div>}
       {!isUploading && touched && error && (
@@ -127,9 +130,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         <div className="relative mt-2">
           <button
             type="button"
-            className="absolute top-0 left-0   bg-primary text-white rounded-full p-2  flex items-center justify-center hover:bg-primary/90 h-7 w-7"
+            className="absolute top-0 left-0 bg-primary text-white rounded-full p-2 flex items-center justify-center hover:bg-primary/90 h-7 w-7"
             onClick={handleRemoveImage}
             aria-label="Remove Image"
+            tabIndex={tabIndex ? tabIndex + 1 : undefined}
           >
             <X className="h-5 w-5" />
           </button>

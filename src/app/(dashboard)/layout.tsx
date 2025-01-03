@@ -201,7 +201,7 @@ export default function DashboardLayout({
       <div className="flex-1 flex flex-col">
         <Header title="Dashboard" />
         <div className="relative flex-1">
-          <main className="absolute inset-0 overflow-y-auto p-4">
+          <main className="absolute inset-0 overflow-y-auto p-4 ">
             {children}
           </main>
         </div>

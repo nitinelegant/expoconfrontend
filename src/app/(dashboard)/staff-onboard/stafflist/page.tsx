@@ -1,71 +1,65 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, SquarePen } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  StaffProps,
+  VenueProps,
+  VenueListResponse,
+  VenueDeleteResponse,
   StaffListResponse,
-  StaffDeleteResponse,
+  StaffProps,
 } from "@/types/listTypes";
-import { Loader } from "@/components/ui/loader";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
+import { useRouter } from "next/navigation";
+import { useSegments } from "@/hooks/useSegments";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 
-const StaffList = () => {
+const Staff = () => {
+  const { data } = useSegments();
   const { toast } = useToast();
+  const router = useRouter();
+  const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [users, setUsers] = useState<StaffProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = useCallback(
+    async (page: number, searchTerm: string) => {
       try {
-        setIsLoading(true);
-        const { users }: StaffListResponse = await listApi.getStaff();
-        if (users?.length > 0) setUsers(users);
+        const { users, totalPages, currentPage }: StaffListResponse =
+          await listApi.getStaff({
+            page,
+            searchTerm,
+          });
+
+        return {
+          data: users,
+          totalItems: totalPages * 5 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
+        };
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Error while fetching data",
-          duration: 1000,
+          title: "Failed to fetch data",
+          description: "Error while fetching staff. Please try again.",
+          duration: 1500,
           variant: "error",
         });
-        console.log("error", error);
-      } finally {
-        setIsLoading(false);
+        throw error;
       }
-    };
-    fetchData();
-  }, [rerenderData]);
-
-  if (isLoading) {
-    return <Loader size="medium" />;
-  }
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedId(id);
-    setIsDeleteDialogOpen(true);
-  };
+    },
+    [rerenderData]
+  );
 
   const columns: Column<StaffProps>[] = [
     { header: "Staff Name", accessorKey: "user_fullname" },
     { header: "Email", accessorKey: "user_email" },
-    // {
-    //   header: "Role",
-    //   accessorKey: "user_role",
-    //   cell: (user) => (
-    //     <span
-    //       className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold`}
-    //     >
-    //       {user.user_role === 1 ? "Adming" : "Staff"}
-    //     </span>
-    //   ),
-    // },
+
     {
       header: "Status",
       accessorKey: "user_status",
@@ -101,11 +95,16 @@ const StaffList = () => {
       },
     },
   ];
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedId(id);
+    setIsDeleteDialogOpen(true);
+  };
+
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
-        setIsLoading(true);
-        const { message }: StaffDeleteResponse = await listApi.deleteStaff(
+        const { message }: VenueDeleteResponse = await listApi.deleteVenue(
           selectedId
         );
 
@@ -114,7 +113,7 @@ const StaffList = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully deleted the staff.",
+            description: "You have successfully deleted the venue.",
             duration: 1500,
             variant: "success",
           });
@@ -123,7 +122,7 @@ const StaffList = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected staff.",
+          description: "Id is missing from the selected venue.",
           duration: 1500,
           variant: "destructive",
         });
@@ -131,32 +130,34 @@ const StaffList = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting staff. Please try again.",
+        description: "Error while deleting venue. Please try again.",
         duration: 1500,
         variant: "error",
       });
-      console.log("error", error);
+      console.log(error);
     } finally {
-      setIsLoading(false);
     }
   };
   return (
     <div className="space-y-8 p-6">
       <DataTable
         columns={columns}
-        data={users}
-        title="Staff "
+        fetchData={fetchData}
+        title="All Staff"
         viewAllLink="/staff-onboard"
         addButtonTitle="Add Staff"
-        itemsPerPage={10}
-        searchField="user_fullname"
+        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleConfirmDeletion}
         title="Delete Item"
-        description="Are you sure you want to delete this item? This action is irreversible."
+        description={
+          user === ADMIN
+            ? "Are you sure you want to delete this item? This action is irreversible."
+            : "Your request will be sent to admin for approval"
+        }
         confirmButtonText="Yes, Delete"
         cancelButtonText="No, Cancel"
       />
@@ -164,4 +165,4 @@ const StaffList = () => {
   );
 };
 
-export default withAuth(StaffList, { requiredRole: ["admin", "staff"] });
+export default withAuth(Staff, { requiredRole: ["admin", "staff"] });

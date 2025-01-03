@@ -230,6 +230,9 @@ export interface StaffProps {
 export interface StaffListResponse {
   message: string;
   users: StaffProps[];
+  hasMore: boolean;
+  currentPage: number;
+  totalPages: number;
 }
 
 // delete interface

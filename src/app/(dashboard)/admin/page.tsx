@@ -33,6 +33,7 @@ const Dashboard = () => {
       count: 0,
     },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -47,7 +48,10 @@ const Dashboard = () => {
   const getUsers = async () => {
     try {
       setIsLoading(true);
-      const { users }: StaffListResponse = await listApi.getStaff();
+      const { users }: StaffListResponse = await listApi.getStaff({
+        page: 1,
+        searchTerm: "",
+      });
       if (users?.length > 0) {
         setOverviewSection((prevOverview) =>
           prevOverview.map(
@@ -71,28 +75,9 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) return <Loader size="medium" />;
+  if (loading || isLoading) return <Loader size="medium" />;
 
   if (!isAuthenticated) return null;
-
-  // const overviewSection: userSection[] = [
-  //   {
-  //     name: "Users",
-  //     count: 66,
-  //   },
-  //   {
-  //     name: "Visitors",
-  //     count: 97,
-  //   },
-  //   {
-  //     name: "Exhibit",
-  //     count: 15,
-  //   },
-  //   {
-  //     name: "Delegate",
-  //     count: 233,
-  //   },
-  // ];
 
   return (
     <div className="flex h-screen bg-gray-50">

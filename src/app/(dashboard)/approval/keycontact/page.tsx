@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  ApproveResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
@@ -57,6 +58,36 @@ const KeyContact = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleAction = async (id: string, action: string) => {
+    try {
+      const isApproved = action === "approve" ? true : false;
+
+      const { message }: ApproveResponse = await approvalApi.approveOrReject(
+        `keycontact/${id}/${action}`
+      );
+      if (message) {
+        toast({
+          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          } the key contact.`,
+          duration: 1500,
+          variant: isApproved ? "success" : "error",
+        });
+        setRerenderData(!rerenderData);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Error while approving key contact. Please try again.",
+        duration: 1500,
+        variant: "error",
+      });
+      console.log(error);
+    } finally {
+    }
+  };
+
   const columns: Column<KeyContactProps>[] = [
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
@@ -94,27 +125,25 @@ const KeyContact = () => {
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
-        if (user === STAFF && cellItem.adminStatus === "pending") return null;
         return (
           <div className="flex items-center space-x-2">
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                router.push(`/forms/add-key-contact?id=${cellItem._id}`)
-              }
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
+              onClick={() => handleAction(cellItem._id, "approve")}
             >
-              <SquarePen />
+              <h1>Approve</h1>
             </Button>
-            {cellItem.adminStatus !== "approved" && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeleteClick(cellItem._id)}
-              >
-                <Trash2 className="text-red-600" />
-              </Button>
-            )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-primary text-primary"
+              onClick={() => handleAction(cellItem._id, "reject")}
+            >
+              Reject
+            </Button>
           </div>
         );
       },

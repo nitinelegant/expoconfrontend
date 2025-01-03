@@ -29,10 +29,19 @@ export const listApi = {
     }
   },
 
-  getStaff: async (): Promise<StaffListResponse> => {
+  getStaff: async ({
+    page,
+    searchTerm,
+  }: {
+    page: number;
+    searchTerm: string;
+  }): Promise<StaffListResponse> => {
     try {
       const response = await axiosInstance.get<StaffListResponse>(
-        "/staff/list"
+        "/staff/list?limit=10",
+        {
+          params: { page, keyword: searchTerm },
+        }
       );
       return response.data;
     } catch (error) {
@@ -155,7 +164,7 @@ export const listApi = {
   }): Promise<AssociationsListResponse> => {
     try {
       const response = await axiosInstance.get<AssociationsListResponse>(
-        "/association/list?limit=50",
+        "/association/list?limit=10",
         {
           params: { page, keyword: searchTerm },
         }
@@ -193,7 +202,7 @@ export const listApi = {
   }): Promise<ExpConferenceListResponse> => {
     try {
       const response = await axiosInstance.get<ExpConferenceListResponse>(
-        "/conference/expired",
+        "/conference/expired?limit=10",
         {
           params: { page, keyword: searchTerm },
         }
@@ -212,7 +221,7 @@ export const listApi = {
   }): Promise<ConferenceListResponse> => {
     try {
       const response = await axiosInstance.get<ConferenceListResponse>(
-        "/conference/list",
+        "/conference/list?limit=10",
         {
           params: { page, keyword: searchTerm },
         }
@@ -231,7 +240,7 @@ export const listApi = {
   }): Promise<ExhibitionsListResponse> => {
     try {
       const response = await axiosInstance.get<ExhibitionsListResponse>(
-        "/exhibition/expired?limit=50",
+        "/exhibition/expired?limit=10",
         {
           params: { page, keyword: searchTerm },
         }
@@ -251,7 +260,7 @@ export const listApi = {
   }): Promise<ExhibitionsListResponse> => {
     try {
       const response = await axiosInstance.get<ExhibitionsListResponse>(
-        "/exhibition/list?limit=50",
+        "/exhibition/list?limit=10",
         {
           params: { page, keyword: searchTerm },
         }

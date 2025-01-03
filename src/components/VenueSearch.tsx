@@ -199,14 +199,18 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
               onValueChange={debouncedSearch}
               className="text-black"
             />
-            {loading && <CommandEmpty>Loading...</CommandEmpty>}
+            {loading && (
+              <CommandEmpty className="text-sm text-black p-3">
+                Loading...
+              </CommandEmpty>
+            )}
             {!loading && searchError && (
               <CommandEmpty className="text-red-500">
                 {searchError}
               </CommandEmpty>
             )}
             {!loading && !searchError && venues.length === 0 && (
-              <CommandEmpty className="text-black">
+              <CommandEmpty className="text-black p-3 text-sm">
                 No venues found.
               </CommandEmpty>
             )}

@@ -26,7 +26,7 @@ export const authApi = {
 
   getCurrentUser: async (): Promise<User> => {
     try {
-      const response = await axiosInstance.get<User>("/users/me");
+      const response = await axiosInstance.get<User>("/me");
       return response.data;
     } catch (error) {
       throw new Error(`Error while fetching data ${error}`);

@@ -378,7 +378,7 @@ const VenueForm = () => {
 
               <ImageUploader
                 name="logo"
-                label="Upload Venue Photo*"
+                label="Upload Venue Photo"
                 setFieldValue={formik.setFieldValue}
                 setFieldError={formik.setFieldError}
                 setFieldTouched={formik.setFieldTouched}
@@ -455,7 +455,7 @@ const VenueForm = () => {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full bg-primary" tabIndex={11}>
+            <Button type="submit" className="w-full bg-primary text-white" tabIndex={11}>
               {isEditMode ? "Update" : "Submit"}
             </Button>
           </form>

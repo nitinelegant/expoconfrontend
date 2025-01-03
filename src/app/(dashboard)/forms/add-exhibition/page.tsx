@@ -708,7 +708,7 @@ const ExhibitonForm = () => {
               />
 
               <SearchInput
-                label="Website"
+                label="Website*"
                 placeholder="Enter website URL"
                 id="website"
                 onResultFound={handleResultFound}

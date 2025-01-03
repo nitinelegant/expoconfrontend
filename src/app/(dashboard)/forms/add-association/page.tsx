@@ -178,7 +178,7 @@ const AssociationForm = () => {
               <SearchInput
                 ref={firstInputRef}
                 tabIndex={1}
-                label="Website"
+                label="Website*"
                 placeholder="Enter website URL"
                 id="website"
                 onResultFound={() => {}}

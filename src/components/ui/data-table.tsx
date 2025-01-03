@@ -20,6 +20,7 @@ import {
   Search,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import ExcelExportButton from "../ExcelExportButton";
 
 export interface Column<T> {
   header: string;
@@ -107,7 +108,11 @@ export function DataTable<T>({
     // Create unique, stable keys for ellipsis
     const leftEllipsisKey = "ellipsis-left";
     const rightEllipsisKey = "ellipsis-right";
-    const ellipsisElement = (key: string) => <span key={key}>...</span>;
+    const ellipsisElement = (key: string) => (
+      <span key={key} className="text-black text-lg">
+        ...
+      </span>
+    );
 
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
@@ -211,9 +216,20 @@ export function DataTable<T>({
                 {addButtonTitle}
               </Button>
             )}
+            {data.length > 0 && (
+              <ExcelExportButton
+                data={data}
+                fileName={title}
+                sheetName={title}
+                onExportComplete={() => console.log("Export completed!")}
+                onError={(error) => console.error("Export failed:", error)}
+                className="bg-primary"
+              />
+            )}
           </div>
         </CardHeader>
       )}
+
       <CardContent>
         <Table className="w-full bg-white">
           <TableHeader className="hover:bg-gray-50 transition-colors text-background">

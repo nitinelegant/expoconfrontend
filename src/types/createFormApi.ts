@@ -127,16 +127,16 @@ export interface AddExhibitionCredentials {
   expo_sd: string;
   expo_ed: string;
   month_id: number;
-  year_id: number;
+  year_id: string | null;
   expo_time: string;
-  fee_id: string; // Replace with `string` if not using mongoose
+  fee_id: number;
   expo_city: string;
   state_id: number;
-  venue_id: string; // Replace with `string` if not using mongoose
+  venue_id: string;
   expo_website: string;
   expo_logo: string;
   expo_frequency: string;
-  company_id: string; // Replace with `string` if not using mongoose
+  company_id: string;
   expo_segment_id: string;
   expo_eprofile: string;
   expo_vprofile: string;

@@ -109,7 +109,7 @@ interface Exhibition {
   expo_sd: string;
   expo_ed: string;
   month_id: number;
-  year_id: number;
+  year_id: string;
   expo_time: string;
   fee_id: number;
   expo_city: string;

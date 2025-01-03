@@ -11,16 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  companyTypes,
-  eventTypes,
-  months,
-  segmentTypes,
-  statesAndUnionTerritories,
-  years,
-} from "@/constants/form";
+import { months } from "@/constants/form";
 import { cn } from "@/lib/utils";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
@@ -32,11 +24,16 @@ import TimeSelector from "@/components/TimeSelector";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
+import { useSegments } from "@/hooks/useSegments";
+import ImageUploader from "@/components/ImageUploader";
+import { Textarea } from "@/components/ui/textarea";
 
-const ExhibitionForm = () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const ExhibitonForm = () => {
   const { toast } = useToast();
+  const { data } = useSegments();
   const router = useRouter();
   const firstInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
@@ -60,7 +57,7 @@ const ExhibitionForm = () => {
       state: "",
       venue: "",
       website: "",
-      logo: null,
+      logo: "",
       frequency: "",
       exhibitionOrganizer: "",
       exhibitionType: "",
@@ -173,49 +170,55 @@ const ExhibitionForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      exhibitionType: Yup.string().required("Exhibition Type is required"),
-      exhibitionOrganizer: Yup.string().required("Exhibition Type is required"),
+      exhibitionType: Yup.string(),
+      exhibitionOrganizer: Yup.string(),
+      logo: Yup.string(),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
+
         const {
           eventType,
           eventFullName,
           eventShortName,
+          year,
+          month,
           startDate,
           endDate,
           timings,
-          year,
-          state,
-          city,
-          exhibitionType,
-          website,
-          venue,
           entryFees,
+          city,
+          state,
+          venue,
+          website,
+          logo,
           frequency,
-          month,
           exhibitionOrganizer,
+          exhibitionType,
           exhibitorProfile,
           visitorProfile,
         } = values;
         const payload = {
-          expo_type_id: parseInt(eventType),
+          year_id: data?.year_id
+            .find((x) => parseInt(x.name) === parseInt(year))
+            ?._id.toString(),
+          fee_id: parseInt(entryFees),
+          con_city: city,
+          state_id: state,
+          venue_id: venue,
+          company_id: exhibitionOrganizer,
+          expo_type_id: eventType,
           expo_fullname: eventFullName,
           expo_shortname: eventShortName,
           expo_sd: startDate,
           expo_ed: endDate,
           month_id: parseInt(month),
-          year_id: parseInt(year),
           expo_time: timings,
-          fee_id: Number(entryFees),
           expo_city: city,
-          state_id: parseInt(state),
-          venue_id: venue,
           expo_website: website,
-          expo_logo: "",
+          expo_logo: logo ? logo : "",
           expo_frequency: frequency,
-          company_id: exhibitionOrganizer,
           expo_segment_id: exhibitionType,
           expo_eprofile: exhibitorProfile,
           expo_vprofile: visitorProfile,
@@ -254,9 +257,9 @@ const ExhibitionForm = () => {
         }
       } catch (error) {
         toast({
-          title: "Add Exhibition Failed",
+          title: "Add Conference Failed",
           description:
-            "Failed to add exhibition. Please check your fields and try again.",
+            "Failed to add conference. Please check your fields and try again.",
           duration: 2500,
           variant: "error",
         });
@@ -266,6 +269,18 @@ const ExhibitionForm = () => {
       }
     },
   });
+  useEffect(() => {
+    if (!initialLoading) {
+      // Use a short timeout to ensure the component has fully rendered
+      const focusTimer = setTimeout(() => {
+        if (firstInputRef.current) {
+          firstInputRef.current.focus();
+        }
+      }, 100);
+
+      return () => clearTimeout(focusTimer);
+    }
+  }, [initialLoading]);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -276,28 +291,32 @@ const ExhibitionForm = () => {
             exhibitionId as string
           );
           console.log("exhibition", exhibition);
+
           if (exhibition) {
             formik.setValues(
               {
                 ...formik.values,
-                eventType: exhibition?.expo_type_id?.toString(),
-                eventFullName: exhibition?.expo_fullname,
-                eventShortName: exhibition?.expo_shortname,
-                startDate: exhibition?.expo_sd,
-                endDate: exhibition?.expo_ed,
-                timings: exhibition?.expo_time,
-                year: exhibition?.year_id?.toString(),
-                state: exhibition?.state_id?.toString(),
-                city: exhibition?.expo_city,
+                eventType: exhibition.expo_type_id?.toString(),
+                eventFullName: exhibition.expo_fullname,
+                eventShortName: exhibition.expo_shortname,
+                startDate: exhibition.expo_sd,
+                endDate: exhibition.expo_ed,
+                timings: exhibition.expo_time,
+                year: data?.year_id
+                  ?.find((x) => x?._id?.toString() === exhibition?.year_id)
+                  ?.name?.toString(),
+                state: exhibition.state_id?.toString(),
+                city: exhibition.expo_city,
                 exhibitionType: exhibition?.expo_segment_id?.toString(),
-                website: exhibition?.expo_website,
-                venue: exhibition?.venue_id,
-                frequency: exhibition?.expo_frequency,
-                month: exhibition?.month_id?.toString(),
-                exhibitionOrganizer: exhibition?.company_id?.toString(),
+                website: exhibition.expo_website,
+                venue: exhibition.venue_id?.toString(),
+                entryFees: exhibition.fee_id?.toString(),
+                frequency: exhibition.expo_frequency,
+                month: exhibition.month_id?.toString(),
+                exhibitionOrganizer: exhibition.company_id?.toString(),
+                logo: exhibition.expo_logo,
                 exhibitorProfile: exhibition?.expo_eprofile,
                 visitorProfile: exhibition?.expo_vprofile,
-                entryFees: exhibition?.fee_id,
               },
               false
             );
@@ -318,32 +337,7 @@ const ExhibitionForm = () => {
     initializeData();
   }, [isEditMode, exhibitionId]);
 
-  useEffect(() => {
-    if (!initialLoading) {
-      // Use a short timeout to ensure the component has fully rendered
-      const focusTimer = setTimeout(() => {
-        if (firstInputRef.current) {
-          firstInputRef.current.focus();
-        }
-      }, 100);
-
-      return () => clearTimeout(focusTimer);
-    }
-  }, [initialLoading]);
-
   if (initialLoading || isLoading) return <Loader size="medium" />;
-
-  const handleLogoChange = (event) => {
-    const file = event.currentTarget.files?.[0];
-    formik.setFieldValue("logo", file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // setLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   // Generate time options for the time picker
   const generateTimeOptions = () => {
@@ -378,7 +372,7 @@ const ExhibitionForm = () => {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
-            {isEditMode ? "Update" : "Add"} Exhibition
+            {isEditMode ? "Update" : "Add"} Conference
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -395,24 +389,25 @@ const ExhibitionForm = () => {
                   defaultValue={formik.values.eventType}
                 >
                   <SelectTrigger
-                    tabIndex={3}
-                    aria-required="true"
+                    tabIndex={1}
+                    // ref={firstInputRef}
+                    // aria-required="true"
                     className={
                       formik.touched.state && formik.errors.state
                         ? "border-red-500 text-black capitalize"
                         : "text-black capitalize"
                     }
                   >
-                    <SelectValue placeholder="Select State" />
+                    <SelectValue placeholder="Select event" />
                   </SelectTrigger>
                   <SelectContent className="bg-white text-black">
-                    {eventTypes.map((state) => (
+                    {data?.association_type_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
+                        key={state._id}
+                        value={state._id.toString()}
                         className=" text-black hover:cursor-pointer capitalize"
                       >
-                        {state.name}
+                        {state?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -486,13 +481,13 @@ const ExhibitionForm = () => {
                     <SelectValue placeholder="Select Year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {years.map((year) => (
+                    {data?.year_id?.map((year) => (
                       <SelectItem
-                        key={year}
-                        value={year.toString()}
+                        key={year._id}
+                        value={year?.name?.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {year}
+                        {year?.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -681,10 +676,10 @@ const ExhibitionForm = () => {
                     <SelectValue placeholder="Select State" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    {statesAndUnionTerritories.map((state) => (
+                    {data?.state_id?.map((state) => (
                       <SelectItem
-                        key={state.id}
-                        value={state.id.toString()}
+                        key={state._id}
+                        value={state._id.toString()}
                         className=" text-black hover:cursor-pointer capitalize"
                       >
                         {state.name}
@@ -722,7 +717,7 @@ const ExhibitionForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
-                apiEndpoint="exhibition"
+                apiEndpoint="company"
                 tabIndex={13}
               />
               {/* <div className="space-y-2">
@@ -745,24 +740,16 @@ const ExhibitionForm = () => {
                 )}
               </div> */}
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">Upload Event Logo</Label>
-                <Input
-                  id="logo"
-                  type="file"
-                  tabIndex={14}
-                  accept="image/*"
-                  className="cursor-pointer"
-                  onChange={handleLogoChange}
-                />
-                {/* {logoPreview && (
-                  <img
-                    src={logoPreview}
-                    alt="Logo Preview"
-                    className="mt-2 h-20 w-auto rounded-md"
-                  />
-                )} */}
-              </div>
+              <ImageUploader
+                name="logo"
+                label="Upload Event Logo"
+                setFieldValue={formik.setFieldValue}
+                setFieldError={formik.setFieldError}
+                setFieldTouched={formik.setFieldTouched}
+                error={formik.errors.logo}
+                touched={formik.touched.logo}
+                initialPreview={formik.values.logo}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="frequency">Frequency</Label>
@@ -792,13 +779,13 @@ const ExhibitionForm = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select conference organizer" />
+                    <SelectValue placeholder="Select exhibition organizer" />
                   </SelectTrigger>
                   <SelectContent>
-                    {companyTypes?.map((item) => (
+                    {data?.company_type_id?.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
                         {item.name}
@@ -820,6 +807,7 @@ const ExhibitionForm = () => {
                   onValueChange={(value) =>
                     formik.setFieldValue("exhibitionType", value)
                   }
+                  defaultValue={formik.values.exhibitionType}
                 >
                   <SelectTrigger
                     tabIndex={17}
@@ -833,10 +821,10 @@ const ExhibitionForm = () => {
                     <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((item) => (
+                    {data?.con_segment_id?.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
                         {item.name}
@@ -851,26 +839,26 @@ const ExhibitionForm = () => {
                     </p>
                   )}
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
-              <Textarea
-                id="exhibitorProfile"
-                tabIndex={20}
-                {...formik.getFieldProps("exhibitorProfile")}
-                className="text-black"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="exhibitorProfile">Exhibitor Profile</Label>
+                <Textarea
+                  id="exhibitorProfile"
+                  tabIndex={20}
+                  {...formik.getFieldProps("exhibitorProfile")}
+                  className="text-black"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="visitorProfile">Visitor Profile</Label>
-              <Textarea
-                id="visitorProfile"
-                tabIndex={21}
-                {...formik.getFieldProps("visitorProfile")}
-                className="text-black"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="visitorProfile">Visitor Profile</Label>
+                <Textarea
+                  id="visitorProfile"
+                  tabIndex={21}
+                  {...formik.getFieldProps("visitorProfile")}
+                  className="text-black"
+                />
+              </div>
             </div>
 
             <Button
@@ -879,7 +867,7 @@ const ExhibitionForm = () => {
               tabIndex={22}
               disabled={isLoading}
             >
-              {isEditMode ? "Update" : "Add"} Exhibition
+              {isEditMode ? "Update" : "Add"} Conference
             </Button>
           </form>
         </CardContent>
@@ -888,4 +876,4 @@ const ExhibitionForm = () => {
   );
 };
 
-export default withAuth(ExhibitionForm, { requiredRole: ["admin", "staff"] });
+export default withAuth(ExhibitonForm, { requiredRole: ["admin", "staff"] });

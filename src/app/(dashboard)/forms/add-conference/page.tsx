@@ -720,7 +720,7 @@ const ConferenceForm = () => {
                 onBlur={formik.handleBlur}
                 error={formik.errors.website}
                 touched={formik.touched.website}
-                apiEndpoint="company"
+                apiEndpoint="conference"
                 tabIndex={13}
               />
               {/* <div className="space-y-2">

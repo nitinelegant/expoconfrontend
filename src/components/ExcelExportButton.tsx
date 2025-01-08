@@ -146,7 +146,7 @@ const ExcelExportButton = ({
               </Button>
               <Button
                 variant="default"
-                className="ml-2"
+                className="ml-2 text-white font-bold"
                 onClick={confirmExport}
                 disabled={selectedKeys.length === 0}
               >

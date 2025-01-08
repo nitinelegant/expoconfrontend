@@ -52,8 +52,10 @@ const ExcelExportButton = ({
 
       if (Array.isArray(arrayData) && arrayData.length > 0) {
         setKeys(Object.keys(arrayData[0]));
+        setSelectedKeys(Object.keys(arrayData[0]));
         setModalVisible(true);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       onError?.(error as Error);

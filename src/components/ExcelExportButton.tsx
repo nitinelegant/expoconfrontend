@@ -112,11 +112,11 @@ const ExcelExportButton = ({
     <>
       {/* Modal */}
       {modalVisible && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-lg p-6 w-4/5 min-w-[80%]">
-            <h2 className="text-lg font-bold mb-4">Select Keys to Export</h2>
+            <h2 className="text-lg font-bold mb-4 text-black">
+              Select Keys to Export
+            </h2>
             <div className="grid grid-cols-3 gap-4 mb-4">
               {keys.map((key) => (
                 <div key={key} className="flex items-center">
@@ -129,19 +129,25 @@ const ExcelExportButton = ({
                       if (e.target.checked) {
                         setSelectedKeys((prev) => [...prev, key]);
                       } else {
-                        setSelectedKeys((prev) => prev.filter((k) => k !== key));
+                        setSelectedKeys((prev) =>
+                          prev.filter((k) => k !== key)
+                        );
                       }
                     }}
                     className="mr-2"
                   />
-                  <label htmlFor={key} className="text-sm break-all">
+                  <label htmlFor={key} className="text-sm break-all text-black">
                     {key}
                   </label>
                 </div>
               ))}
             </div>
             <div className="flex justify-end">
-              <Button variant="secondary" onClick={() => setModalVisible(false)}>
+              <Button
+                variant="secondary"
+                onClick={() => setModalVisible(false)}
+                className="text-black"
+              >
                 Cancel
               </Button>
               <Button
@@ -164,7 +170,9 @@ const ExcelExportButton = ({
         disabled={disabled || loading}
         className={"bg-[#1e744b]"}
       >
-        {showIcon && <FileSpreadsheetIcon className="mr-2 h-4 w-4 text-white" />}
+        {showIcon && (
+          <FileSpreadsheetIcon className="mr-2 h-4 w-4 text-white" />
+        )}
         <p className="text-white font-bold">{label}</p>
       </Button>
     </>

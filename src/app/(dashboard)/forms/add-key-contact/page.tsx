@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import VenueSearch from "@/components/VenueSearch";
 import { useSegments } from "@/hooks/useSegments";
+import { AssociationProps, CompanyProps } from "@/types/listTypes";
+import { listApi } from "@/api/listApi";
 
 const KeyContactForm = () => {
   const { data } = useSegments();
@@ -32,6 +34,8 @@ const KeyContactForm = () => {
   const keyContactId = searchParams.get("id");
   const isEditMode = Boolean(searchParams.get("id"));
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const [companies, setCompanies] = useState<CompanyProps[]>([]);
+  const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -125,6 +129,9 @@ const KeyContactForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
+        fetchCompany();
+        fetchAssociation();
+        // await Promise.all([fetchCompany(), fetchAssociation()]);
         if (isEditMode) {
           const { keyContact } = await createFormApi.getKeyContact(
             keyContactId as string
@@ -154,6 +161,23 @@ const KeyContactForm = () => {
 
     initializeData();
   }, [isEditMode, keyContactId]);
+
+  const fetchCompany = async () => {
+    try {
+      const { companies } = await listApi.fetchCompanies();
+      setCompanies(companies);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchAssociation = async () => {
+    try {
+      const { associations } = await listApi.fetchAssociation();
+      setAssociations(associations);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
@@ -291,13 +315,13 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select Company" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data?.company_type_id?.map((item) => (
+                    {companies?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer capitalize"
                       >
-                        {item?.name}
+                        {item?.company_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -341,13 +365,13 @@ const KeyContactForm = () => {
                     <SelectValue placeholder="Select Association" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data?.association_type_id?.map((item) => (
+                    {associations?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer capitalize"
                       >
-                        {item?.name}
+                        {item?.association_name}
                       </SelectItem>
                     ))}
                   </SelectContent>

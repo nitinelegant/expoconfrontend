@@ -808,7 +808,7 @@ const ConferenceForm = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select exhibition type" />
+                    <SelectValue placeholder="Select conference segment type" />
                   </SelectTrigger>
                   <SelectContent>
                     {data?.con_segment_id?.map((item) => (
@@ -846,7 +846,7 @@ const ConferenceForm = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select exhibition type" />
+                    <SelectValue placeholder="Select national association type" />
                   </SelectTrigger>
                   <SelectContent>
                     {data?.con_segment_id?.map((item) => (
@@ -883,7 +883,7 @@ const ConferenceForm = () => {
                         : "text-black"
                     }
                   >
-                    <SelectValue placeholder="Select exhibition type" />
+                    <SelectValue placeholder="Select hosting chapter type" />
                   </SelectTrigger>
                   <SelectContent>
                     {segmentTypes.map((item) => (

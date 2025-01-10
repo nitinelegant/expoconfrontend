@@ -234,63 +234,62 @@ export function DataTable<T>({
       )}
 
       <CardContent>
-        <Table className="w-full bg-white">
-          <TableHeader className="hover:bg-gray-50 transition-colors text-background">
-            <TableRow>
-              {showCheckbox && (
-                <TableHead className="w-12">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                </TableHead>
-              )}
-              {columns.map((column) => (
-                <TableHead
-                  key={column.header}
-                  className="font-semibold text-[#64748b]"
-                >
-                  {column.header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
+        <div className="overflow-x-auto">
+          <Table className="w-full bg-white">
+            <TableHeader className="hover:bg-gray-50 transition-colors text-background">
               <TableRow>
-                <TableCell>
-                  <p className="p-3 text-black">Loading...</p>
-                </TableCell>
+                {showCheckbox && (
+                  <TableHead className="w-12">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                  </TableHead>
+                )}
+                {columns.map((column) => (
+                  <TableHead
+                    key={column.header}
+                    className="font-semibold text-[#64748b]"
+                  >
+                    {column.header}
+                  </TableHead>
+                ))}
               </TableRow>
-            ) : (
-              data?.map((item, index) => (
-                <TableRow
-                  key={index}
-                  className="hover:bg-gray-50 transition-colors text-background "
-                >
-                  {showCheckbox && (
-                    <TableCell>
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300"
-                      />
-                    </TableCell>
-                  )}
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.header}
-                      className="max-w-[400px] text-black"
-                    >
-                      {column.cell
-                        ? column.cell(item)
-                        : (item[column.accessorKey] as React.ReactNode)}
-                    </TableCell>
-                  ))}
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell>
+                    <p className="p-3 text-black">Loading...</p>
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                data?.map((item, index) => (
+                  <TableRow
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors text-background "
+                  >
+                    {showCheckbox && (
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300"
+                        />
+                      </TableCell>
+                    )}
+                    {columns.map((column) => (
+                      <TableCell key={column.header} className=" text-black">
+                        {column.cell
+                          ? column.cell(item)
+                          : (item[column.accessorKey] as React.ReactNode)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-700">
             Showing {totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}{" "}

@@ -270,4 +270,24 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  fetchCompanies: async (): Promise<CompanyListResponse> => {
+    try {
+      const response = await axiosInstance.get<CompanyListResponse>(
+        "/company/list?limit=200"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  fetchAssociation: async (): Promise<AssociationsListResponse> => {
+    try {
+      const response = await axiosInstance.get<AssociationsListResponse>(
+        "/association/list?limit=200"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
 };

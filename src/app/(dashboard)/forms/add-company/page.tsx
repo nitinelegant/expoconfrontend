@@ -24,6 +24,7 @@ import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
+import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 
 const CompanyForm = () => {
   const { data } = useSegments();
@@ -410,6 +411,14 @@ const CompanyForm = () => {
                       : ""
                   }
                 />
+                {formik.values.googleMapLink && (
+                  <div className="mt-2">
+                    <GoogleMapEmbed
+                      src={formik.values.googleMapLink}
+                      height={200}
+                    />
+                  </div>
+                )}
                 {formik.touched.googleMapLink &&
                   formik.errors.googleMapLink && (
                     <p className="text-sm text-red-600">
@@ -497,7 +506,6 @@ const CompanyForm = () => {
                 )}
               </div>
             </div>
-            
 
             <Button
               type="submit"

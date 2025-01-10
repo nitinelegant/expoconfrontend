@@ -25,6 +25,7 @@ import { createFormApi } from "@/api/createFormApi";
 import SearchInput from "@/components/SearchInput";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
+import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 
 const VenueForm = () => {
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -357,6 +358,7 @@ const VenueForm = () => {
                 <Label htmlFor="googleMapLink" className="text-gray-900">
                   Google Map Link*
                 </Label>
+
                 <Input
                   id="googleMapLink"
                   type="url"
@@ -368,6 +370,14 @@ const VenueForm = () => {
                       : ""
                   }
                 />
+                {formik.values.googleMapLink && (
+                  <div className="mt-2">
+                    <GoogleMapEmbed
+                      src={formik.values.googleMapLink}
+                      height={200}
+                    />
+                  </div>
+                )}
                 {formik.touched.googleMapLink &&
                   formik.errors.googleMapLink && (
                     <p className="text-sm text-red-600">
@@ -455,7 +465,11 @@ const VenueForm = () => {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full bg-primary text-white" tabIndex={11}>
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white"
+              tabIndex={11}
+            >
               {isEditMode ? "Update" : "Submit"}
             </Button>
           </form>

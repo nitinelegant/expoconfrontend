@@ -34,7 +34,6 @@ const ExcelExportButton = ({
   disabled = false,
   showIcon = true,
   label = "Export to Excel",
-  onExportStart,
   onExportComplete,
   onError,
   url,
@@ -65,8 +64,8 @@ const ExcelExportButton = ({
 
   const confirmExport = () => {
     try {
-      const filteredData = data.map((item: any) => {
-        const filteredItem: any = {};
+      const filteredData = data.map((item) => {
+        const filteredItem = {};
         selectedKeys.forEach((key) => {
           filteredItem[key] = item[key];
         });

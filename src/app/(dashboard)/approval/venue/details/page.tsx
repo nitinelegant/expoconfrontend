@@ -14,7 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { listApi } from "@/api/listApi";
 import { Loader } from "@/components/ui/loader";
-import { ApproveResponse, CompanyProps, VenueProps } from "@/types/listTypes";
+import { ApproveResponse, VenueProps } from "@/types/listTypes";
 import BackButton from "@/components/BackButton";
 import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
@@ -26,6 +26,7 @@ import {
   isValidGoogleMapLink,
   ValuesToShow,
 } from "@/utils/common";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -40,6 +41,7 @@ const displayNames: Record<string, string> = {
   venue_layout: "Venue Layout",
   status: "Status",
   adminStatus: "Admin Status",
+  venue_featured: "Featured",
 };
 
 export default function ApprovalChanges() {
@@ -151,8 +153,7 @@ export default function ApprovalChanges() {
       key === "status" ||
       key === "createdAt" ||
       key === "updatedAt" ||
-      key === "adminStatus" ||
-      key === "venue_featured"
+      key === "adminStatus"
     )
       return null;
 
@@ -179,6 +180,14 @@ export default function ApprovalChanges() {
             />
           </div>
         );
+      case "venue_featured":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <Checkbox id="featured" checked={value} />
+          </div>
+        );
+
       case "venue_layout":
         return (
           <div className="space-y-2" key={key}>

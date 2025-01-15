@@ -26,6 +26,7 @@ import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
 import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -50,6 +51,7 @@ const displayNames: Record<string, string> = {
   adminStatus: "Admin Status",
   con_time: "Timing",
   con_logo: "Logo",
+  con_featured: "Featured",
 };
 
 export default function ApprovalChanges() {
@@ -144,8 +146,7 @@ export default function ApprovalChanges() {
       key === "status" ||
       key === "createdAt" ||
       key === "updatedAt" ||
-      key === "adminStatus" ||
-      key === "con_featured"
+      key === "adminStatus"
     )
       return null;
 
@@ -171,6 +172,7 @@ export default function ApprovalChanges() {
             </p>
           </div>
         );
+
       case "con_ed":
         if (!value) return;
         return (
@@ -259,6 +261,14 @@ export default function ApprovalChanges() {
               alt="Preview"
               className="h-20 w-auto rounded-md border"
             />
+          </div>
+        );
+
+      case "con_featured":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <Checkbox id="featured" checked={value} />
           </div>
         );
 

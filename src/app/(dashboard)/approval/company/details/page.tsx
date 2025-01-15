@@ -26,6 +26,7 @@ import {
   isValidGoogleMapLink,
   ValuesToShow,
 } from "@/utils/common";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -36,9 +37,9 @@ const displayNames: Record<string, string> = {
   company_address: "Address",
   company_phone: "Phone Number",
   company_website: "Website",
-  company_map: "Map Location",
+  company_map: "Google Map Link",
   company_logo: "Logo",
-  company_featured: "Featured Company",
+  company_featured: "Featured",
   company_user_id: "Email ID",
   company_password: "Password",
   status: "Status",
@@ -117,26 +118,29 @@ export default function ApprovalChanges() {
     }
   };
 
-  const renderMap = (mapUrl: string, key: string) => {
+  const renderMap = (mapUrl: string, key: string, label: string) => {
     if (!mapUrl) return null;
 
     const url = extractMapUrl(mapUrl);
     if (isValidGoogleMapLink(url)) {
       return (
-        <div
-          className="mt-2 rounded-md overflow-hidden border border-gray-200"
-          key={key}
-        >
-          <iframe
-            src={url}
-            width="100%"
-            height="200"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="rounded-md"
-          />
+        <div>
+          <h6 className=" text-gray-500 font-bold ">{label}</h6>
+          <div
+            className="mt-2 rounded-md overflow-hidden border border-gray-200"
+            key={key}
+          >
+            <iframe
+              src={url}
+              width="100%"
+              height="200"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-md"
+            />
+          </div>
         </div>
       );
     }
@@ -148,7 +152,6 @@ export default function ApprovalChanges() {
       key === "changes" ||
       key === "_id" ||
       key === "__v" ||
-      key === "company_featured" ||
       key === "status" ||
       key === "createdAt" ||
       key === "updatedAt" ||
@@ -168,6 +171,13 @@ export default function ApprovalChanges() {
               {data?.company_type_id?.find((x) => x._id === value)?.name ||
                 "---"}
             </p>
+          </div>
+        );
+      case "company_featured":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <Checkbox id="featured" checked={value} />
           </div>
         );
 
@@ -204,7 +214,7 @@ export default function ApprovalChanges() {
         );
 
       case "company_map":
-        return renderMap(value, key);
+        return renderMap(value, key, label);
 
       default:
         return (

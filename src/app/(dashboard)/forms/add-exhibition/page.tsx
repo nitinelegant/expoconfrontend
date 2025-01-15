@@ -28,6 +28,8 @@ import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CompanyProps } from "@/types/listTypes";
+import { listApi } from "@/api/listApi";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -42,6 +44,7 @@ const ExhibitonForm = () => {
   const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [companies, setCompanies] = useState<CompanyProps[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -291,6 +294,7 @@ const ExhibitonForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
+        fetchCompany();
         if (isEditMode) {
           const { exhibition } = await createFormApi.getExhibition(
             exhibitionId as string
@@ -341,6 +345,15 @@ const ExhibitonForm = () => {
 
     initializeData();
   }, [isEditMode, exhibitionId]);
+
+  const fetchCompany = async () => {
+    try {
+      const { companies } = await listApi.fetchCompanies();
+      setCompanies(companies);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
@@ -405,7 +418,7 @@ const ExhibitonForm = () => {
                     <SelectValue placeholder="Select event" />
                   </SelectTrigger>
                   <SelectContent className="bg-white text-black">
-                    {data?.association_type_id?.map((state) => (
+                    {data?.expo_type_id?.map((state) => (
                       <SelectItem
                         key={state._id}
                         value={state._id.toString()}
@@ -722,6 +735,7 @@ const ExhibitonForm = () => {
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="exhibition"
+                disabled={isEditMode}
                 tabIndex={13}
               />
 
@@ -768,13 +782,13 @@ const ExhibitonForm = () => {
                     <SelectValue placeholder="Select exhibition organizer" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data?.company_type_id?.map((item) => (
+                    {companies?.map((item) => (
                       <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
+                        key={item?._id}
+                        value={item?._id?.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {item.name}
+                        {item?.company_name}
                       </SelectItem>
                     ))}
                   </SelectContent>

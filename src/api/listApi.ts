@@ -1,9 +1,12 @@
 import { axiosInstance } from "@/lib/axios";
 import {
   AssociationDeleteResponse,
+  AssociationProps,
+  AssociationSingleResponse,
   AssociationsListResponse,
   CompanyDeleteResponse,
   CompanyListResponse,
+  CompanySingleResponse,
   ConferenceDeleteResponse,
   ConferenceListResponse,
   DeleteApiResponse,
@@ -11,6 +14,7 @@ import {
   ExpConferenceListResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
+  KeyContactSingleResponse,
   StaffDeleteResponse,
   StaffListResponse,
   VenueDeleteResponse,
@@ -22,6 +26,38 @@ export const listApi = {
     try {
       const response = await axiosInstance.get<KeyContactListResponse>(
         "/keycontact/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getKeyContactById: async (id: string): Promise<KeyContactSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<KeyContactSingleResponse>(
+        `/keycontact/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getCompanyById: async (id: string): Promise<CompanySingleResponse> => {
+    try {
+      const response = await axiosInstance.get<CompanySingleResponse>(
+        `/company/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getAssociationById: async (
+    id: string
+  ): Promise<AssociationSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<AssociationSingleResponse>(
+        `/association/${id}`
       );
       return response.data;
     } catch (error) {
@@ -273,7 +309,17 @@ export const listApi = {
   fetchCompanies: async (): Promise<CompanyListResponse> => {
     try {
       const response = await axiosInstance.get<CompanyListResponse>(
-        "/company/list?limit=200"
+        "/company/list"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  fetchVenues: async (): Promise<VenueListResponse> => {
+    try {
+      const response = await axiosInstance.get<VenueListResponse>(
+        "/venue/list"
       );
       return response.data;
     } catch (error) {

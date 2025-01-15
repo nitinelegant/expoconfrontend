@@ -32,6 +32,7 @@ interface SearchInputProps {
   error?: string;
   touched?: boolean;
   tabIndex?: number;
+  disabled?: boolean; // New prop for disabling the input
 }
 
 const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
@@ -51,6 +52,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       error,
       touched,
       tabIndex,
+      disabled = false, // Default value is false
     },
     ref
   ) => {
@@ -68,7 +70,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     }, [externalValue]);
 
     const performSearch = async (term: string): Promise<void> => {
-      if (!term.trim()) {
+      if (!term.trim() || disabled) {
         setIsLoading(false);
         return;
       }
@@ -112,6 +114,8 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     };
 
     useEffect(() => {
+      if (disabled) return; // Don't perform search if disabled
+
       const debounceTimer = setTimeout(() => {
         if (searchTerm.length > 0) {
           performSearch(searchTerm);
@@ -122,7 +126,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       }, debounceTime);
 
       return () => clearTimeout(debounceTimer);
-    }, [searchTerm, debounceTime]);
+    }, [searchTerm, debounceTime, disabled]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
       const newValue = e.target.value;
@@ -133,7 +137,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" && !disabled) {
         performSearch(searchTerm);
       }
     };
@@ -157,14 +161,16 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
               isError || (touched && error)
                 ? "border-red-500 focus:ring-red-500"
                 : "",
-              isLoading ? "pr-10" : ""
+              isLoading ? "pr-10" : "",
+              disabled ? "opacity-50 cursor-not-allowed" : ""
             )}
             aria-invalid={isError || (touched && !!error)}
             aria-describedby={
               isError || (touched && error) ? `${id}-error` : undefined
             }
+            disabled={disabled} // Apply the disabled prop to the Input component
           />
-          {isLoading && (
+          {isLoading && !disabled && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
             </div>
@@ -176,7 +182,8 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           </p>
         ) : (
           isError &&
-          searchTerm.length > 0 && (
+          searchTerm.length > 0 &&
+          !disabled && (
             <p id={`${id}-error`} className="text-sm text-red-600" role="alert">
               {errorMessage}
             </p>

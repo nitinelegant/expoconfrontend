@@ -16,11 +16,13 @@ import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
+import { useRouter } from "next/navigation";
 
 const KeyContact = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { data } = useSegments();
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [rerenderData, setRerenderData] = useState(false);
@@ -123,6 +125,16 @@ const KeyContact = () => {
               variant="outline"
               className="bg-primary text-white"
               size="sm"
+              onClick={() =>
+                router.push(`/approval/keycontact/details?id=${cellItem._id}`)
+              }
+            >
+              <h1>Details</h1>
+            </Button>
+            {/* <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
               onClick={() => handleAction(cellItem._id, "approve")}
             >
               <h1>Approve</h1>
@@ -135,7 +147,7 @@ const KeyContact = () => {
               onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
-            </Button>
+            </Button> */}
           </div>
         );
       },

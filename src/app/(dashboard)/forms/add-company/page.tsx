@@ -24,7 +24,7 @@ import { Loader } from "@/components/ui/loader";
 import { useToast } from "@/hooks/use-toast";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
-import GoogleMapEmbed from "@/components/GoogleMapEmbed";
+import GoogleMapInput from "@/components/GoogleMapInput";
 
 const CompanyForm = () => {
   const { data } = useSegments();
@@ -65,7 +65,22 @@ const CompanyForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      googleMapLink: Yup.string().url("Must be a valid URL"),
+      googleMapLink: Yup.string().test(
+        "is-valid-map",
+        "Must be a valid Google Maps embed link or iframe",
+        (value) => {
+          if (!value) return false;
+          // Check if it's an iframe
+          if (value.includes("<iframe")) {
+            const srcMatch = value.match(/src="([^"]+)"/);
+            return srcMatch
+              ? srcMatch[1].startsWith("https://www.google.com/maps/embed?pb=")
+              : false;
+          }
+          // Check if it's a direct URL
+          return value.startsWith("https://www.google.com/maps/embed?pb=");
+        }
+      ),
       featured: Yup.boolean().required("Featured is required"),
       email: Yup.string()
         .email("Invalid email address")
@@ -393,38 +408,24 @@ const CompanyForm = () => {
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="company"
+                disabled={isEditMode}
                 tabIndex={7}
               />
 
               <div className="space-y-2">
-                <Label htmlFor="googleMapLink" className="text-gray-900">
-                  Google Map Link
-                </Label>
-                <Input
-                  id="googleMapLink"
-                  type="url"
-                  tabIndex={8}
-                  {...formik.getFieldProps("googleMapLink")}
-                  className={
-                    formik.touched.googleMapLink && formik.errors.googleMapLink
-                      ? "border-red-500"
-                      : ""
+                <GoogleMapInput
+                  label="Google Map Link"
+                  name="googleMapLink"
+                  value={formik.values.googleMapLink}
+                  onChange={(value) =>
+                    formik.setFieldValue("googleMapLink", value)
                   }
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.googleMapLink}
+                  touched={formik.touched.googleMapLink}
+                  placeholder="Enter Google Map embed link or iframe code"
+                  tabIndex={7}
                 />
-                {formik.values.googleMapLink && (
-                  <div className="mt-2">
-                    <GoogleMapEmbed
-                      src={formik.values.googleMapLink}
-                      height={200}
-                    />
-                  </div>
-                )}
-                {formik.touched.googleMapLink &&
-                  formik.errors.googleMapLink && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.googleMapLink}
-                    </p>
-                  )}
               </div>
 
               <ImageUploader

@@ -192,6 +192,7 @@ const AssociationForm = () => {
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="association"
+                disabled={isEditMode}
               />
               {/* <div className="space-y-2">
                 <Label htmlFor="website" className="text-gray-900">

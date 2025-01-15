@@ -16,8 +16,10 @@ import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 import { approvalApi } from "@/api/approvalApi";
+import { useRouter } from "next/navigation";
 
 const Company = () => {
+  const router = useRouter();
   const { data } = useSegments();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -122,6 +124,16 @@ const Company = () => {
               variant="outline"
               className="bg-primary text-white"
               size="sm"
+              onClick={() =>
+                router.push(`/approval/company/details?id=${cellItem._id}`)
+              }
+            >
+              <h1>Details</h1>
+            </Button>
+            {/* <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
               onClick={() => handleAction(cellItem._id, "approve")}
             >
               <h1>Approve</h1>
@@ -134,7 +146,7 @@ const Company = () => {
               onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
-            </Button>
+            </Button> */}
           </div>
         );
       },

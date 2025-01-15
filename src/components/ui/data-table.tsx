@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDebounce } from "use-debounce";
 import {
   Table,
@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ExcelExportButton from "../ExcelExportButton";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 
 export interface Column<T> {
   header: string;
@@ -60,6 +62,8 @@ export function DataTable<T>({
   startingUrl,
 }: DataTableProps<T>) {
   const router = useRouter();
+  const { user } = useAuth();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
@@ -67,6 +71,8 @@ export function DataTable<T>({
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [showScrollbar, setShowScrollbar] = useState(false);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -192,6 +198,22 @@ export function DataTable<T>({
     return buttons;
   };
 
+  useEffect(() => {
+    const checkForScrollbar = () => {
+      if (tableContainerRef.current) {
+        const { scrollWidth, clientWidth } = tableContainerRef.current;
+        setShowScrollbar(scrollWidth > clientWidth);
+      }
+    };
+
+    checkForScrollbar();
+    window.addEventListener("resize", checkForScrollbar);
+
+    return () => {
+      window.removeEventListener("resize", checkForScrollbar);
+    };
+  }, [data]);
+
   return (
     <Card className={cn("mt-6", className)}>
       {title && (
@@ -218,7 +240,7 @@ export function DataTable<T>({
                 {addButtonTitle}
               </Button>
             )}
-            {data.length > 0 && startingUrl && (
+            {data.length > 0 && startingUrl && user === ADMIN && (
               <ExcelExportButton
                 data={data}
                 fileName={title}
@@ -234,7 +256,13 @@ export function DataTable<T>({
       )}
 
       <CardContent>
-        <div className="overflow-x-auto">
+        <div
+          ref={tableContainerRef}
+          className={cn(
+            "w-full",
+            showScrollbar ? "overflow-x-auto" : "overflow-x-hidden"
+          )}
+        >
           <Table className="w-full bg-white">
             <TableHeader className="hover:bg-gray-50 transition-colors text-background">
               <TableRow>
@@ -259,7 +287,7 @@ export function DataTable<T>({
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell>
+                  <TableCell colSpan={columns.length + (showCheckbox ? 1 : 0)}>
                     <p className="p-3 text-black">Loading...</p>
                   </TableCell>
                 </TableRow>
@@ -267,7 +295,7 @@ export function DataTable<T>({
                 data?.map((item, index) => (
                   <TableRow
                     key={index}
-                    className="hover:bg-gray-50 transition-colors text-background "
+                    className="hover:bg-gray-50 transition-colors text-background"
                   >
                     {showCheckbox && (
                       <TableCell>
@@ -278,10 +306,20 @@ export function DataTable<T>({
                       </TableCell>
                     )}
                     {columns.map((column) => (
-                      <TableCell key={column.header} className=" text-black">
-                        {column.cell
-                          ? column.cell(item)
-                          : (item[column.accessorKey] as React.ReactNode)}
+                      <TableCell key={column.header} className="text-black">
+                        <div
+                          className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap"
+                          title={String(item[column.accessorKey])}
+                        >
+                          {column.cell
+                            ? column.cell(item)
+                            : String(item[column.accessorKey]).length > 50
+                            ? `${String(item[column.accessorKey]).slice(
+                                0,
+                                50
+                              )}...`
+                            : (item[column.accessorKey] as React.ReactNode)}
+                        </div>
                       </TableCell>
                     ))}
                   </TableRow>

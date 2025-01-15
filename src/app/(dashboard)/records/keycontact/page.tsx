@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -7,6 +7,7 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  CompanyProps,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
@@ -25,6 +26,19 @@ const KeyContact = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [rerenderData, setRerenderData] = useState(false);
+  const [companies, setCompanies] = useState<CompanyProps[]>([]);
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const { companies } = await listApi.fetchCompanies();
+        setCompanies(companies);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchCompany();
+  }, [rerenderData]);
 
   const fetchData = useCallback(
     async (page: number, searchTerm: string) => {
@@ -60,6 +74,23 @@ const KeyContact = () => {
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
+    // { header: "Company", accessorKey: "contact_organizer_id" },
+    {
+      header: "Company",
+      accessorKey: "contact_organizer_id",
+      cell: (item) => {
+        console.log("item._id", item._id);
+        console.log("companies", JSON.stringify(companies));
+        return (
+          <span className="capitalize">
+            {
+              companies?.find((x) => x._id === item.contact_organizer_id)
+                ?.company_name
+            }
+          </span>
+        );
+      },
+    },
 
     {
       header: "State",

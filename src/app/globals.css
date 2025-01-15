@@ -26,7 +26,7 @@ body {
   overflow: hidden !important;
 }
 ::-webkit-scrollbar {
-  display: none;  /* Hide scrollbar in WebKit-based browsers */
+  display: none;
 }
 /* input file text css  */
 input[type="file"] {

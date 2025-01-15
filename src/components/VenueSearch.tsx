@@ -178,7 +178,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
             aria-label="Select venue"
             aria-expanded={open}
             className={cn(
-              "w-full justify-between text-black bg-white",
+              "w-full justify-between text-black bg-white min-h-[44px] h-auto py-2",
               !selectedVenueName && "text-gray-600",
               touched && error && "border-red-500"
             )}
@@ -187,11 +187,13 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
             tabIndex={tabIndex}
             type="button"
           >
-            {loading ? "Loading..." : selectedVenueName || "Select venue..."}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <span className="line-clamp-2 text-left mr-2">
+              {loading ? "Loading..." : selectedVenueName || "Select venue..."}
+            </span>
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="min-w-56 p-0 bg-white">
+        <PopoverContent className="w-[300px] p-0 bg-white">
           <Command onKeyDown={handleKeyDown}>
             <CommandInput
               ref={commandInputRef}
@@ -222,17 +224,17 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
                   onSelect={() => handleSelect(venue)}
                   ref={(el) => (commandItemsRef.current[index] = el)}
                   className={cn(
-                    "hover:cursor-pointer text-black",
+                    "hover:cursor-pointer text-black min-h-[44px] flex items-start py-3",
                     highlightedIndex === index && "bg-gray-100"
                   )}
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "mr-2 h-4 w-4 shrink-0 mt-1",
                       value === venue._id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {venue.venue_name}
+                  <span className="text-sm">{venue.venue_name}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

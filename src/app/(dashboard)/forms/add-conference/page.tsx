@@ -27,6 +27,8 @@ import { Loader } from "@/components/ui/loader";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
+import { listApi } from "@/api/listApi";
+import { AssociationProps, CompanyProps } from "@/types/listTypes";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -41,6 +43,8 @@ const ConferenceForm = () => {
   const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [companies, setCompanies] = useState<CompanyProps[]>([]);
+  const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -289,6 +293,9 @@ const ConferenceForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
+        fetchCompany();
+        fetchAssociation();
+        // await Promise.all([fetchCompany(), fetchAssociation()]);
         if (isEditMode) {
           const { conference } = await createFormApi.getConference(
             conferenceId as string
@@ -343,6 +350,22 @@ const ConferenceForm = () => {
 
     initializeData();
   }, [isEditMode, conferenceId]);
+  const fetchCompany = async () => {
+    try {
+      const { companies } = await listApi.fetchCompanies();
+      setCompanies(companies);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchAssociation = async () => {
+    try {
+      const { associations } = await listApi.fetchAssociation();
+      setAssociations(associations);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
@@ -408,7 +431,7 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select event" />
                   </SelectTrigger>
                   <SelectContent className="bg-white text-black">
-                    {data?.association_type_id?.map((state) => (
+                    {data?.con_type_id?.map((state) => (
                       <SelectItem
                         key={state._id}
                         value={state._id.toString()}
@@ -726,6 +749,7 @@ const ConferenceForm = () => {
                 error={formik.errors.website}
                 touched={formik.touched.website}
                 apiEndpoint="conference"
+                disabled={isEditMode}
                 tabIndex={13}
               />
 
@@ -772,13 +796,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select conference organizer" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data?.company_type_id?.map((item) => (
+                    {companies?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {item.name}
+                        {item.company_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -849,13 +873,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select national association type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data?.con_segment_id?.map((item) => (
+                    {associations?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {item.name}
+                        {item.association_name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -886,13 +910,13 @@ const ConferenceForm = () => {
                     <SelectValue placeholder="Select hosting chapter type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {segmentTypes.map((item) => (
+                    {associations.map((item) => (
                       <SelectItem
-                        key={item.id}
-                        value={item.id.toString()}
+                        key={item._id}
+                        value={item._id.toString()}
                         className="hover:cursor-pointer"
                       >
-                        {item.name}
+                        {item.association_name}
                       </SelectItem>
                     ))}
                   </SelectContent>

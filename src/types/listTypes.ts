@@ -36,7 +36,10 @@ export interface CompanyProps {
   company_password: string;
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";
-  changes: ContactChanges;
+  changes: Changes;
+  createdAt: string;
+  updatedAt: string;
+  __v: string;
 }
 export interface VenueListResponse {
   message: string;
@@ -67,6 +70,7 @@ export interface KeyContactProps {
   updatedAt: string; // ISO date string
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";
+  __v: string;
 }
 export interface ContactChanges {
   date: string; // ISO date string
@@ -91,6 +95,16 @@ interface KeyContact {
   contact_association_id: string;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
+
+  status: string;
+  adminStatus: string;
+  changes: Changes;
+}
+interface Changes {
+  date: string;
+  type: string;
+  fields: string[];
+  user_id: string;
 }
 
 export interface KeyContactSingleResponse {
@@ -134,7 +148,7 @@ export interface AssociationProps {
   association_address: string;
   association_type_id: number;
   association_website: string;
-  changes: AssociationChange; // Nested structure for change details
+  changes: Changes; // Nested structure for change details
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
   status: "active" | "inactive";

@@ -187,7 +187,8 @@ export interface ConferenceProps {
   con_segment_id: string;
   con_nassociation_id: string;
   con_hassociation_id: string;
-  changes: Changes; // Nested structure for change details
+  changes: Changes;
+  con_featured: boolean;
 
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";

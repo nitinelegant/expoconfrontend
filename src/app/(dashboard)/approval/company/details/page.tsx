@@ -163,8 +163,8 @@ export default function ApprovalChanges() {
       case "company_type_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.company_type_id?.find((x) => x._id === value)?.name ||
                 "---"}
             </p>
@@ -174,8 +174,8 @@ export default function ApprovalChanges() {
       case "company_type_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.company_type_id?.find((x) => x._id === value)?.name ||
                 "---"}
             </p>
@@ -183,11 +183,10 @@ export default function ApprovalChanges() {
         );
 
       case "state_id":
-        console.log("state_id", value);
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -210,8 +209,8 @@ export default function ApprovalChanges() {
       default:
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">{value}</p>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">{value}</p>
           </div>
         );
     }

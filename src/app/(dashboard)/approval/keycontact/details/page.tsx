@@ -141,8 +141,8 @@ export default function ApprovalChanges() {
       case "contact_venue_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {venues?.find(
                 (x) => x._id?.toString() === keyContact?.contact_venue_id
               )?.venue_name || "---"}
@@ -153,8 +153,8 @@ export default function ApprovalChanges() {
       case "contact_organizer_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {companies?.find(
                 (x) => x?._id?.toString() === keyContact?.contact_organizer_id
               )?.company_name || "---"}
@@ -164,8 +164,8 @@ export default function ApprovalChanges() {
       case "contact_association_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {associations?.find(
                 (x) => x?._id?.toString() === keyContact?.contact_association_id
               )?.association_name || "---"}
@@ -176,8 +176,8 @@ export default function ApprovalChanges() {
       case "state_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.state_id?.find((x) => x._id === keyContact?.state_id)
                 ?.name || "---"}
             </p>
@@ -187,8 +187,8 @@ export default function ApprovalChanges() {
       default:
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">{value}</p>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">{value}</p>
           </div>
         );
     }

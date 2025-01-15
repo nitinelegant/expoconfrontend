@@ -114,26 +114,29 @@ export default function ApprovalChanges() {
     }
   };
 
-  const renderMap = (mapUrl: string, key: string) => {
+  const renderMap = (mapUrl: string, key: string, label: string) => {
     if (!mapUrl) return null;
 
     const url = extractMapUrl(mapUrl);
     if (isValidGoogleMapLink(url)) {
       return (
-        <div
-          className="mt-2 rounded-md overflow-hidden border border-gray-200"
-          key={key}
-        >
-          <iframe
-            src={url}
-            width="100%"
-            height="200"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="rounded-md"
-          />
+        <div>
+          <h6 className=" text-gray-500 font-bold ">{label}</h6>
+          <div
+            className="mt-2 rounded-md overflow-hidden border border-gray-200"
+            key={key}
+          >
+            <iframe
+              src={url}
+              width="100%"
+              height="200"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-md"
+            />
+          </div>
         </div>
       );
     }
@@ -157,11 +160,10 @@ export default function ApprovalChanges() {
 
     switch (key) {
       case "state_id":
-        console.log("state_id", value);
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -169,7 +171,7 @@ export default function ApprovalChanges() {
       case "venue_photo":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <img
               src={value}
               alt="Preview"
@@ -180,7 +182,7 @@ export default function ApprovalChanges() {
       case "venue_layout":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <img
               src={value}
               alt="Preview"
@@ -190,13 +192,13 @@ export default function ApprovalChanges() {
         );
 
       case "venue_map":
-        return renderMap(value, key);
+        return renderMap(value, key, label);
 
       default:
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">{value}</p>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">{value}</p>
           </div>
         );
     }

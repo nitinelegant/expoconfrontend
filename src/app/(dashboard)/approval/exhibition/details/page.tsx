@@ -154,8 +154,8 @@ export default function ApprovalChanges() {
       case "expo_type_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.expo_type_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -164,8 +164,8 @@ export default function ApprovalChanges() {
         if (!value) return;
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {new Date(value).toLocaleDateString()}
             </p>
           </div>
@@ -174,8 +174,8 @@ export default function ApprovalChanges() {
         if (!value) return;
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {new Date(value).toLocaleDateString()}
             </p>
           </div>
@@ -183,8 +183,8 @@ export default function ApprovalChanges() {
       case "venue_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {venues?.find((x) => x._id?.toString() === value)?.venue_name ||
                 "---"}
             </p>
@@ -193,8 +193,8 @@ export default function ApprovalChanges() {
       case "year_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.year_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -202,8 +202,8 @@ export default function ApprovalChanges() {
       case "state_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -212,8 +212,8 @@ export default function ApprovalChanges() {
       case "company_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {companies?.find((x) => x._id?.toString() === value?.toString())
                 ?.company_name || "---"}
             </p>
@@ -222,8 +222,8 @@ export default function ApprovalChanges() {
       case "expo_segment_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.expo_segment_id?.find(
                 (x) => x._id?.toString() === value?.toString()
               )?.name || "---"}
@@ -232,10 +232,9 @@ export default function ApprovalChanges() {
         );
 
       case "expo_logo":
-        console.log("value", value);
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <img
               src={value}
               alt="Preview"
@@ -247,8 +246,8 @@ export default function ApprovalChanges() {
       default:
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">{value}</p>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">{value}</p>
           </div>
         );
     }

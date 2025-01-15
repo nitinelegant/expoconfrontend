@@ -144,7 +144,8 @@ export default function ApprovalChanges() {
       key === "status" ||
       key === "createdAt" ||
       key === "updatedAt" ||
-      key === "adminStatus"
+      key === "adminStatus" ||
+      key === "con_featured"
     )
       return null;
 
@@ -154,8 +155,8 @@ export default function ApprovalChanges() {
       case "con_type_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.con_type_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -164,8 +165,8 @@ export default function ApprovalChanges() {
         if (!value) return;
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {new Date(value).toLocaleDateString()}
             </p>
           </div>
@@ -174,8 +175,8 @@ export default function ApprovalChanges() {
         if (!value) return;
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {new Date(value).toLocaleDateString()}
             </p>
           </div>
@@ -183,8 +184,8 @@ export default function ApprovalChanges() {
       case "venue_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {venues?.find((x) => x._id === value)?.venue_name || "---"}
             </p>
           </div>
@@ -192,18 +193,17 @@ export default function ApprovalChanges() {
       case "year_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.year_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
         );
       case "state_id":
-        console.log("state_id", value);
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
@@ -212,8 +212,8 @@ export default function ApprovalChanges() {
       case "company_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {companies?.find((x) => x._id?.toString() === value?.toString())
                 ?.company_name || "---"}
             </p>
@@ -222,8 +222,8 @@ export default function ApprovalChanges() {
       case "con_nassociation_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {associations?.find((x) => x._id === value)?.association_name ||
                 "---"}
             </p>
@@ -232,8 +232,8 @@ export default function ApprovalChanges() {
       case "con_segment_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {data?.con_segment_id?.find((x) => x._id === value)?.name ||
                 "---"}
             </p>
@@ -242,8 +242,8 @@ export default function ApprovalChanges() {
       case "con_hassociation_id":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">
               {associations?.find((x) => x._id === value)?.association_name ||
                 "---"}
             </p>
@@ -253,7 +253,7 @@ export default function ApprovalChanges() {
       case "con_logo":
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <img
               src={value}
               alt="Preview"
@@ -265,8 +265,8 @@ export default function ApprovalChanges() {
       default:
         return (
           <div className="space-y-2" key={key}>
-            <h6 className="text-black font-medium ">{label}</h6>
-            <p className="text-gray-400 capitalize">{value}</p>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">{value}</p>
           </div>
         );
     }

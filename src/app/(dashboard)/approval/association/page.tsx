@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
+import ChangeTypeBadge from "@/components/ChangeTypeBadge";
 
 const Association = () => {
   const router = useRouter();
@@ -88,6 +89,13 @@ const Association = () => {
     }
   };
   const columns: Column<AssociationProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: (item) => {
+        return <ChangeTypeBadge type={item?.changes?.type} />;
+      },
+    },
     { header: "Association Name", accessorKey: "association_name" },
     { header: "City", accessorKey: "association_city" },
     { header: "Address", accessorKey: "association_address" },

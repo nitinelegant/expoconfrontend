@@ -18,7 +18,8 @@ import {
   ApproveResponse,
   AssociationProps,
   CompanyProps,
-  KeyContactProps,
+  ConferenceProps,
+  ExhibitionProps,
   VenueProps,
 } from "@/types/listTypes";
 import BackButton from "@/components/BackButton";
@@ -28,15 +29,28 @@ import { useRouter } from "next/navigation";
 import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
 
 const displayNames: Record<string, string> = {
-  _id: "ID",
-  contact_name: "Name",
-  contact_mobile: "Phone Number",
-  contact_email: "Email",
+  _id: "Company ID",
+  expo_type_id: "Event Type",
+  expo_fullname: "Full Name",
+  expo_shortname: "Short Name",
+  year_id: "Year",
+  month_id: "Month",
+  expo_sd: "Start Date",
+  expo_ed: "End Date",
+  fee_id: "Fees",
+  expo_city: "City",
   state_id: "State",
-  contact_organizer_id: "Company",
-  contact_venue_id: "Venue",
-  contact_association_id: "Association",
+  venue_id: "Venue",
+  expo_website: "Website",
+  expo_frequency: "Frequency",
+  company_id: "Exhibition Organizer",
+  expo_segment_id: "Exhibition Type",
+  expo_eprofile: "Exhibitor Profile",
+  expo_vprofile: "Visitor Profile",
+  status: "Status",
   adminStatus: "Admin Status",
+  expo_time: "Timing",
+  expo_logo: "Logo",
 };
 
 export default function ApprovalChanges() {
@@ -45,10 +59,10 @@ export default function ApprovalChanges() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEditMode = Boolean(searchParams.get("id"));
-  const keyContactId = searchParams.get("id");
+  const exhibitionId = searchParams.get("id");
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
-  const [keyContact, setKeyContact] = useState<KeyContactProps>();
   const [loading, setLoading] = useState(false);
+  const [exhibition, setConference] = useState<ConferenceProps>();
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
   const [venues, setVenues] = useState<VenueProps[]>([]);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
@@ -57,19 +71,17 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { keyContact } = await listApi.getKeyContactById(
-          keyContactId as string
+        const { exhibition: Exhibition } = await listApi.getExhibitionById(
+          exhibitionId as string
         );
         const { companies } = await listApi.fetchCompanies();
         const { venues } = await listApi.fetchVenues();
         const { associations } = await listApi.fetchAssociation();
 
-        if (keyContact) {
-          setKeyContact(keyContact);
-        }
+        setConference(Exhibition);
+        setCompanies(companies);
         setAssociations(associations);
         setVenues(venues);
-        setCompanies(companies);
       } catch (error) {
         console.error("Error initializing data:", error);
         toast({
@@ -83,7 +95,7 @@ export default function ApprovalChanges() {
     };
 
     initializeData();
-  }, [isEditMode, keyContactId]);
+  }, [isEditMode, exhibitionId]);
 
   if (initialLoading) return <Loader size="medium" />;
 
@@ -93,7 +105,7 @@ export default function ApprovalChanges() {
       const isApproved = action === "approve" ? true : false;
 
       const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `keycontact/${id}/${action}`
+        `exhibition/${id}/${action}`
       );
       if (message) {
         toast({
@@ -123,7 +135,7 @@ export default function ApprovalChanges() {
     }
   };
 
-  const renderField = (key: keyof KeyContactProps, value: any) => {
+  const renderField = (key: keyof ExhibitionProps, value: any) => {
     if (
       key === "changes" ||
       key === "_id" ||
@@ -131,56 +143,104 @@ export default function ApprovalChanges() {
       key === "status" ||
       key === "createdAt" ||
       key === "updatedAt" ||
-      key === "adminStatus"
+      key === "adminStatus" ||
+      key === "expo_featured"
     )
       return null;
 
     const label = displayNames[key] || key;
 
     switch (key) {
-      case "contact_venue_id":
+      case "expo_type_id":
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {venues?.find(
-                (x) => x._id?.toString() === keyContact?.contact_venue_id
-              )?.venue_name || "---"}
+              {data?.expo_type_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
         );
-
-      case "contact_organizer_id":
+      case "expo_sd":
+        if (!value) return;
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {companies?.find(
-                (x) => x?._id?.toString() === keyContact?.contact_organizer_id
-              )?.company_name || "---"}
+              {new Date(value).toLocaleDateString()}
             </p>
           </div>
         );
-      case "contact_association_id":
+      case "expo_ed":
+        if (!value) return;
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {associations?.find(
-                (x) => x?._id?.toString() === keyContact?.contact_association_id
-              )?.association_name || "---"}
+              {new Date(value).toLocaleDateString()}
             </p>
           </div>
         );
-
+      case "venue_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {venues?.find((x) => x._id?.toString() === value)?.venue_name ||
+                "---"}
+            </p>
+          </div>
+        );
+      case "year_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {data?.year_id?.find((x) => x._id === value)?.name || "---"}
+            </p>
+          </div>
+        );
       case "state_id":
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {data?.state_id?.find((x) => x._id === keyContact?.state_id)
-                ?.name || "---"}
+              {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
+          </div>
+        );
+
+      case "company_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {companies?.find((x) => x._id?.toString() === value?.toString())
+                ?.company_name || "---"}
+            </p>
+          </div>
+        );
+      case "expo_segment_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {data?.expo_segment_id?.find(
+                (x) => x._id?.toString() === value?.toString()
+              )?.name || "---"}
+            </p>
+          </div>
+        );
+
+      case "expo_logo":
+        console.log("value", value);
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <img
+              src={value}
+              alt="Preview"
+              className="h-20 w-auto rounded-md border"
+            />
           </div>
         );
 
@@ -194,8 +254,8 @@ export default function ApprovalChanges() {
     }
   };
 
-  const statusText = getStatusText(keyContact?.changes?.type);
-  const colorClasses = getStatusColor(keyContact?.changes?.type);
+  const statusText = getStatusText(exhibition?.changes?.type);
+  const colorClasses = getStatusColor(exhibition?.changes?.type);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -203,20 +263,20 @@ export default function ApprovalChanges() {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center justify-between mt-2">
-            Approve Key Contact
+            Approve Exhibition
             <Badge
               variant={
-                keyContact?.adminStatus === "pending" ? "outline" : "default"
+                exhibition?.adminStatus === "pending" ? "outline" : "default"
               }
               className={`outline outline-1 ${
-                keyContact?.adminStatus === "approved"
+                exhibition?.adminStatus === "approved"
                   ? "bg-green-100 text-green-600"
-                  : keyContact?.adminStatus === "rejected"
+                  : exhibition?.adminStatus === "rejected"
                   ? "bg-red-50 text-red-600"
                   : "bg-yellow-100 text-yellow-600"
               }`}
             >
-              {keyContact?.adminStatus}
+              {exhibition?.adminStatus}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -233,22 +293,22 @@ export default function ApprovalChanges() {
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">
-              {Object.entries(keyContact || {}).map(([key, value]) =>
-                renderField(key as keyof KeyContactProps, value)
+              {Object.entries(exhibition || {}).map(([key, value]) =>
+                renderField(key as keyof ExhibitionProps, value)
               )}
             </div>
             {/* rendering updated  fields  */}
             <div className="space-y-4">
-              {ValuesToShow.includes(keyContact?.changes?.type) && (
-                <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200 ">
+              {ValuesToShow.includes(exhibition?.changes?.type) && (
+                <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
                   <h6 className="text-lg font-semibold text-green-700 mb-3">
                     Updated Values
                   </h6>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(
-                      keyContact?.changes?.updated_values || {}
+                      exhibition?.changes?.updated_values || {}
                     ).map(([key, value]) =>
-                      renderField(key as keyof KeyContactProps, value)
+                      renderField(key as keyof ExhibitionProps, value)
                     )}
                   </div>
                 </div>
@@ -257,7 +317,7 @@ export default function ApprovalChanges() {
 
             <CardFooter className="flex justify-end space-x-2 mt-3">
               <Button
-                onClick={() => handleAction(keyContactId as string, "reject")}
+                onClick={() => handleAction(exhibitionId as string, "reject")}
                 variant="outline"
                 className="flex items-center space-x-2 bg-white border border-red-600 text-red-600"
                 disabled={loading}
@@ -266,7 +326,7 @@ export default function ApprovalChanges() {
                 <span>Reject</span>
               </Button>
               <Button
-                onClick={() => handleAction(keyContactId as string, "approve")}
+                onClick={() => handleAction(exhibitionId as string, "approve")}
                 className="flex items-center space-x-2"
                 disabled={loading}
               >

@@ -6,7 +6,6 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ApproveResponse,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
@@ -17,6 +16,7 @@ import { ADMIN } from "@/constants/auth";
 import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
+import ChangeTypeBadge from "@/components/ChangeTypeBadge";
 
 const KeyContact = () => {
   const { user } = useAuth();
@@ -52,37 +52,15 @@ const KeyContact = () => {
     [rerenderData]
   );
 
-  const handleAction = async (id: string, action: string) => {
-    try {
-      const isApproved = action === "approve" ? true : false;
-
-      const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `keycontact/${id}/${action}`
-      );
-      if (message) {
-        toast({
-          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          } the key contact.`,
-          duration: 1500,
-          variant: isApproved ? "success" : "error",
-        });
-        setRerenderData(!rerenderData);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error while approving key contact. Please try again.",
-        duration: 1500,
-        variant: "error",
-      });
-      console.log(error);
-    } finally {
-    }
-  };
-
   const columns: Column<KeyContactProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: (item) => {
+        return <ChangeTypeBadge type={item?.changes?.type} />;
+      },
+    },
+
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },

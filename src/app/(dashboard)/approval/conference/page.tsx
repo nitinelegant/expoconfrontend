@@ -6,7 +6,6 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ApproveResponse,
   ConferenceDeleteResponse,
   ConferenceListResponse,
   ConferenceProps,
@@ -17,8 +16,11 @@ import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 import { approvalApi } from "@/api/approvalApi";
+import { useRouter } from "next/navigation";
+import ChangeTypeBadge from "@/components/ChangeTypeBadge";
 
 const Conference = () => {
+  const router = useRouter();
   const { data } = useSegments();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -54,37 +56,14 @@ const Conference = () => {
     [rerenderData]
   );
 
-  const handleAction = async (id: string, action: string) => {
-    try {
-      const isApproved = action === "approve" ? true : false;
-
-      const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `conference/${id}/${action}`
-      );
-      if (message) {
-        toast({
-          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          } the conference.`,
-          duration: 1500,
-          variant: isApproved ? "success" : "error",
-        });
-        setRerenderData(!rerenderData);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error while approving conference. Please try again.",
-        duration: 1500,
-        variant: "error",
-      });
-      console.log(error);
-    } finally {
-    }
-  };
-
   const columns: Column<ConferenceProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: (item) => {
+        return <ChangeTypeBadge type={item?.changes?.type} />;
+      },
+    },
     { header: "Name", accessorKey: "con_shortname" },
     {
       header: "Start Date",
@@ -143,11 +122,21 @@ const Conference = () => {
               variant="outline"
               className="bg-primary text-white"
               size="sm"
+              onClick={() =>
+                router.push(`/approval/conference/details?id=${cellItem._id}`)
+              }
+            >
+              <h1>Details</h1>
+            </Button>
+            {/* <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
               onClick={() => handleAction(cellItem._id, "approve")}
             >
               <h1>Approve</h1>
-            </Button>
-
+            </Button> */}
+            {/* 
             <Button
               variant="ghost"
               size="sm"
@@ -155,7 +144,7 @@ const Conference = () => {
               onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
-            </Button>
+            </Button> */}
           </div>
         );
       },

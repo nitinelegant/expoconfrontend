@@ -9,15 +9,17 @@ import {
   VenueProps,
   VenueListResponse,
   VenueDeleteResponse,
-  ApproveResponse,
 } from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useSegments } from "@/hooks/useSegments";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
 import { approvalApi } from "@/api/approvalApi";
+import { useRouter } from "next/navigation";
+import ChangeTypeBadge from "@/components/ChangeTypeBadge";
 
 const Venue = () => {
+  const router = useRouter();
   const { data } = useSegments();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -53,36 +55,14 @@ const Venue = () => {
     [rerenderData]
   );
 
-  const handleAction = async (id: string, action: string) => {
-    try {
-      const isApproved = action === "approve" ? true : false;
-
-      const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `venue/${id}/${action}`
-      );
-      if (message) {
-        toast({
-          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          } the venue.`,
-          duration: 1500,
-          variant: isApproved ? "success" : "error",
-        });
-        setRerenderData(!rerenderData);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error while approving venue. Please try again.",
-        duration: 1500,
-        variant: "error",
-      });
-      console.log(error);
-    } finally {
-    }
-  };
   const columns: Column<VenueProps>[] = [
+    {
+      header: "Type",
+      accessorKey: "changes",
+      cell: (item) => {
+        return <ChangeTypeBadge type={item?.changes?.type} />;
+      },
+    },
     { header: "Venue Name", accessorKey: "venue_name" },
     { header: "City", accessorKey: "venue_city" },
     { header: "Address", accessorKey: "venue_address" },
@@ -125,6 +105,16 @@ const Venue = () => {
               variant="outline"
               className="bg-primary text-white"
               size="sm"
+              onClick={() =>
+                router.push(`/approval/venue/details?id=${cellItem._id}`)
+              }
+            >
+              <h1>Details</h1>
+            </Button>
+            {/* <Button
+              variant="outline"
+              className="bg-primary text-white"
+              size="sm"
               onClick={() => handleAction(cellItem._id, "approve")}
             >
               <h1>Approve</h1>
@@ -137,7 +127,7 @@ const Venue = () => {
               onClick={() => handleAction(cellItem._id, "reject")}
             >
               Reject
-            </Button>
+            </Button> */}
           </div>
         );
       },

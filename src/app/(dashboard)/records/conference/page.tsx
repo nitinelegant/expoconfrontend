@@ -105,7 +105,7 @@ const Conference = () => {
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item?.adminStatus === "approved" ? item.status : item?.adminStatus}
+          {item?.adminStatus}
         </span>
       ),
     },

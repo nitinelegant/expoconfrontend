@@ -106,17 +106,17 @@ const KeyContact = () => {
     {
       header: "Status",
       accessorKey: "status",
-      cell: (status) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            status?.adminStatus === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : status.adminStatus === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {status.adminStatus === "approved" ? "Active" : status.adminStatus}
+          {item?.adminStatus}
         </span>
       ),
     },

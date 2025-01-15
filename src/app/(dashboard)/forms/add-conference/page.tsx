@@ -293,19 +293,14 @@ const ConferenceForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        fetchCompany();
-        fetchAssociation();
-        // await Promise.all([fetchCompany(), fetchAssociation()]);
+        const { companies } = await listApi.fetchCompanies();
+        setCompanies(companies);
+        const { associations } = await listApi.fetchAssociation();
+        setAssociations(associations);
+
         if (isEditMode) {
           const { conference } = await createFormApi.getConference(
             conferenceId as string
-          );
-          console.log(
-            "exhibition",
-            conference,
-            data?.year_id?.find(
-              (x) => x?._id?.toString() === conference?.year_id
-            )?.name
           );
           if (conference) {
             formik.setValues(
@@ -350,22 +345,6 @@ const ConferenceForm = () => {
 
     initializeData();
   }, [isEditMode, conferenceId]);
-  const fetchCompany = async () => {
-    try {
-      const { companies } = await listApi.fetchCompanies();
-      setCompanies(companies);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const fetchAssociation = async () => {
-    try {
-      const { associations } = await listApi.fetchAssociation();
-      setAssociations(associations);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 

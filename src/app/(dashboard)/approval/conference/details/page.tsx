@@ -18,7 +18,7 @@ import {
   ApproveResponse,
   AssociationProps,
   CompanyProps,
-  KeyContactProps,
+  ConferenceProps,
   VenueProps,
 } from "@/types/listTypes";
 import BackButton from "@/components/BackButton";
@@ -28,15 +28,28 @@ import { useRouter } from "next/navigation";
 import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
 
 const displayNames: Record<string, string> = {
-  _id: "ID",
-  contact_name: "Name",
-  contact_mobile: "Phone Number",
-  contact_email: "Email",
+  _id: "Company ID",
+  con_type_id: "Event Type",
+  con_fullname: "Full Name",
+  con_shortname: "Short Name",
+  year_id: "Year",
+  month_id: "Month",
+  con_sd: "Start Date",
+  con_ed: "End Date",
+  fee_id: "Fees",
+  con_city: "City",
   state_id: "State",
-  contact_organizer_id: "Company",
-  contact_venue_id: "Venue",
-  contact_association_id: "Association",
+  venue_id: "Venue",
+  con_website: "Website",
+  con_frequency: "Frequency",
+  company_id: "Company",
+  con_segment_id: "Conference Segment",
+  con_nassociation_id: "National Association",
+  con_hassociation_id: "Hosting Chapter",
+  status: "Status",
   adminStatus: "Admin Status",
+  con_time: "Timing",
+  con_logo: "Logo",
 };
 
 export default function ApprovalChanges() {
@@ -45,10 +58,10 @@ export default function ApprovalChanges() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEditMode = Boolean(searchParams.get("id"));
-  const keyContactId = searchParams.get("id");
+  const conferenceId = searchParams.get("id");
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
-  const [keyContact, setKeyContact] = useState<KeyContactProps>();
   const [loading, setLoading] = useState(false);
+  const [conference, setConference] = useState<ConferenceProps>();
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
   const [venues, setVenues] = useState<VenueProps[]>([]);
   const [associations, setAssociations] = useState<AssociationProps[]>([]);
@@ -57,19 +70,19 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { keyContact } = await listApi.getKeyContactById(
-          keyContactId as string
+        const { conference } = await listApi.getConferenceById(
+          conferenceId as string
         );
         const { companies } = await listApi.fetchCompanies();
         const { venues } = await listApi.fetchVenues();
         const { associations } = await listApi.fetchAssociation();
 
-        if (keyContact) {
-          setKeyContact(keyContact);
+        if (conference) {
+          setConference(conference);
         }
+        setCompanies(companies);
         setAssociations(associations);
         setVenues(venues);
-        setCompanies(companies);
       } catch (error) {
         console.error("Error initializing data:", error);
         toast({
@@ -83,7 +96,7 @@ export default function ApprovalChanges() {
     };
 
     initializeData();
-  }, [isEditMode, keyContactId]);
+  }, [isEditMode, conferenceId]);
 
   if (initialLoading) return <Loader size="medium" />;
 
@@ -93,7 +106,7 @@ export default function ApprovalChanges() {
       const isApproved = action === "approve" ? true : false;
 
       const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `keycontact/${id}/${action}`
+        `conference/${id}/${action}`
       );
       if (message) {
         toast({
@@ -123,7 +136,7 @@ export default function ApprovalChanges() {
     }
   };
 
-  const renderField = (key: keyof KeyContactProps, value: any) => {
+  const renderField = (key: keyof ConferenceProps, value: any) => {
     if (
       key === "changes" ||
       key === "_id" ||
@@ -138,49 +151,114 @@ export default function ApprovalChanges() {
     const label = displayNames[key] || key;
 
     switch (key) {
-      case "contact_venue_id":
+      case "con_type_id":
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {venues?.find(
-                (x) => x._id?.toString() === keyContact?.contact_venue_id
-              )?.venue_name || "---"}
+              {data?.con_type_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
         );
-
-      case "contact_organizer_id":
+      case "con_sd":
+        if (!value) return;
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {companies?.find(
-                (x) => x?._id?.toString() === keyContact?.contact_organizer_id
-              )?.company_name || "---"}
+              {new Date(value).toLocaleDateString()}
             </p>
           </div>
         );
-      case "contact_association_id":
+      case "con_ed":
+        if (!value) return;
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {associations?.find(
-                (x) => x?._id?.toString() === keyContact?.contact_association_id
-              )?.association_name || "---"}
+              {new Date(value).toLocaleDateString()}
             </p>
           </div>
         );
-
+      case "venue_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {venues?.find((x) => x._id === value)?.venue_name || "---"}
+            </p>
+          </div>
+        );
+      case "year_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {data?.year_id?.find((x) => x._id === value)?.name || "---"}
+            </p>
+          </div>
+        );
       case "state_id":
+        console.log("state_id", value);
         return (
           <div className="space-y-2" key={key}>
             <h6 className="text-black font-medium ">{label}</h6>
             <p className="text-gray-400 capitalize">
-              {data?.state_id?.find((x) => x._id === keyContact?.state_id)
-                ?.name || "---"}
+              {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
+          </div>
+        );
+
+      case "company_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {companies?.find((x) => x._id?.toString() === value?.toString())
+                ?.company_name || "---"}
+            </p>
+          </div>
+        );
+      case "con_nassociation_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {associations?.find((x) => x._id === value)?.association_name ||
+                "---"}
+            </p>
+          </div>
+        );
+      case "con_segment_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {data?.con_segment_id?.find((x) => x._id === value)?.name ||
+                "---"}
+            </p>
+          </div>
+        );
+      case "con_hassociation_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <p className="text-gray-400 capitalize">
+              {associations?.find((x) => x._id === value)?.association_name ||
+                "---"}
+            </p>
+          </div>
+        );
+
+      case "con_logo":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className="text-black font-medium ">{label}</h6>
+            <img
+              src={value}
+              alt="Preview"
+              className="h-20 w-auto rounded-md border"
+            />
           </div>
         );
 
@@ -194,8 +272,8 @@ export default function ApprovalChanges() {
     }
   };
 
-  const statusText = getStatusText(keyContact?.changes?.type);
-  const colorClasses = getStatusColor(keyContact?.changes?.type);
+  const statusText = getStatusText(conference?.changes?.type);
+  const colorClasses = getStatusColor(conference?.changes?.type);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -203,20 +281,20 @@ export default function ApprovalChanges() {
       <Card className="mx-auto max-w-3xl shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center justify-between mt-2">
-            Approve Key Contact
+            Approve Conference
             <Badge
               variant={
-                keyContact?.adminStatus === "pending" ? "outline" : "default"
+                conference?.adminStatus === "pending" ? "outline" : "default"
               }
               className={`outline outline-1 ${
-                keyContact?.adminStatus === "approved"
+                conference?.adminStatus === "approved"
                   ? "bg-green-100 text-green-600"
-                  : keyContact?.adminStatus === "rejected"
+                  : conference?.adminStatus === "rejected"
                   ? "bg-red-50 text-red-600"
                   : "bg-yellow-100 text-yellow-600"
               }`}
             >
-              {keyContact?.adminStatus}
+              {conference?.adminStatus}
             </Badge>
           </CardTitle>
         </CardHeader>
@@ -233,22 +311,22 @@ export default function ApprovalChanges() {
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">
-              {Object.entries(keyContact || {}).map(([key, value]) =>
-                renderField(key as keyof KeyContactProps, value)
+              {Object.entries(conference || {}).map(([key, value]) =>
+                renderField(key as keyof ConferenceProps, value)
               )}
             </div>
             {/* rendering updated  fields  */}
             <div className="space-y-4">
-              {ValuesToShow.includes(keyContact?.changes?.type) && (
-                <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200 ">
+              {ValuesToShow.includes(conference?.changes?.type) && (
+                <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
                   <h6 className="text-lg font-semibold text-green-700 mb-3">
                     Updated Values
                   </h6>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(
-                      keyContact?.changes?.updated_values || {}
+                      conference?.changes?.updated_values || {}
                     ).map(([key, value]) =>
-                      renderField(key as keyof KeyContactProps, value)
+                      renderField(key as keyof ConferenceProps, value)
                     )}
                   </div>
                 </div>
@@ -257,7 +335,7 @@ export default function ApprovalChanges() {
 
             <CardFooter className="flex justify-end space-x-2 mt-3">
               <Button
-                onClick={() => handleAction(keyContactId as string, "reject")}
+                onClick={() => handleAction(conferenceId as string, "reject")}
                 variant="outline"
                 className="flex items-center space-x-2 bg-white border border-red-600 text-red-600"
                 disabled={loading}
@@ -266,7 +344,7 @@ export default function ApprovalChanges() {
                 <span>Reject</span>
               </Button>
               <Button
-                onClick={() => handleAction(keyContactId as string, "approve")}
+                onClick={() => handleAction(conferenceId as string, "approve")}
                 className="flex items-center space-x-2"
                 disabled={loading}
               >

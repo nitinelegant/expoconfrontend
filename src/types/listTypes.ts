@@ -19,6 +19,10 @@ export interface VenueProps {
   venue_featured: boolean;
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";
+  changes: Changes;
+  createdAt: string;
+  updatedAt: string;
+  __v: string;
 }
 export interface CompanyProps {
   _id: string;
@@ -183,10 +187,13 @@ export interface ConferenceProps {
   con_segment_id: string;
   con_nassociation_id: string;
   con_hassociation_id: string;
-  changes: AssociationChange; // Nested structure for change details
+  changes: Changes; // Nested structure for change details
 
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";
+  createdAt: string;
+  updatedAt: string;
+  __v: string;
 }
 
 export interface ConferenceListResponse {
@@ -354,6 +361,8 @@ export interface VenueDetailsProps {
   venue_layout: string;
   venue_featured: boolean;
   status: string;
+  adminStatus: "approved" | "pending" | "rejected";
+  changes: Changes;
 }
 
 export interface ConferenceSingleResponse {
@@ -418,6 +427,10 @@ export interface ExhibitionProps {
   createdAt: string; // ISO date string
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";
+  changes: Changes;
+  __v: string;
+  updatedAt: string;
+  expo_featured: boolean;
 }
 
 export interface ExhibitionsListResponse {

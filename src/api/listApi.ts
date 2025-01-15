@@ -9,7 +9,9 @@ import {
   CompanySingleResponse,
   ConferenceDeleteResponse,
   ConferenceListResponse,
+  ConferenceSingleResponse,
   DeleteApiResponse,
+  ExhibitionSingleResponse,
   ExhibitionsListResponse,
   ExpConferenceListResponse,
   KeyContactDeleteResponse,
@@ -19,6 +21,7 @@ import {
   StaffListResponse,
   VenueDeleteResponse,
   VenueListResponse,
+  VenueSingleResponse,
 } from "@/types/listTypes";
 
 export const listApi = {
@@ -46,6 +49,36 @@ export const listApi = {
     try {
       const response = await axiosInstance.get<CompanySingleResponse>(
         `/company/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getVenueById: async (id: string): Promise<VenueSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<VenueSingleResponse>(
+        `/venue/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getConferenceById: async (id: string): Promise<ConferenceSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<ConferenceSingleResponse>(
+        `/conference/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getExhibitionById: async (id: string): Promise<ExhibitionSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionSingleResponse>(
+        `/exhibition/${id}`
       );
       return response.data;
     } catch (error) {

@@ -39,7 +39,7 @@ const Conference = () => {
 
         return {
           data: conferences,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -106,7 +106,7 @@ const Conference = () => {
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item?.adminStatus === "approved" ? item.status : item?.adminStatus}
+          {item?.adminStatus}
         </span>
       ),
     },

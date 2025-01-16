@@ -39,9 +39,9 @@ const Venue = () => {
 
         return {
           data: conferences,
-          totalItems: totalPages * 5,
-          currentPage: currentPage,
-          totalPages: totalPages,
+          totalItems: totalPages * 10 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
         };
       } catch (error) {
         toast({
@@ -110,7 +110,31 @@ const Venue = () => {
         </span>
       ),
     },
-    {
+    // {
+    //   header: "Action",
+    //   accessorKey: "con_type_id",
+    //   cell: (cellItem) => {
+    //     if (user !== ADMIN) return null;
+    //     return (
+    //       <div className="flex items-center space-x-2">
+    //         <Button variant="ghost" size="icon">
+    //           <SquarePen />
+    //         </Button>
+    //         <Button
+    //           variant="ghost"
+    //           size="icon"
+    //           onClick={() => handleDeleteClick(cellItem._id)}
+    //         >
+    //           <Trash2 className="text-red-600" />
+    //         </Button>
+    //       </div>
+    //     );
+    //   },
+    // },
+  ];
+
+  if (user === ADMIN) {
+    columns.push({
       header: "Action",
       accessorKey: "con_type_id",
       cell: (cellItem) => {
@@ -130,8 +154,8 @@ const Venue = () => {
           </div>
         );
       },
-    },
-  ];
+    });
+  }
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {
@@ -174,7 +198,6 @@ const Venue = () => {
         columns={columns}
         fetchData={fetchData}
         title="Expired Conference"
-        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

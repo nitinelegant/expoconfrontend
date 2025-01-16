@@ -48,7 +48,7 @@ const KeyContact = () => {
 
         return {
           data: keyContacts,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -194,7 +194,6 @@ const KeyContact = () => {
         title="Key Contact"
         viewAllLink="/forms/add-key-contact"
         addButtonTitle="Add Key Contact"
-        itemsPerPage={10}
         startingUrl="keycontact"
       />
       <DeleteConfirmationDialog

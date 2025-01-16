@@ -35,7 +35,7 @@ const Company = () => {
 
         return {
           data: companies,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };

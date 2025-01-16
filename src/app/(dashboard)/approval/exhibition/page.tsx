@@ -42,7 +42,7 @@ const Exhibition = () => {
 
         return {
           data: exhibitions,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -187,7 +187,6 @@ const Exhibition = () => {
         columns={columns}
         fetchData={fetchData}
         title="Approve Exhibition"
-        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

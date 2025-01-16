@@ -38,9 +38,9 @@ const Venue = () => {
 
         return {
           data: venues,
-          totalItems: totalPages * 5,
-          currentPage: currentPage,
-          totalPages: totalPages,
+          totalItems: totalPages * 10 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
         };
       } catch (error) {
         toast({
@@ -76,17 +76,34 @@ const Venue = () => {
       cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            item.adminStatus === "approved"
+            item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : item.adminStatus === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.adminStatus === "approved" ? item.status : item?.adminStatus}
+          {item?.adminStatus}
         </span>
       ),
     },
+    // {
+    //   header: "Status",
+    //   accessorKey: "status",
+    //   cell: (item) => (
+    //     <span
+    //       className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+    //         item.adminStatus === "approved"
+    //           ? "bg-green-100 text-green-600"
+    //           : item.adminStatus === "rejected"
+    //           ? "bg-red-50 text-red-600"
+    //           : "bg-yellow-100 text-yellow-600"
+    //       }`}
+    //     >
+    //       {item.adminStatus === "approved" ? item.status : item?.adminStatus}
+    //     </span>
+    //   ),
+    // },
     {
       header: "Action",
       accessorKey: "_id",

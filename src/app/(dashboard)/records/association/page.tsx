@@ -41,7 +41,7 @@ const Association = () => {
 
         return {
           data: associations,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -168,7 +168,6 @@ const Association = () => {
         title="Association"
         viewAllLink="/forms/add-association"
         addButtonTitle="Add Association"
-        itemsPerPage={10}
         startingUrl="association"
       />
       <DeleteConfirmationDialog

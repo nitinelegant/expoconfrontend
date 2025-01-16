@@ -142,6 +142,7 @@ interface Exhibition {
   expo_vprofile: string;
   status: "pending" | "approved" | "rejected";
   changes: AssociationChange;
+  expo_featured: boolean;
 }
 
 export interface AssociationProps {
@@ -157,6 +158,7 @@ export interface AssociationProps {
   updatedAt: string; // ISO date string
   status: "active" | "inactive";
   adminStatus: "approved" | "pending" | "rejected";
+  __v: string;
 }
 
 export interface AssociationsListResponse {

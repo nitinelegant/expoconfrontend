@@ -38,7 +38,7 @@ const Conference = () => {
 
         return {
           data: conferences,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -181,7 +181,6 @@ const Conference = () => {
         title="Conference"
         viewAllLink="/forms/add-conference"
         addButtonTitle="Add Conference"
-        itemsPerPage={10}
         startingUrl="conference"
       />
       <DeleteConfirmationDialog

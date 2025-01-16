@@ -137,7 +137,7 @@ export default function ApprovalChanges() {
       setLoading(false);
     }
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderField = (key: keyof ConferenceProps, value: any) => {
     if (
       key === "changes" ||
@@ -257,8 +257,8 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <img
-              src={value}
-              alt="Preview"
+              src={value || null}
+              alt="logo"
               className="h-20 w-auto rounded-md border"
             />
           </div>

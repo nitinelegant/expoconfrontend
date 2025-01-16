@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { months, segmentTypes } from "@/constants/form";
+import { months } from "@/constants/form";
 import { cn } from "@/lib/utils";
 import VenueSearch from "@/components/VenueSearch";
 import BackButton from "@/components/BackButton";
@@ -306,26 +306,28 @@ const ConferenceForm = () => {
             formik.setValues(
               {
                 ...formik.values,
-                eventType: conference.con_type_id?.toString(),
-                eventFullName: conference.con_fullname,
-                eventShortName: conference.con_shortname,
-                startDate: conference.con_sd,
-                endDate: conference.con_ed,
-                timings: conference.con_time,
+                eventType: conference?.con_type_id?.toString(),
+                eventFullName: conference?.con_fullname,
+                eventShortName: conference?.con_shortname,
+                startDate: conference?.con_sd,
+                endDate: conference?.con_ed,
+                timings: conference?.con_time,
                 year: data?.year_id
                   ?.find((x) => x?._id?.toString() === conference?.year_id)
                   ?.name?.toString(),
-                state: conference.state_id?.toString(),
-                city: conference.con_city,
+                state: conference?.state_id?.toString(),
+                city: conference?.con_city,
                 conferenceSegment: conference?.con_segment_id?.toString(),
-                website: conference.con_website,
-                venue: conference.venue_id?.toString(),
-                entryFees: conference.fee_id?.toString(),
-                frequency: conference.con_frequency,
-                month: conference.month_id?.toString(),
-                nationalAssociation: conference.con_nassociation_id?.toString(),
-                conferenceOrganizer: conference.company_id?.toString(),
-                logo: conference.con_logo,
+                website: conference?.con_website,
+                venue: conference?.venue_id?.toString(),
+                entryFees: conference?.fee_id?.toString(),
+                frequency: conference?.con_frequency,
+                month: conference?.month_id?.toString(),
+                nationalAssociation:
+                  conference?.con_nassociation_id?.toString(),
+                conferenceOrganizer: conference?.company_id?.toString(),
+                logo: conference?.con_logo,
+                featured: conference?.con_featured,
               },
               false
             );

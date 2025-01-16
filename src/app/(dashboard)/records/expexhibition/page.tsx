@@ -41,9 +41,9 @@ const ExpExhibiton = () => {
 
         return {
           data: exhibitions,
-          totalItems: totalPages * 5,
-          currentPage: currentPage,
-          totalPages: totalPages,
+          totalItems: totalPages * 10 || 0,
+          currentPage: currentPage || 0,
+          totalPages: totalPages || 0,
         };
       } catch (error) {
         toast({
@@ -112,7 +112,37 @@ const ExpExhibiton = () => {
         </span>
       ),
     },
-    {
+    // {
+    //   header: "Action",
+    //   accessorKey: "_id",
+    //   cell: (cellItem) => {
+    //     if (user !== ADMIN) return null;
+    //     return (
+    //       <div className="flex items-center space-x-2">
+    //         <Button
+    //           variant="ghost"
+    //           size="icon"
+    //           onClick={() =>
+    //             router.push(`/forms/add-exhibition?id=${cellItem._id}`)
+    //           }
+    //         >
+    //           <SquarePen />
+    //         </Button>
+    //         <Button
+    //           variant="ghost"
+    //           size="icon"
+    //           onClick={() => handleDeleteClick(cellItem._id)}
+    //         >
+    //           <Trash2 className="text-red-600" />
+    //         </Button>
+    //       </div>
+    //     );
+    //   },
+    // },
+  ];
+
+  if (user === ADMIN) {
+    columns.push({
       header: "Action",
       accessorKey: "_id",
       cell: (cellItem) => {
@@ -138,8 +168,8 @@ const ExpExhibiton = () => {
           </div>
         );
       },
-    },
-  ];
+    });
+  }
   const handleConfirmDeletion = async () => {
     try {
       if (selectedId) {

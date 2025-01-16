@@ -1,7 +1,6 @@
 import { axiosInstance } from "@/lib/axios";
 import {
   AssociationDeleteResponse,
-  AssociationProps,
   AssociationSingleResponse,
   AssociationsListResponse,
   CompanyDeleteResponse,

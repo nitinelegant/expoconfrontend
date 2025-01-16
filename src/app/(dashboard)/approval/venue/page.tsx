@@ -38,7 +38,7 @@ const Venue = () => {
 
         return {
           data: venues,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -177,7 +177,6 @@ const Venue = () => {
         columns={columns}
         fetchData={fetchData}
         title="Approve Venue"
-        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

@@ -122,7 +122,7 @@ export default function ApprovalChanges() {
       setLoading(false);
     }
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderField = (key: keyof KeyContactProps, value: any) => {
     if (
       key === "changes" ||
@@ -143,9 +143,8 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <p className="text-black capitalize">
-              {venues?.find(
-                (x) => x._id?.toString() === keyContact?.contact_venue_id
-              )?.venue_name || "---"}
+              {venues?.find((x) => x._id?.toString() === value)?.venue_name ||
+                "---"}
             </p>
           </div>
         );
@@ -155,9 +154,8 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <p className="text-black capitalize">
-              {companies?.find(
-                (x) => x?._id?.toString() === keyContact?.contact_organizer_id
-              )?.company_name || "---"}
+              {companies?.find((x) => x?._id?.toString() === value)
+                ?.company_name || "---"}
             </p>
           </div>
         );
@@ -166,9 +164,8 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <p className="text-black capitalize">
-              {associations?.find(
-                (x) => x?._id?.toString() === keyContact?.contact_association_id
-              )?.association_name || "---"}
+              {associations?.find((x) => x?._id?.toString() === value)
+                ?.association_name || "---"}
             </p>
           </div>
         );
@@ -178,8 +175,7 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <p className="text-black capitalize">
-              {data?.state_id?.find((x) => x._id === keyContact?.state_id)
-                ?.name || "---"}
+              {data?.state_id?.find((x) => x._id === value)?.name || "---"}
             </p>
           </div>
         );

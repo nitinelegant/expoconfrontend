@@ -33,7 +33,7 @@ const Staff = () => {
 
         return {
           data: users,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -139,7 +139,6 @@ const Staff = () => {
         title="All Staff"
         viewAllLink="/staff-onboard"
         addButtonTitle="Add Staff"
-        itemsPerPage={5}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

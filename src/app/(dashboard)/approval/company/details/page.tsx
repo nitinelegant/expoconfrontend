@@ -124,12 +124,9 @@ export default function ApprovalChanges() {
     const url = extractMapUrl(mapUrl);
     if (isValidGoogleMapLink(url)) {
       return (
-        <div>
+        <div key={key}>
           <h6 className=" text-gray-500 font-bold ">{label}</h6>
-          <div
-            className="mt-2 rounded-md overflow-hidden border border-gray-200"
-            key={key}
-          >
+          <div className="mt-2 rounded-md overflow-hidden border border-gray-200">
             <iframe
               src={url}
               width="100%"
@@ -146,7 +143,7 @@ export default function ApprovalChanges() {
     }
     return null;
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderField = (key: keyof CompanyProps, value: any) => {
     if (
       key === "changes" ||
@@ -202,12 +199,11 @@ export default function ApprovalChanges() {
           </div>
         );
       case "company_logo":
-        if (!value?.company_logo) return null;
         return (
           <div className="space-y-2" key={key}>
             <img
-              src={value?.company_logo}
-              alt="Preview"
+              src={value || null}
+              alt="logo"
               className="h-20 w-auto rounded-md border"
             />
           </div>

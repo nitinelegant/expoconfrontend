@@ -229,7 +229,7 @@ const ExhibitonForm = () => {
           expo_segment_id: exhibitionType,
           expo_eprofile: exhibitorProfile,
           expo_vprofile: visitorProfile,
-          expp_featured: featured,
+          expo_featured: featured,
         };
 
         if (isEditMode) {
@@ -299,7 +299,6 @@ const ExhibitonForm = () => {
           const { exhibition } = await createFormApi.getExhibition(
             exhibitionId as string
           );
-          console.log("exhibition", exhibition);
 
           if (exhibition) {
             formik.setValues(
@@ -326,6 +325,7 @@ const ExhibitonForm = () => {
                 logo: exhibition.expo_logo,
                 exhibitorProfile: exhibition?.expo_eprofile,
                 visitorProfile: exhibition?.expo_vprofile,
+                featured: exhibition?.expo_featured,
               },
               false
             );

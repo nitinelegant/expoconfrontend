@@ -6,7 +6,6 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ApproveResponse,
   AssociationDeleteResponse,
   AssociationProps,
   AssociationsListResponse,
@@ -42,7 +41,7 @@ const Association = () => {
 
         return {
           data: associations,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -59,35 +58,6 @@ const Association = () => {
     [rerenderData]
   );
 
-  const handleAction = async (id: string, action: string) => {
-    try {
-      const isApproved = action === "approve" ? true : false;
-
-      const { message }: ApproveResponse = await approvalApi.approveOrReject(
-        `association/${id}/${action}`
-      );
-      if (message) {
-        toast({
-          title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          } the association.`,
-          duration: 1500,
-          variant: isApproved ? "success" : "error",
-        });
-        setRerenderData(!rerenderData);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error while approving association. Please try again.",
-        duration: 1500,
-        variant: "error",
-      });
-      console.log(error);
-    } finally {
-    }
-  };
   const columns: Column<AssociationProps>[] = [
     {
       header: "Type",
@@ -207,7 +177,6 @@ const Association = () => {
         columns={columns}
         fetchData={fetchData}
         title="Approve Association"
-        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

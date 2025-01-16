@@ -35,7 +35,7 @@ const Company = () => {
 
         return {
           data: companies,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -164,7 +164,6 @@ const Company = () => {
         title="Company"
         viewAllLink="/forms/add-company"
         addButtonTitle="Add Company"
-        itemsPerPage={10}
         startingUrl="company"
       />
       <DeleteConfirmationDialog

@@ -16,7 +16,6 @@ import { listApi } from "@/api/listApi";
 import { Loader } from "@/components/ui/loader";
 import {
   ApproveResponse,
-  AssociationProps,
   CompanyProps,
   ConferenceProps,
   ExhibitionProps,
@@ -67,7 +66,6 @@ export default function ApprovalChanges() {
   const [exhibition, setConference] = useState<ConferenceProps>();
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
   const [venues, setVenues] = useState<VenueProps[]>([]);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -78,11 +76,10 @@ export default function ApprovalChanges() {
         );
         const { companies } = await listApi.fetchCompanies();
         const { venues } = await listApi.fetchVenues();
-        const { associations } = await listApi.fetchAssociation();
 
         setConference(Exhibition);
         setCompanies(companies);
-        setAssociations(associations);
+
         setVenues(venues);
       } catch (error) {
         console.error("Error initializing data:", error);
@@ -137,6 +134,7 @@ export default function ApprovalChanges() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderField = (key: keyof ExhibitionProps, value: any) => {
     if (
       key === "changes" ||
@@ -237,8 +235,8 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <img
-              src={value}
-              alt="Preview"
+              src={value || null}
+              alt="logo"
               className="h-20 w-auto rounded-md border"
             />
           </div>

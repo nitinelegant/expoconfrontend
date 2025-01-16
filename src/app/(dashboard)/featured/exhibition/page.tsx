@@ -44,7 +44,7 @@ const Exhibition = () => {
 
         return {
           data: exhibitions,
-          totalItems: totalPages * 5 || 0,
+          totalItems: totalPages * 10 || 0,
           currentPage: currentPage || 0,
           totalPages: totalPages || 0,
         };
@@ -106,12 +106,12 @@ const Exhibition = () => {
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
             item?.adminStatus === "approved"
               ? "bg-green-100 text-green-600"
-              : item.adminStatus === "rejected"
+              : item?.adminStatus === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {item.adminStatus === "approved" ? item.status : item?.adminStatus}
+          {item?.adminStatus}
         </span>
       ),
     },
@@ -185,7 +185,6 @@ const Exhibition = () => {
         columns={columns}
         fetchData={fetchData}
         title="Featured Exhibition"
-        itemsPerPage={10}
       />
       <DeleteConfirmationDialog
         isOpen={isDeleteDialogOpen}

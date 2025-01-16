@@ -141,6 +141,7 @@ export interface AddExhibitionCredentials {
   expo_segment_id: string;
   expo_eprofile: string;
   expo_vprofile: string;
+  expo_featured: boolean;
 }
 export interface ContactChanges {
   date: string; // ISO date string

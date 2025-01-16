@@ -14,11 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { listApi } from "@/api/listApi";
 import { Loader } from "@/components/ui/loader";
-import {
-  ApproveResponse,
-  AssociationProps,
-  CompanyProps,
-} from "@/types/listTypes";
+import { ApproveResponse, AssociationProps } from "@/types/listTypes";
 import BackButton from "@/components/BackButton";
 import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
@@ -111,6 +107,7 @@ export default function ApprovalChanges() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderField = (key: keyof AssociationProps, value: any) => {
     if (
       key === "changes" ||

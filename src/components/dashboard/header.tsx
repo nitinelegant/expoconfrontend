@@ -35,7 +35,7 @@ export function Header({ title }: HeaderProps) {
               {/* <AvatarFallback>GA</AvatarFallback> */}
             </Avatar>
             <div className="text-sm">
-              <p className="font-medium">{data?.fullname}</p>
+              <p className="font-medium capitalize">{data?.fullname}</p>
               <p className="text-gray-500">{data?.email}</p>
             </div>
           </div>

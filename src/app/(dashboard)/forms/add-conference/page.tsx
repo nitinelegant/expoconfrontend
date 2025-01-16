@@ -713,6 +713,7 @@ const ConferenceForm = () => {
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
                 tabIndex={12}
+                required
               />
 
               <SearchInput

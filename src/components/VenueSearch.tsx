@@ -46,6 +46,7 @@ interface VenueSearchProps {
   error?: string;
   touched?: boolean;
   tabIndex?: number;
+  required?: boolean;
 }
 
 const VenueSearch: React.FC<VenueSearchProps> = ({
@@ -55,6 +56,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
   error,
   touched,
   tabIndex = 0,
+  required = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -169,7 +171,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="venue">Venue</Label>
+      <Label htmlFor="venue">Venue {required && "*"}</Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

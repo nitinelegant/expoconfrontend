@@ -130,7 +130,7 @@ const VenueForm = () => {
             toast({
               title: "Venue Added Successfully!",
               description:
-                "The venue has been added successfully. You can view it in the key venue table.",
+                "The venue has been added successfully. You can view it in the venue list.",
               duration: 3000,
               variant: "success",
             });

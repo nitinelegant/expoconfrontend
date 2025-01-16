@@ -250,9 +250,9 @@ const ExhibitonForm = () => {
           if (response) {
             console.log("submitting vlaues", response);
             toast({
-              title: "Conference Added Successfully!",
+              title: "Exhibition Added Successfully!",
               description:
-                "The conference has been added successfully. You can view it in the conference list.",
+                "The exhibition has been added successfully. You can view it in the exhibition list.",
               duration: 3000,
               variant: "success",
             });
@@ -265,9 +265,9 @@ const ExhibitonForm = () => {
         }
       } catch (error) {
         toast({
-          title: "Add Conference Failed",
+          title: "Add Exhibition Failed",
           description:
-            "Failed to add conference. Please check your fields and try again.",
+            "Failed to add Exhibition. Please check your fields and try again.",
           duration: 2500,
           variant: "error",
         });
@@ -718,6 +718,7 @@ const ExhibitonForm = () => {
                 error={formik.errors.venue}
                 touched={formik.touched.venue}
                 tabIndex={12}
+                required
               />
 
               <SearchInput

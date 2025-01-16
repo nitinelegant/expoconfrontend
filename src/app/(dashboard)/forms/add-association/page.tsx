@@ -101,9 +101,9 @@ const AssociationForm = () => {
         router.push("/records/association");
       } catch (error) {
         toast({
-          title: "Add Key Contact Failed",
+          title: "Add association Failed",
           description:
-            "Failed to add key contact. Please check your credentials and try again.",
+            "Failed to add association. Please check your credentials and try again.",
           duration: 2500,
           variant: "error",
         });

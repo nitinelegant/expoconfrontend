@@ -69,15 +69,13 @@ const CompanyForm = () => {
         "is-valid-map",
         "Must be a valid Google Maps embed link or iframe",
         (value) => {
-          if (!value) return false;
-          // Check if it's an iframe
+          if (!value) return true; // Optional field
           if (value.includes("<iframe")) {
             const srcMatch = value.match(/src="([^"]+)"/);
             return srcMatch
               ? srcMatch[1].startsWith("https://www.google.com/maps/embed?pb=")
               : false;
           }
-          // Check if it's a direct URL
           return value.startsWith("https://www.google.com/maps/embed?pb=");
         }
       ),
@@ -457,7 +455,7 @@ const CompanyForm = () => {
                 }
               />
               <Label htmlFor="featured" className="text-gray-900">
-                Featured*
+                Featured
               </Label>
             </div>
             {formik.touched.featured && formik.errors.featured && (

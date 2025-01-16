@@ -386,7 +386,7 @@ const KeyContactForm = () => {
 
             <Button
               type="submit"
-              className="w-full bg-primary"
+              className="w-full bg-primary text-white"
               tabIndex={7}
               disabled={isLoading}
             >

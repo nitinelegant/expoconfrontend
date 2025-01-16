@@ -132,16 +132,16 @@ const CompanyForm = () => {
           }
         } else {
           const response = await createFormApi.addCompany(payload);
-          console.log("submitting vlaues", response);
-          toast({
-            title: "Company Added Successfully!",
-            description:
-              "The company has been added successfully. You can view it in the company list.",
-            duration: 3000,
-            variant: "success",
-          });
+          if (response) {
+            toast({
+              title: "Company Added Successfully!",
+              description:
+                "The company has been added successfully. You can view it in the company list.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         }
-        // router.push("/records/company");
         if (window.history.length > 1) {
           router.back(); // Navigates to the previous page
         } else {

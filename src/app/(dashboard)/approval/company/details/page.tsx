@@ -108,7 +108,7 @@ export default function ApprovalChanges() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while approving key contact. Please try again.",
+        description: "Error while approving company. Please try again.",
         duration: 1500,
         variant: "error",
       });

@@ -248,7 +248,6 @@ const ExhibitonForm = () => {
         } else {
           const response = await createFormApi.addExhibition(payload);
           if (response) {
-            console.log("submitting vlaues", response);
             toast({
               title: "Exhibition Added Successfully!",
               description:

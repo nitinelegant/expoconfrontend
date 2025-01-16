@@ -74,24 +74,36 @@ const KeyContactForm = () => {
           contact_association_id: association,
         };
         if (isEditMode) {
-          await createFormApi.updateKeyContact(keyContactId as string, payload);
-          toast({
-            title: "Key Contact Updated Successfully!",
-            description: "The key contact has been updated successfully.",
-            duration: 3000,
-            variant: "success",
-          });
+          const response = await createFormApi.updateKeyContact(
+            keyContactId as string,
+            payload
+          );
+
+          if (response) {
+            toast({
+              title: "Key Contact Updated Successfully!",
+              description: "The key contact has been updated successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         } else {
-          await createFormApi.addKeyContact(payload);
-          toast({
-            title: "Key Contact Added Successfully!",
-            description: "The key contact has been added successfully.",
-            duration: 3000,
-            variant: "success",
-          });
+          const response = await createFormApi.addKeyContact(payload);
+          if (response) {
+            toast({
+              title: "Key Contact Added Successfully!",
+              description: "The key contact has been added successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         }
 
-        router.push("/records/keycontact");
+        if (window.history.length > 1) {
+          router.back(); // Navigates to the previous page
+        } else {
+          router.push("/"); // Fallback: Navigate to the home page
+        }
       } catch (error) {
         toast({
           title: `${isEditMode ? "Update" : "Add"} Key Contact Failed`,
@@ -151,7 +163,7 @@ const KeyContactForm = () => {
         console.error("Error initializing data:", error);
         toast({
           title: "Error Loading Data",
-          description: "Failed to load contact information. Please try again.",
+          description: "Failed to load data. Please try again.",
           variant: "error",
         });
       } finally {

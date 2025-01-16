@@ -111,7 +111,7 @@ export default function ApprovalChanges() {
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
           description: `You have successfully ${
             isApproved ? "approved" : "reject"
-          } the key contact.`,
+          } the exhibition.`,
           duration: 1500,
           variant: isApproved ? "success" : "error",
         });
@@ -124,7 +124,7 @@ export default function ApprovalChanges() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while approving key contact. Please try again.",
+        description: "Error while approving exhibition. Please try again.",
         duration: 1500,
         variant: "error",
       });

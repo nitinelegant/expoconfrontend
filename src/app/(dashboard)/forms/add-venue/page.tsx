@@ -116,17 +116,21 @@ const VenueForm = () => {
           venue_featured: featured,
         };
         if (isEditMode) {
-          await createFormApi.updateVenue(venueId as string, payload);
-          toast({
-            title: "Venue Updated Successfully!",
-            description: "The venue has been updated successfully.",
-            duration: 3000,
-            variant: "success",
-          });
+          const response = await createFormApi.updateVenue(
+            venueId as string,
+            payload
+          );
+          if (response) {
+            toast({
+              title: "Venue Updated Successfully!",
+              description: "The venue has been updated successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         } else {
           const response = await createFormApi.addVenue(payload);
           if (response) {
-            console.log("submitting vlaues", response);
             toast({
               title: "Venue Added Successfully!",
               description:
@@ -136,7 +140,11 @@ const VenueForm = () => {
             });
           }
         }
-        router.push("/records/venue");
+        if (window.history.length > 1) {
+          router.back(); // Navigates to the previous page
+        } else {
+          router.push("/"); // Fallback: Navigate to the home page
+        }
       } catch (error) {
         toast({
           title: "Add Venue Failed",

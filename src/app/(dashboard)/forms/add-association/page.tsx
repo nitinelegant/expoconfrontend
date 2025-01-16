@@ -74,16 +74,18 @@ const AssociationForm = () => {
           association_type_id: associationType,
         };
         if (isEditMode) {
-          await createFormApi.updateAssociation(
+          const response = await createFormApi.updateAssociation(
             associationId as string,
             payload
           );
-          toast({
-            title: "Association Updated Successfully!",
-            description: "The association has been updated successfully.",
-            duration: 3000,
-            variant: "success",
-          });
+          if (response) {
+            toast({
+              title: "Association Updated Successfully!",
+              description: "The association has been updated successfully.",
+              duration: 3000,
+              variant: "success",
+            });
+          }
         } else {
           const response = await createFormApi.addAssociation(payload);
           if (response) {
@@ -94,11 +96,14 @@ const AssociationForm = () => {
               duration: 3000,
               variant: "success",
             });
-            router.push("/records/association");
           }
         }
 
-        router.push("/records/association");
+        if (window.history.length > 1) {
+          router.back(); // Navigates to the previous page
+        } else {
+          router.push("/"); // Fallback: Navigate to the home page
+        }
       } catch (error) {
         toast({
           title: "Add association Failed",

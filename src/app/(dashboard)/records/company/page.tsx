@@ -41,8 +41,8 @@ const Company = () => {
         };
       } catch (error) {
         toast({
-          title: "Failed to fetch data",
-          description: "Error while fetching company. Please try again.",
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
           duration: 1500,
           variant: "error",
         });
@@ -130,7 +130,7 @@ const Company = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully Deleted the company.",
+            description: "You have successfully deleted the company.",
             duration: 1500,
             variant: "success",
           });

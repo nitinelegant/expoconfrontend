@@ -106,7 +106,7 @@ const Staff = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully deleted the venue.",
+            description: "You have successfully deleted the staff.",
             duration: 1500,
             variant: "success",
           });
@@ -115,7 +115,7 @@ const Staff = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected venue.",
+          description: "Id is missing from the selected staff.",
           duration: 1500,
           variant: "destructive",
         });
@@ -123,7 +123,7 @@ const Staff = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting venue. Please try again.",
+        description: "Error while deleting staff. Please try again.",
         duration: 1500,
         variant: "error",
       });

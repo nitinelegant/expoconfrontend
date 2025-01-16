@@ -247,7 +247,6 @@ const ConferenceForm = () => {
         } else {
           const response = await createFormApi.addConference(payload);
           if (response) {
-            console.log("submitting vlaues", response);
             toast({
               title: "Conference Added Successfully!",
               description:

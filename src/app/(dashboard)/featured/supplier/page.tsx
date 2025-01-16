@@ -42,8 +42,8 @@ const Supplier = () => {
         };
       } catch (error) {
         toast({
-          title: "Failed to fetch data",
-          description: "Error while fetching organizer. Please try again.",
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
           duration: 1500,
           variant: "error",
         });
@@ -130,7 +130,7 @@ const Supplier = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully Deleted the organizer.",
+            description: "You have successfully Deleted the supplier.",
             duration: 1500,
             variant: "success",
           });
@@ -139,7 +139,7 @@ const Supplier = () => {
       } else {
         toast({
           title: "Failed to fetch Id",
-          description: "Id is missing from the selected organizer.",
+          description: "Id is missing from the selected supplier.",
           duration: 1500,
           variant: "destructive",
         });
@@ -147,7 +147,7 @@ const Supplier = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error while deleting organizer. Please try again.",
+        description: "Error while deleting supplier. Please try again.",
         duration: 1500,
         variant: "error",
       });

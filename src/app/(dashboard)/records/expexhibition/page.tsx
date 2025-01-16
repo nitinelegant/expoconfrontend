@@ -47,8 +47,8 @@ const ExpExhibiton = () => {
         };
       } catch (error) {
         toast({
-          title: "Failed to fetch data",
-          description: "Error while fetching key contacts. Please try again.",
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
           duration: 1500,
           variant: "error",
         });

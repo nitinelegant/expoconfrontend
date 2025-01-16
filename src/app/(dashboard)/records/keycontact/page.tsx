@@ -54,8 +54,8 @@ const KeyContact = () => {
         };
       } catch (error) {
         toast({
-          title: "Failed to fetch data",
-          description: "Error while fetching key contacts. Please try again.",
+          title: "Error Loading Data",
+          description: "Failed to load data. Please try again.",
           duration: 1500,
           variant: "error",
         });
@@ -161,7 +161,7 @@ const KeyContact = () => {
           setSelectedId(null);
           toast({
             title: "Delete Successful",
-            description: "You have successfully eleted the key contact.",
+            description: "You have successfully deleted the key contact.",
             duration: 1500,
             variant: "success",
           });

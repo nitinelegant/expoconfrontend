@@ -564,15 +564,25 @@ const ConferenceForm = () => {
                       : ""
                   }
                   onChange={(e) => {
-                    formik.setFieldValue("startDate", e.target.value);
+                    const selectedDate = new Date(e.target.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (selectedDate >= today) {
+                      formik.setFieldValue("startDate", e.target.value);
+                    } else {
+                      formik.setFieldValue(
+                        "startDate",
+                        today.toISOString().split("T")[0]
+                      );
+                    }
                   }}
-                  // {...formik.getFieldProps("startDate")}
                   className={cn(
                     formik.touched.startDate &&
                       formik.errors.startDate &&
                       "border-red-500"
                   )}
-                  min={todayStr}
+                  min={new Date().toISOString().split("T")[0]}
                   max={
                     formik.values.year && formik.values.month
                       ? getMaxDateForMonth(
@@ -582,6 +592,11 @@ const ConferenceForm = () => {
                       : undefined
                   }
                 />
+                {formik.touched.startDate && formik.errors.startDate && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.startDate}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">

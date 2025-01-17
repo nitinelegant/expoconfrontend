@@ -372,7 +372,6 @@ const ExhibitonForm = () => {
   const handleResultFound = () => {};
 
   const timeOptions = generateTimeOptions();
-  const todayStr = today.toISOString().split("T")[0];
 
   const getMaxDateForMonth = (year: string, month: string) => {
     if (!year || !month) return undefined;
@@ -569,15 +568,25 @@ const ExhibitonForm = () => {
                       : ""
                   }
                   onChange={(e) => {
-                    formik.setFieldValue("startDate", e.target.value);
+                    const selectedDate = new Date(e.target.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    if (selectedDate >= today) {
+                      formik.setFieldValue("startDate", e.target.value);
+                    } else {
+                      formik.setFieldValue(
+                        "startDate",
+                        today.toISOString().split("T")[0]
+                      );
+                    }
                   }}
-                  // {...formik.getFieldProps("startDate")}
                   className={cn(
                     formik.touched.startDate &&
                       formik.errors.startDate &&
                       "border-red-500"
                   )}
-                  min={todayStr}
+                  min={new Date().toISOString().split("T")[0]}
                   max={
                     formik.values.year && formik.values.month
                       ? getMaxDateForMonth(
@@ -587,6 +596,11 @@ const ExhibitonForm = () => {
                       : undefined
                   }
                 />
+                {formik.touched.startDate && formik.errors.startDate && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.startDate}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -610,7 +624,10 @@ const ExhibitonForm = () => {
                       formik.errors.endDate &&
                       "border-red-500"
                   )}
-                  min={formik.values.startDate || todayStr}
+                  min={
+                    formik.values.startDate ||
+                    new Date().toISOString().split("T")[0]
+                  }
                   max={
                     formik.values.year && formik.values.month
                       ? getMaxDateForMonth(
@@ -639,7 +656,6 @@ const ExhibitonForm = () => {
                   onChange={(e) => {
                     formik.setFieldValue("entryFees", e.target.value);
                   }}
-                  // {...formik.getFieldProps("entryFees")}
                   className={
                     formik.touched.entryFees && formik.errors.entryFees
                       ? "border-red-500"

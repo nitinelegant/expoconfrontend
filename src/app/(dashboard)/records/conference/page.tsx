@@ -76,7 +76,7 @@ const Conference = () => {
       accessorKey: "con_ed",
       cell: (state) => {
         return (
-          <span className="capitalize">{formatDateToYear(state.con_sd)}</span>
+          <span className="capitalize">{formatDateToYear(state.con_ed)}</span>
         );
       },
     },

@@ -93,7 +93,7 @@ const AssociationSearch: React.FC<VenueSearchProps> = ({
         setLoading(true);
         setSearchError("");
         const { data } = await axiosInstance.get(
-          `/association/list?search=${searchTerm}`
+          `/association/list?keyword=${searchTerm}`
         );
         setAssociations(data.associations);
       } catch (error) {

@@ -93,7 +93,7 @@ const CompanySearch: React.FC<CompanySearchProps> = ({
         setLoading(true);
         setSearchError("");
         const { data } = await axiosInstance.get(
-          `/company/list?search=${searchTerm}`
+          `/company/list?keyword=${searchTerm}`
         );
         setCompanies(data.companies);
       } catch (error) {

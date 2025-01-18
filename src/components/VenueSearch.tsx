@@ -104,7 +104,7 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
         setLoading(true);
         setSearchError("");
         const { data } = await axiosInstance.get(
-          `/venue/list?search=${searchTerm}&page=1`
+          `/venue/list?keyword=${searchTerm}&page=1`
         );
         setVenues(data.venues);
       } catch (error) {

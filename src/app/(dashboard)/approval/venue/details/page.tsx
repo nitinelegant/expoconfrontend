@@ -27,6 +27,7 @@ import {
   ValuesToShow,
 } from "@/utils/common";
 import { Checkbox } from "@/components/ui/checkbox";
+import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -42,6 +43,8 @@ const displayNames: Record<string, string> = {
   status: "Status",
   adminStatus: "Admin Status",
   venue_featured: "Featured",
+  user_fullname: "Staff Name",
+  user_email: "Staff Email",
 };
 
 export default function ApprovalChanges() {
@@ -59,7 +62,7 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { venue } = await listApi.getVenueById(venueId as string);
+        const { venue } = await listApi.getAdminVenueById(venueId as string);
         if (venue) {
           setvenue(venue);
         }
@@ -91,9 +94,8 @@ export default function ApprovalChanges() {
       if (message) {
         toast({
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${
-            isApproved ? "approved" : "reject"
-          } the key contact.`,
+          description: `You have successfully ${isApproved ? "approved" : "reject"
+            } the key contact.`,
           duration: 1500,
           variant: isApproved ? "success" : "error",
         });
@@ -225,13 +227,12 @@ export default function ApprovalChanges() {
             Approve Venue
             <Badge
               variant={venue?.adminStatus === "pending" ? "outline" : "default"}
-              className={`outline outline-1 ${
-                venue?.adminStatus === "approved"
+              className={`outline outline-1 ${venue?.adminStatus === "approved"
                   ? "bg-green-100 text-green-600"
                   : venue?.adminStatus === "rejected"
-                  ? "bg-red-50 text-red-600"
-                  : "bg-yellow-100 text-yellow-600"
-              }`}
+                    ? "bg-red-50 text-red-600"
+                    : "bg-yellow-100 text-yellow-600"
+                }`}
             >
               {venue?.adminStatus}
             </Badge>
@@ -247,6 +248,7 @@ export default function ApprovalChanges() {
                 {statusText}
               </h2>
             </div>
+            <StaffInformation changes={venue?.changes} />
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">

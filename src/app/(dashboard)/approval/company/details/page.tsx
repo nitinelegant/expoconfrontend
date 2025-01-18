@@ -27,6 +27,7 @@ import {
   ValuesToShow,
 } from "@/utils/common";
 import { Checkbox } from "@/components/ui/checkbox";
+import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -61,7 +62,7 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { company } = await listApi.getCompanyById(companyId as string);
+        const { company } = await listApi.getAdminCompanyById(companyId as string);
         if (company) {
           setCompany(company);
         }
@@ -260,6 +261,7 @@ export default function ApprovalChanges() {
                 {statusText}
               </h2>
             </div>
+            <StaffInformation changes={company?.changes} />
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">

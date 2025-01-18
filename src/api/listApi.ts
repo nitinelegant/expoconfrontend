@@ -44,10 +44,30 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  getAdminKeyContactById: async (id: string): Promise<KeyContactSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<KeyContactSingleResponse>(
+        `/keycontact/approval/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
   getCompanyById: async (id: string): Promise<CompanySingleResponse> => {
     try {
       const response = await axiosInstance.get<CompanySingleResponse>(
         `/company/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getAdminCompanyById: async (id: string): Promise<CompanySingleResponse> => {
+    try {
+      const response = await axiosInstance.get<CompanySingleResponse>(
+        `/company/approval/${id}`
       );
       return response.data;
     } catch (error) {
@@ -64,10 +84,30 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  getAdminVenueById: async (id: string): Promise<VenueSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<VenueSingleResponse>(
+        `/venue/approval/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
   getConferenceById: async (id: string): Promise<ConferenceSingleResponse> => {
     try {
       const response = await axiosInstance.get<ConferenceSingleResponse>(
         `/conference/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getAdminConferenceById: async (id: string): Promise<ConferenceSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<ConferenceSingleResponse>(
+        `/conference/approval/${id}`
       );
       return response.data;
     } catch (error) {
@@ -84,12 +124,34 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  getAdminExhibitionById: async (id: string): Promise<ExhibitionSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<ExhibitionSingleResponse>(
+        `/exhibition/approval/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
   getAssociationById: async (
     id: string
   ): Promise<AssociationSingleResponse> => {
     try {
       const response = await axiosInstance.get<AssociationSingleResponse>(
         `/association/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getAdminAssociationById: async (
+    id: string
+  ): Promise<AssociationSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<AssociationSingleResponse>(
+        `/association/approval/${id}`
       );
       return response.data;
     } catch (error) {

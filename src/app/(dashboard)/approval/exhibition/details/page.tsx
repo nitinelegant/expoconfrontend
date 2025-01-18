@@ -27,6 +27,7 @@ import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
 import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
 import { Checkbox } from "@/components/ui/checkbox";
+import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -71,7 +72,7 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { exhibition: Exhibition } = await listApi.getExhibitionById(
+        const { exhibition: Exhibition } = await listApi.getAdminExhibitionById(
           exhibitionId as string
         );
         const { companies } = await listApi.fetchCompanies();
@@ -298,6 +299,7 @@ export default function ApprovalChanges() {
                 {statusText}
               </h2>
             </div>
+            <StaffInformation changes={exhibition?.changes} />
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">

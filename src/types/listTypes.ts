@@ -4,6 +4,11 @@ interface AssociationChange {
   fields: string[]; // Array of field names
   user_id: string; // User ID related to the change
   _id: string; // Change ID
+  staff?: {
+    _id: string;
+    user_fullname: string;
+    user_email: string;
+  };
 }
 export interface VenueProps {
   _id: string;
@@ -109,6 +114,11 @@ interface Changes {
   type: string;
   fields: string[];
   user_id: string;
+  staff?: {
+    _id: string;
+    user_fullname: string;
+    user_email: string;
+  };
 }
 
 export interface KeyContactSingleResponse {

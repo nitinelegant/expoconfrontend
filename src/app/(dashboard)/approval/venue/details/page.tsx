@@ -27,6 +27,7 @@ import {
   ValuesToShow,
 } from "@/utils/common";
 import { Checkbox } from "@/components/ui/checkbox";
+import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -59,7 +60,7 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { venue } = await listApi.getVenueById(venueId as string);
+        const { venue } = await listApi.getAdminVenueById(venueId as string);
         if (venue) {
           setvenue(venue);
         }
@@ -247,6 +248,7 @@ export default function ApprovalChanges() {
                 {statusText}
               </h2>
             </div>
+            <StaffInformation changes={venue?.changes} />
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">

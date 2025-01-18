@@ -26,6 +26,7 @@ import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
 import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
+import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
   _id: "ID",
@@ -57,7 +58,7 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { keyContact } = await listApi.getKeyContactById(
+        const { keyContact } = await listApi.getAdminKeyContactById(
           keyContactId as string
         );
         const { companies } = await listApi.fetchCompanies();
@@ -228,6 +229,7 @@ export default function ApprovalChanges() {
                 {statusText}
               </h2>
             </div>
+            <StaffInformation changes={keyContact?.changes} />
 
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">

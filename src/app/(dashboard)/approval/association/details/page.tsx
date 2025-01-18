@@ -20,6 +20,7 @@ import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
 import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
+import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
   _id: "Company ID",
@@ -48,7 +49,7 @@ export default function ApprovalChanges() {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { association } = await listApi.getAssociationById(
+        const { association } = await listApi.getAdminAssociationById(
           associationId as string
         );
         if (association) {
@@ -192,7 +193,8 @@ export default function ApprovalChanges() {
                 {statusText}
               </h2>
             </div>
-
+            <StaffInformation changes={association?.changes} />
+            
             {/* rendering all fields  */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 mt-2">
               {Object.entries(association || {}).map(([key, value]) =>

@@ -72,7 +72,7 @@ const StaffOnBoardForm = () => {
         toast({
           title: "Add Staff Failed",
           description:
-            "Failed to add Staff. Make user the user is not already registered or try again.",
+            "Failed to add Staff. Make user the user is not already registered or try again later.",
           duration: 2500,
           variant: "error",
         });

@@ -20,15 +20,15 @@ import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import TimeSelector from "@/components/TimeSelector";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
 import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
 import { Checkbox } from "@/components/ui/checkbox";
-import { listApi } from "@/api/listApi";
-import { AssociationProps, CompanyProps } from "@/types/listTypes";
+import TimeInput from "@/components/time-input";
+import CompanySearch from "@/components/CompanySearch";
+import AssociationSearch from "@/components/AssociationSearch";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -43,8 +43,6 @@ const ConferenceForm = () => {
   const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -168,6 +166,10 @@ const ConferenceForm = () => {
 
           return true;
         }),
+      timings: Yup.string().matches(
+        /^(0?[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/,
+        "Invalid time format. Use HH:MM AM/PM"
+      ),
       entryFees: Yup.number().required("Entry Fees is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
@@ -204,6 +206,7 @@ const ConferenceForm = () => {
           conferenceOrganizer,
           conferenceSegment,
           nationalAssociation,
+          hostingChapter,
           featured,
         } = values;
         const payload = {
@@ -226,7 +229,7 @@ const ConferenceForm = () => {
           company_id: conferenceOrganizer,
           con_segment_id: conferenceSegment,
           con_nassociation_id: nationalAssociation,
-          con_hassociation_id: nationalAssociation, //hostingChapter
+          con_hassociation_id: hostingChapter, //hostingChapter
           con_type_id: eventType,
           con_featured: featured,
         };
@@ -292,11 +295,6 @@ const ConferenceForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        const { companies } = await listApi.fetchCompanies();
-        setCompanies(companies);
-        const { associations } = await listApi.fetchAssociation();
-        setAssociations(associations);
-
         if (isEditMode) {
           const { conference } = await createFormApi.getConference(
             conferenceId as string
@@ -327,6 +325,7 @@ const ConferenceForm = () => {
                 conferenceOrganizer: conference?.company_id?.toString(),
                 logo: conference?.con_logo,
                 featured: conference?.con_featured,
+                hostingChapter: conference?.con_hassociation_id,
               },
               false
             );
@@ -334,11 +333,6 @@ const ConferenceForm = () => {
         }
       } catch (error) {
         console.error("Error initializing data:", error);
-        // toast({
-        //   title: "Error Loading Data",
-        //   description: "Failed to load contact information. Please try again.",
-        //   variant: "error",
-        // });
       } finally {
         setInitialLoading(false);
       }
@@ -349,22 +343,8 @@ const ConferenceForm = () => {
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
-  // Generate time options for the time picker
-  const generateTimeOptions = () => {
-    const times = [];
-    for (let hours = 0; hours < 24; hours++) {
-      for (let minutes = 0; minutes < 60; minutes += 30) {
-        const hour = hours.toString().padStart(2, "0");
-        const minute = minutes.toString().padStart(2, "0");
-        times.push(`${hour}:${minute}`);
-      }
-    }
-    return times;
-  };
-
   const handleResultFound = () => {};
 
-  const timeOptions = generateTimeOptions();
   const todayStr = today.toISOString().split("T")[0];
 
   const getMaxDateForMonth = (year: string, month: string) => {
@@ -390,7 +370,7 @@ const ConferenceForm = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="state" className="text-gray-900">
-                  Event Type*
+                  Conference Type*
                 </Label>
                 <Select
                   onValueChange={(value) =>
@@ -636,8 +616,16 @@ const ConferenceForm = () => {
                   </p>
                 )}
               </div>
-
-              <TimeSelector formik={formik} timeOptions={timeOptions} />
+              <TimeInput
+                id="timings"
+                label="Timings"
+                value={formik.values.timings}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.timings}
+                touched={formik.touched.timings}
+                tabIndex={8}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees* (₹)</Label>
@@ -771,44 +759,18 @@ const ConferenceForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="conferenceOrganizer">
-                  Conference Organizer PCO
-                </Label>
-                <Select
-                  onValueChange={(value) =>
+                <CompanySearch
+                  value={formik.values.conferenceOrganizer}
+                  onChange={(value) =>
                     formik.setFieldValue("conferenceOrganizer", value)
                   }
-                  defaultValue={formik.values.conferenceOrganizer}
-                >
-                  <SelectTrigger
-                    tabIndex={17}
-                    className={
-                      formik.touched.conferenceOrganizer &&
-                      formik.errors.conferenceOrganizer
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue placeholder="Select conference organizer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {companies?.map((item) => (
-                      <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
-                        className="hover:cursor-pointer"
-                      >
-                        {item.company_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.conferenceOrganizer &&
-                  formik.errors.conferenceOrganizer && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.conferenceOrganizer}
-                    </p>
-                  )}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.conferenceOrganizer}
+                  touched={formik.touched.conferenceOrganizer}
+                  tabIndex={16}
+                  label="Conference Organizer PCO"
+                  placeholder="Select conference rrganizer "
+                />
               </div>
 
               <div className="space-y-2">
@@ -850,79 +812,32 @@ const ConferenceForm = () => {
                   )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="segment">National Association</Label>
-                <Select
-                  onValueChange={(value) =>
+                <AssociationSearch
+                  value={formik.values.nationalAssociation}
+                  onChange={(value) =>
                     formik.setFieldValue("nationalAssociation", value)
                   }
-                  defaultValue={formik.values.nationalAssociation}
-                >
-                  <SelectTrigger
-                    tabIndex={17}
-                    className={
-                      formik.touched.nationalAssociation &&
-                      formik.errors.nationalAssociation
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue placeholder="Select national association type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {associations?.map((item) => (
-                      <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
-                        className="hover:cursor-pointer"
-                      >
-                        {item.association_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.nationalAssociation &&
-                  formik.errors.nationalAssociation && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.nationalAssociation}
-                    </p>
-                  )}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.nationalAssociation}
+                  touched={formik.touched.nationalAssociation}
+                  tabIndex={18}
+                  label="Association"
+                  placeholder="Select national association"
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="segment">Hosting Chapter</Label>
-                <Select
-                  onValueChange={(value) =>
+                <AssociationSearch
+                  value={formik.values.hostingChapter}
+                  onChange={(value) =>
                     formik.setFieldValue("hostingChapter", value)
                   }
-                >
-                  <SelectTrigger
-                    tabIndex={17}
-                    className={
-                      formik.touched.hostingChapter &&
-                      formik.errors.hostingChapter
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue placeholder="Select hosting chapter type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {associations.map((item) => (
-                      <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
-                        className="hover:cursor-pointer"
-                      >
-                        {item.association_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.hostingChapter &&
-                  formik.errors.hostingChapter && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.hostingChapter}
-                    </p>
-                  )}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.hostingChapter}
+                  touched={formik.touched.hostingChapter}
+                  tabIndex={19}
+                  label="Hosting Chapter"
+                  placeholder="Select hosting chapter"
+                />
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -933,7 +848,7 @@ const ConferenceForm = () => {
                   formik.setFieldValue("featured", checked)
                 }
                 className="text-white"
-                tabIndex={18}
+                tabIndex={20}
               />
               <Label htmlFor="featured" className="text-gray-900">
                 Featured
@@ -943,7 +858,7 @@ const ConferenceForm = () => {
             <Button
               type="submit"
               className="w-full bg-primary text-white"
-              tabIndex={19}
+              tabIndex={21}
               disabled={isLoading}
             >
               {isEditMode ? "Update" : "Add"} Conference

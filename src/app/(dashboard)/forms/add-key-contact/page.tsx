@@ -19,10 +19,10 @@ import { withAuth } from "@/utils/withAuth";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
-import VenueSearch from "@/components/VenueSearch";
 import { useSegments } from "@/hooks/useSegments";
-import { AssociationProps, CompanyProps } from "@/types/listTypes";
-import { listApi } from "@/api/listApi";
+import CompanySearch from "@/components/CompanySearch";
+import AssociationSearch from "@/components/AssociationSearch";
+import VenueSearch from "@/components/VenueSearch";
 
 const KeyContactForm = () => {
   const { data } = useSegments();
@@ -34,8 +34,6 @@ const KeyContactForm = () => {
   const keyContactId = searchParams.get("id");
   const isEditMode = Boolean(searchParams.get("id"));
   const firstInputRef = useRef<HTMLInputElement>(null);
-  const [companies, setCompanies] = useState<CompanyProps[]>([]);
-  const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -141,9 +139,6 @@ const KeyContactForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        fetchCompany();
-        fetchAssociation();
-        // await Promise.all([fetchCompany(), fetchAssociation()]);
         if (isEditMode) {
           const { keyContact } = await createFormApi.getKeyContact(
             keyContactId as string
@@ -173,23 +168,6 @@ const KeyContactForm = () => {
 
     initializeData();
   }, [isEditMode, keyContactId]);
-
-  const fetchCompany = async () => {
-    try {
-      const { companies } = await listApi.fetchCompanies();
-      setCompanies(companies);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const fetchAssociation = async () => {
-    try {
-      const { associations } = await listApi.fetchAssociation();
-      setAssociations(associations);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
@@ -307,92 +285,43 @@ const KeyContactForm = () => {
             {/* Company and Venue Fields */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="company" className="text-gray-900">
-                  Company
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    formik.setFieldValue("company", value)
-                  }
+                <CompanySearch
                   value={formik.values.company}
-                >
-                  <SelectTrigger
-                    tabIndex={5}
-                    className={
-                      formik.touched.company && formik.errors.company
-                        ? "border-red-500 text-black capitalize"
-                        : "text-black capitalize"
-                    }
-                  >
-                    <SelectValue placeholder="Select Company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {companies?.map((item) => (
-                      <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
-                        className="hover:cursor-pointer capitalize"
-                      >
-                        {item?.company_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.company && formik.errors.company && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.company}
-                  </p>
-                )}
+                  onChange={(value) => formik.setFieldValue("company", value)}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.company}
+                  touched={formik.touched.company}
+                  tabIndex={5}
+                  label="Company"
+                  placeholder="Select company"
+                />
               </div>
-              <VenueSearch
-                value={formik.values.venue}
-                onChange={(value) => formik.setFieldValue("venue", value)}
-                onBlur={formik.handleBlur}
-                error={formik.errors.venue}
-                touched={formik.touched.venue}
-                tabIndex={6}
-              />
-            </div>
 
-            {/* Association Field */}
+              <div className="space-y-2">
+                <VenueSearch
+                  value={formik.values.venue}
+                  onChange={(value) => formik.setFieldValue("venue", value)}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.venue}
+                  touched={formik.touched.venue}
+                  tabIndex={5}
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="association" className="text-gray-900">
-                  Association
-                </Label>
-                <Select
-                  onValueChange={(value) =>
+                <AssociationSearch
+                  value={formik.values.association}
+                  onChange={(value) =>
                     formik.setFieldValue("association", value)
                   }
-                  value={formik.values.association}
-                >
-                  <SelectTrigger
-                    tabIndex={6}
-                    className={
-                      formik.touched.association && formik.errors.association
-                        ? "border-red-500 text-black capitalize"
-                        : "text-black capitalize"
-                    }
-                  >
-                    <SelectValue placeholder="Select Association" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {associations?.map((item) => (
-                      <SelectItem
-                        key={item._id}
-                        value={item._id.toString()}
-                        className="hover:cursor-pointer capitalize"
-                      >
-                        {item?.association_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.association && formik.errors.association && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.association}
-                  </p>
-                )}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.association}
+                  touched={formik.touched.association}
+                  tabIndex={6}
+                  label="Association"
+                  placeholder="Select association"
+                />
               </div>
             </div>
 

@@ -20,7 +20,6 @@ import { withAuth } from "@/utils/withAuth";
 import SearchInput from "@/components/SearchInput";
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import TimeSelector from "@/components/TimeSelector";
 import { createFormApi } from "@/api/createFormApi";
 import { useToast } from "@/hooks/use-toast";
 import { Loader } from "@/components/ui/loader";
@@ -30,6 +29,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CompanyProps } from "@/types/listTypes";
 import { listApi } from "@/api/listApi";
+import TimeInput from "@/components/time-input";
+import CompanySearch from "@/components/CompanySearch";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -168,6 +169,10 @@ const ExhibitonForm = () => {
 
           return true;
         }),
+      timings: Yup.string().matches(
+        /^(0?[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/,
+        "Invalid time format. Use HH:MM AM/PM"
+      ),
       entryFees: Yup.number().required("Entry Fees is required"),
       city: Yup.string().required("City is required"),
       state: Yup.string().required("State is required"),
@@ -293,7 +298,6 @@ const ExhibitonForm = () => {
     const initializeData = async () => {
       try {
         setInitialLoading(true);
-        fetchCompany();
         if (isEditMode) {
           const { exhibition } = await createFormApi.getExhibition(
             exhibitionId as string
@@ -345,15 +349,6 @@ const ExhibitonForm = () => {
     initializeData();
   }, [isEditMode, exhibitionId]);
 
-  const fetchCompany = async () => {
-    try {
-      const { companies } = await listApi.fetchCompanies();
-      setCompanies(companies);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
   // Generate time options for the time picker
@@ -396,7 +391,7 @@ const ExhibitonForm = () => {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="state" className="text-gray-900">
-                  Event Type*
+                  Exhibition Type*
                 </Label>
                 <Select
                   onValueChange={(value) =>
@@ -643,8 +638,40 @@ const ExhibitonForm = () => {
                   </p>
                 )}
               </div>
+              <TimeInput
+                id="timings"
+                label="Timings"
+                value={formik.values.timings}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.errors.timings}
+                touched={formik.touched.timings}
+                tabIndex={8}
+              />
+              {/* <div className="space-y-2">
+                <Label htmlFor="timings">Timings (₹)</Label>
+                <Input
+                  type="time"
+                  id="timings"
+                  tabIndex={8}
+                  value={formik.values.timings}
+                  onChange={(e) => {
+                    formik.setFieldValue("timings", e.target.value);
+                  }}
+                  className={
+                    formik.touched.timings && formik.errors.timings
+                      ? "border-red-500"
+                      : ""
+                  }
+                />
+                {formik.touched.timings && formik.errors.timings && (
+                  <p className="text-sm text-red-600">
+                    {formik.errors.timings}
+                  </p>
+                )}
+              </div> */}
 
-              <TimeSelector formik={formik} timeOptions={timeOptions} />
+              {/* <TimeSelector formik={formik} timeOptions={timeOptions} /> */}
 
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees* (₹)</Label>
@@ -777,44 +804,18 @@ const ExhibitonForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="exhibitionOrganizer">
-                  Exhibition Organizer
-                </Label>
-                <Select
-                  onValueChange={(value) =>
+                <CompanySearch
+                  value={formik.values.exhibitionOrganizer}
+                  onChange={(value) =>
                     formik.setFieldValue("exhibitionOrganizer", value)
                   }
-                  defaultValue={formik.values.exhibitionOrganizer}
-                >
-                  <SelectTrigger
-                    tabIndex={17}
-                    className={
-                      formik.touched.exhibitionOrganizer &&
-                      formik.errors.exhibitionOrganizer
-                        ? "border-red-500 text-black"
-                        : "text-black"
-                    }
-                  >
-                    <SelectValue placeholder="Select exhibition organizer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {companies?.map((item) => (
-                      <SelectItem
-                        key={item?._id}
-                        value={item?._id?.toString()}
-                        className="hover:cursor-pointer"
-                      >
-                        {item?.company_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {formik.touched.exhibitionOrganizer &&
-                  formik.errors.exhibitionOrganizer && (
-                    <p className="text-sm text-red-600">
-                      {formik.errors.exhibitionOrganizer}
-                    </p>
-                  )}
+                  onBlur={formik.handleBlur}
+                  error={formik.errors.exhibitionOrganizer}
+                  touched={formik.touched.exhibitionOrganizer}
+                  tabIndex={16}
+                  label="Exhibition Organizer"
+                  placeholder="Select exhibition organizer"
+                />
               </div>
 
               <div className="space-y-2">

@@ -327,7 +327,7 @@ const AssociationForm = () => {
             {/* Type */}
             <div className="space-y-2">
               <Label htmlFor="type" className="text-gray-900">
-                Type*
+                Association Type*
               </Label>
               <Select
                 onValueChange={(value) =>
@@ -344,7 +344,7 @@ const AssociationForm = () => {
                       : "text-black"
                   }
                 >
-                  <SelectValue placeholder="Select Type" />
+                  <SelectValue placeholder="Select association type" />
                 </SelectTrigger>
                 <SelectContent>
                   {data?.association_type_id?.map((item) => (

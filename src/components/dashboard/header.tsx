@@ -1,4 +1,6 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { ADMIN } from "@/constants/auth";
+import { useAuth } from "@/context/AuthContext";
 import { useUser } from "@/hooks/useUser";
 
 interface HeaderProps {
@@ -7,6 +9,7 @@ interface HeaderProps {
 
 export function Header({ title }: HeaderProps) {
   const { data } = useUser();
+  const { user } = useAuth();
 
   return (
     <header className="border-b bg-white px-6 py-3">
@@ -30,12 +33,10 @@ export function Header({ title }: HeaderProps) {
             </span>
           </button> */}
           <div className="flex items-center space-x-2 text-black">
-            <Avatar>
-              <AvatarImage src="/placeholder-user.jpg" />
-              {/* <AvatarFallback>GA</AvatarFallback> */}
-            </Avatar>
             <div className="text-sm">
-              <p className="font-medium capitalize">{data?.fullname}</p>
+              <p className="font-medium capitalize">
+                {user !== ADMIN && "Welcome "} {data?.fullname}
+              </p>
               <p className="text-gray-500">{data?.email}</p>
             </div>
           </div>

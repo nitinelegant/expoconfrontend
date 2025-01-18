@@ -54,3 +54,25 @@ export const isValidGoogleMapLink = (value: string): boolean => {
 };
 
 export const ValuesToShow = ["update"];
+
+export function formatDateTime(isoString: string): string {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+
+  // Extract date components
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  const formattedDate = date.toLocaleDateString(undefined, options);
+
+  // Extract time components with AM/PM
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const formattedTime = `${hours % 12 || 12}:${minutes
+    .toString()
+    .padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
+
+  return `${formattedDate} at ${formattedTime}`;
+}

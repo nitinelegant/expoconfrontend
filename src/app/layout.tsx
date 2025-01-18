@@ -23,10 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <AuthProvider>
-          <Providers>{children}</Providers>
-          <Toaster />
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>
+            {children}
+
+            <Toaster />
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -9,8 +9,10 @@ interface TimeInputProps {
   id: string;
   label: string;
   value: string;
-  onChange: (e: React.ChangeEvent<any>) => void;
-  onBlur: (e: React.FocusEvent<any>) => void;
+  onChange: (
+    e: React.ChangeEvent<HTMLButtonElement | HTMLInputElement>
+  ) => void;
+  onBlur: (e: React.FocusEvent<HTMLButtonElement | HTMLInputElement>) => void;
   error?: string;
   touched?: boolean;
   tabIndex?: number;

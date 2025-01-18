@@ -27,8 +27,6 @@ import { useSegments } from "@/hooks/useSegments";
 import ImageUploader from "@/components/ImageUploader";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CompanyProps } from "@/types/listTypes";
-import { listApi } from "@/api/listApi";
 import TimeInput from "@/components/time-input";
 import CompanySearch from "@/components/CompanySearch";
 
@@ -45,7 +43,6 @@ const ExhibitonForm = () => {
   const isEditMode = Boolean(searchParams.get("id"));
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [companies, setCompanies] = useState<CompanyProps[]>([]);
 
   const formik = useFormik({
     initialValues: {
@@ -351,22 +348,7 @@ const ExhibitonForm = () => {
 
   if (initialLoading || isLoading) return <Loader size="medium" />;
 
-  // Generate time options for the time picker
-  const generateTimeOptions = () => {
-    const times = [];
-    for (let hours = 0; hours < 24; hours++) {
-      for (let minutes = 0; minutes < 60; minutes += 30) {
-        const hour = hours.toString().padStart(2, "0");
-        const minute = minutes.toString().padStart(2, "0");
-        times.push(`${hour}:${minute}`);
-      }
-    }
-    return times;
-  };
-
   const handleResultFound = () => {};
-
-  const timeOptions = generateTimeOptions();
 
   const getMaxDateForMonth = (year: string, month: string) => {
     if (!year || !month) return undefined;

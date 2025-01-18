@@ -3,6 +3,8 @@ import { authApi } from "@/api/authApi";
 import { useRouter } from "next/navigation";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { ADMIN, AUTH_TOKEN, STAFF, USER } from "@/constants/auth";
+import { useQueryClient } from "@tanstack/react-query";
+
 interface AuthContextType {
   user: string | null;
   login: (email: string, password: string) => Promise<void>;
@@ -14,6 +16,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
+
   const [user, setUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -55,11 +59,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(USER);
+      queryClient.clear();
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(USER);
+      queryClient.clear();
       setUser(null);
       router.replace("/");
     }

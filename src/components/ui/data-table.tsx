@@ -308,15 +308,15 @@ export function DataTable<T>({
                     {columns.map((column) => (
                       <TableCell key={column.header} className="text-black">
                         <div
-                          className="max-w-xs overflow-hidden text-ellipsis whitespace-nowrap capitalize"
+                          className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap capitalize"
                           title={String(item[column.accessorKey])}
                         >
                           {column.cell
                             ? column.cell(item)
-                            : String(item[column.accessorKey]).length > 50
+                            : String(item[column.accessorKey]).length > 30
                             ? `${String(item[column.accessorKey]).slice(
                                 0,
-                                50
+                                30
                               )}...`
                             : (item[column.accessorKey] as React.ReactNode)}
                         </div>

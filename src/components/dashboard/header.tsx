@@ -1,4 +1,3 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { ADMIN } from "@/constants/auth";
 import { useAuth } from "@/context/AuthContext";
 import { useUser } from "@/hooks/useUser";

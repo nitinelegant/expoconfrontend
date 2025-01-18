@@ -53,8 +53,6 @@ const displayNames: Record<string, string> = {
   con_time: "Timing",
   con_logo: "Logo",
   con_featured: "Featured",
-  user_fullname: "Staff Name",
-  user_email: "Staff Email",
 };
 
 export default function ApprovalChanges() {

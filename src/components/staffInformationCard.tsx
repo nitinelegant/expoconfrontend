@@ -40,9 +40,6 @@ function StaffInformation({ changes }: Props) {
                             {changes.staff?.user_email}
                         </p>
                     </div>
-                    {/* {Object.entries({ user_fullname: exhibition?.changes.staff?.user_fullname, created_at: exhibition?.changes.date, user_email: exhibition?.changes.staff?.user_email }).map(([key, value]) =>
-                        renderField(key as keyof ExhibitionProps, value)
-                    )} */}
                 </div>
             </div>
         </div>

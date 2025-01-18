@@ -43,8 +43,6 @@ const displayNames: Record<string, string> = {
   status: "Status",
   adminStatus: "Admin Status",
   venue_featured: "Featured",
-  user_fullname: "Staff Name",
-  user_email: "Staff Email",
 };
 
 export default function ApprovalChanges() {
@@ -227,11 +225,12 @@ export default function ApprovalChanges() {
             Approve Venue
             <Badge
               variant={venue?.adminStatus === "pending" ? "outline" : "default"}
-              className={`outline outline-1 ${venue?.adminStatus === "approved"
+              className={`outline outline-1 ${
+                venue?.adminStatus === "approved"
                   ? "bg-green-100 text-green-600"
                   : venue?.adminStatus === "rejected"
-                    ? "bg-red-50 text-red-600"
-                    : "bg-yellow-100 text-yellow-600"
+                  ? "bg-red-50 text-red-600"
+                  : "bg-yellow-100 text-yellow-600"
                 }`}
             >
               {venue?.adminStatus}

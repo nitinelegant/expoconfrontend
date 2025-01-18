@@ -74,13 +74,11 @@ const KeyContact = () => {
     { header: "Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
-    // { header: "Company", accessorKey: "contact_organizer_id" },
+
     {
       header: "Company",
       accessorKey: "contact_organizer_id",
       cell: (item) => {
-        console.log("item._id", item._id);
-        console.log("companies", JSON.stringify(companies));
         return (
           <span className="capitalize">
             {
@@ -136,15 +134,14 @@ const KeyContact = () => {
             >
               <SquarePen />
             </Button>
-            {cellItem.adminStatus !== "approved" && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeleteClick(cellItem._id)}
-              >
-                <Trash2 className="text-red-600" />
-              </Button>
-            )}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteClick(cellItem._id)}
+            >
+              <Trash2 className="text-red-600" />
+            </Button>
           </div>
         );
       },

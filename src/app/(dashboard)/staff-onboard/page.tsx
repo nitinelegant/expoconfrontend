@@ -68,10 +68,11 @@ const StaffOnBoardForm = () => {
           router.push("/staff-onboard/stafflist");
         }
       } catch (error) {
+        console.log("error", JSON.stringify(error));
         toast({
           title: "Add Staff Failed",
           description:
-            "Failed to add Staff. Please check your fields and try again.",
+            "Failed to add Staff. Make user the user is not already registered or try again.",
           duration: 2500,
           variant: "error",
         });
@@ -230,7 +231,6 @@ const StaffOnBoardForm = () => {
                   type="submit"
                   className="w-full bg-primary text-white"
                   disabled={isLoading}
-                  
                 >
                   {isEditMode ? "Update" : "Create"} Staff
                 </Button>

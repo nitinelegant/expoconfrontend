@@ -1,4 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  KeyboardEvent,
+  useRef,
+} from "react";
 import { Label } from "@/components/ui/label";
 import {
   Command,
@@ -16,34 +22,32 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import debounce from "lodash/debounce";
-import axios, { AxiosError } from "axios";
+import { axiosInstance } from "@/lib/axios";
 
 interface Venue {
-  id: string | number;
-  name: string;
+  _id: string;
+  venue_name: string;
+  venue_city: string;
+  state_id: number;
+  venue_address: string;
+  venue_phone: string;
+  venue_website: string;
+  venue_map: string;
+  venue_photo: string;
+  venue_layout: string;
+  venue_featured: false;
+  status: string;
 }
 
 interface VenueSearchProps {
   value: string;
   onChange: (value: string) => void;
-  onBlur: (e: React.FocusEvent<any>) => void;
+  onBlur: (e: React.FocusEvent<HTMLButtonElement | HTMLInputElement>) => void;
   error?: string;
   touched?: boolean;
+  tabIndex?: number;
+  required?: boolean;
 }
-
-interface ApiResponse {
-  data: Venue[];
-  error?: string;
-}
-
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: "/api",
-  timeout: 5000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
 
 const VenueSearch: React.FC<VenueSearchProps> = ({
   value,
@@ -51,13 +55,43 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
   onBlur,
   error,
   touched,
+  tabIndex = 0,
+  required = false,
 }) => {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [searchError, setSearchError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [selectedVenueName, setSelectedVenueName] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const commandInputRef = useRef<HTMLInputElement>(null);
+  const commandItemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Debounced search function with axios
+  // Fetch initial venue details if value exists
+  useEffect(() => {
+    const fetchInitialVenue = async () => {
+      if (!value) {
+        setSelectedVenueName("");
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const { data } = await axiosInstance.get(`/venue/${value}`);
+        if (data.venue) {
+          setSelectedVenueName(data.venue.venue_name);
+        }
+      } catch (error) {
+        console.error("Error fetching initial venue:", error);
+        setSearchError("Failed to fetch venue details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialVenue();
+  }, [value]);
+
   const debouncedSearch = useCallback(
     debounce(async (searchTerm: string) => {
       if (!searchTerm || searchTerm.length < 2) {
@@ -69,24 +103,13 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
       try {
         setLoading(true);
         setSearchError("");
-
-        const response = await api.get<ApiResponse>(`/venues/search`, {
-          params: {
-            q: searchTerm,
-          },
-        });
-
-        setVenues(response.data.data);
+        const { data } = await axiosInstance.get(
+          `/venue/list?keyword=${searchTerm}`
+        );
+        setVenues(data.venues);
       } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
-        console.error("Failed to fetch venues:", error);
-
-        if (axiosError.response?.data?.error) {
-          setSearchError(axiosError.response.data.error);
-        } else {
-          setSearchError("Failed to fetch venues. Please try again.");
-        }
-
+        console.log(error);
+        setSearchError("Failed to fetch venues");
         setVenues([]);
       } finally {
         setLoading(false);
@@ -95,72 +118,125 @@ const VenueSearch: React.FC<VenueSearchProps> = ({
     []
   );
 
-  // Clean up debounce on unmount
-  React.useEffect(() => {
-    return () => {
-      debouncedSearch.cancel();
-    };
-  }, [debouncedSearch]);
+  const handleSelect = useCallback(
+    (selectedVenue: Venue) => {
+      onChange(selectedVenue._id);
+      setSelectedVenueName(selectedVenue.venue_name);
+      setOpen(false);
+    },
+    [onChange]
+  );
 
-  const handleSelect = (selectedValue: string) => {
-    onChange(selectedValue);
-    onBlur({ target: { name: "venue" } } as React.FocusEvent<HTMLInputElement>);
-    setOpen(false);
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    switch (e.key) {
+      case "Enter":
+        e.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < venues.length) {
+          handleSelect(venues[highlightedIndex]);
+        }
+        break;
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < venues.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case "Escape":
+        setOpen(false);
+        setHighlightedIndex(-1);
+        break;
+      case "Tab":
+        if (open) {
+          e.preventDefault();
+          setHighlightedIndex((prev) =>
+            prev < venues.length - 1 ? prev + 1 : 0
+          );
+        }
+        break;
+    }
+  };
+  const handleTriggerKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setOpen(true);
+      setTimeout(() => {
+        commandInputRef.current?.focus();
+      }, 0);
+    }
   };
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="venue">Venue*</Label>
+      <Label htmlFor="venue">Venue {required && "*"}</Label>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild className="bg-white ">
+        <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
-            aria-expanded={open}
             aria-label="Select venue"
+            aria-expanded={open}
             className={cn(
-              "w-full justify-between",
-              !value && "text-gray-600",
+              "w-full justify-between text-black bg-white min-h-[44px] h-auto py-2",
+              !selectedVenueName && "text-gray-600",
               touched && error && "border-red-500"
             )}
+            onBlur={onBlur}
+            onKeyDown={handleTriggerKeyDown}
+            tabIndex={tabIndex}
             type="button"
           >
-            {value || "Select venue..."}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <span className="line-clamp-2 text-left mr-2">
+              {loading ? "Loading..." : selectedVenueName || "Select venue..."}
+            </span>
+            <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="min-w-56 p-0 bg-white text-black">
-          <Command>
+        <PopoverContent className="w-[300px] p-0 bg-white">
+          <Command onKeyDown={handleKeyDown}>
             <CommandInput
+              ref={commandInputRef}
               placeholder="Search venues..."
-              onValueChange={(search: string) => {
-                debouncedSearch(search);
-              }}
+              onValueChange={debouncedSearch}
               className="text-black"
             />
-            {loading && <CommandEmpty>Loading...</CommandEmpty>}
+            {loading && (
+              <CommandEmpty className="text-sm text-black p-3">
+                Loading...
+              </CommandEmpty>
+            )}
             {!loading && searchError && (
               <CommandEmpty className="text-red-500">
                 {searchError}
               </CommandEmpty>
             )}
             {!loading && !searchError && venues.length === 0 && (
-              <CommandEmpty>No venues found.</CommandEmpty>
+              <CommandEmpty className="text-black p-3 text-sm">
+                No venues found.
+              </CommandEmpty>
             )}
-            <CommandGroup>
-              {venues.map((venue) => (
+            <CommandGroup className="bg-white max-h-64 overflow-auto">
+              {venues.map((venue, index) => (
                 <CommandItem
-                  key={venue.id}
-                  value={venue.name}
-                  onSelect={() => handleSelect(venue.name)}
+                  key={venue._id}
+                  value={venue.venue_name}
+                  onSelect={() => handleSelect(venue)}
+                  ref={(el) => (commandItemsRef.current[index] = el)}
+                  className={cn(
+                    "hover:cursor-pointer text-black min-h-[44px] flex items-start py-3",
+                    highlightedIndex === index && "bg-gray-100"
+                  )}
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
-                      value === venue.name ? "opacity-100" : "opacity-0"
+                      "mr-2 h-4 w-4 shrink-0 mt-1",
+                      value === venue._id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {venue.name}
+                  <span className="text-sm">{venue.venue_name}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

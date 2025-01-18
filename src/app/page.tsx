@@ -2,14 +2,19 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Image from "next/image";
 import Logo from "@/public/assets/images/logo.png";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
+import { Loader } from "@/components/ui/loader";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const router = useRouter();
+  const { user, isAuthenticated, loading, login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const formik = useFormik({
@@ -22,47 +27,48 @@ const Login = () => {
         .email("Invalid email address")
         .required("Email is required"),
       password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
+        .min(8, "Password must be at least 8 characters")
         .required("Password is required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       try {
-        console.log("values", values);
-        if (
-          values.email === "admin@gmail.com" &&
-          values.password === "123456"
-        ) {
-          router.replace("/admin/");
-          return;
-        }
-        if (
-          values.email === "staff@gmail.com" &&
-          values.password === "123456"
-        ) {
-          router.replace("/staff/records");
-          return;
-        }
-        alert("Plese use valid credentials");
-        // localStorage.setItem("authToken", "12345");
-        // localStorage.setItem("userType", "1");
-        // router.replace("/admin/");
-        // toast({
-        //   title: "Success",
-        //   description: "Logged in successfully",
-        //   duration: 3000,
-        // });
-
-        // console.log("submitting form");
-      } catch (error) {
-        console.log("error", error);
+        setIsLoading(true);
+        const { email, password } = values;
+        await login(email, password);
         toast({
-          title: "Error",
-          description: "Invalid credentials. Try demo@example.com / password",
-          variant: "destructive",
+          title: "Login Successful",
+          description: "You have successfully logged in",
+          duration: 1500,
+          variant: "success",
         });
+      } catch (error) {
+        toast({
+          title: "Login Failed",
+          description:
+            "Failed to log in. Please check your credentials and try again.",
+          duration: 2500,
+          variant: "error",
+        });
+        console.log("error", error);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
+
+  useEffect(() => {
+    setIsLoading(true);
+    if (isAuthenticated && user) {
+      router.replace(`${user}`);
+    }
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [loading, isAuthenticated, router]);
+
+  if (loading || isLoading) return <Loader size="medium" />;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -131,7 +137,11 @@ const Login = () => {
           </div>
 
           <div>
-            <Button type="submit" className="w-full bg-primary text-white">
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white"
+              disabled={isLoading}
+            >
               Sign in
             </Button>
           </div>

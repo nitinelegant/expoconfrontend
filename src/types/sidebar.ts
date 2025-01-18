@@ -5,6 +5,7 @@ export interface MenuLink {
   icon?: LucideIcon;
   text: string;
   subItems?: [];
+  visible: string[];
 }
 
 export interface MenuSection {
@@ -12,6 +13,7 @@ export interface MenuSection {
   icon: LucideIcon;
   links: MenuLink[];
   mainLink?: string;
+  visible: string[];
 }
 export interface userSection {
   name: string;

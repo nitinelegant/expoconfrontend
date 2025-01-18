@@ -1,18 +1,37 @@
-import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "@/context/AuthContext";
+import { UserRole } from "@/types/authTypes";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  allowedRoles?: UserRole[];
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  // For demo purposes, we'll just check if there's a user email in localStorage
-  const isAuthenticated = localStorage.getItem("userEmail");
+export function ProtectedRoute({
+  children,
+  allowedRoles = [],
+}: ProtectedRouteProps) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.push("/login");
+      } else if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+        router.push("/unauthorized");
+      }
+    }
+  }, [user, loading, router, allowedRoles]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user || (allowedRoles.length > 0 && !allowedRoles.includes(user.role))) {
+    return null;
   }
 
   return <>{children}</>;
-};
-
-export default ProtectedRoute;
+}

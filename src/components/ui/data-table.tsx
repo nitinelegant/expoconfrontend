@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useDebounce } from "use-debounce";
 import {
   Table,
   TableBody,
@@ -18,7 +19,10 @@ import {
   ChevronRightIcon,
   Search,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import ExcelExportButton from "../ExcelExportButton";
+import { useAuth } from "@/context/AuthContext";
+import { ADMIN } from "@/constants/auth";
 
 export interface Column<T> {
   header: string;
@@ -28,45 +32,187 @@ export interface Column<T> {
 
 interface DataTableProps<T> {
   columns: Column<T>[];
-  data: T[];
+  fetchData: (
+    page: number,
+    searchTerm: string
+  ) => Promise<{
+    data: T[];
+    totalItems: number;
+    currentPage: number;
+    totalPages: number;
+  }>;
   title?: string;
   viewAllLink?: string;
   className?: string;
   showCheckbox?: boolean;
   addButtonTitle?: string;
   itemsPerPage?: number;
+  startingUrl?: string;
 }
 
 export function DataTable<T>({
   columns,
-  data,
+  fetchData,
   title,
   viewAllLink,
   className,
   showCheckbox = false,
   addButtonTitle,
   itemsPerPage = 10,
+  startingUrl,
 }: DataTableProps<T>) {
+  const router = useRouter();
+  const { user } = useAuth();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
+  const [data, setData] = useState<T[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [showScrollbar, setShowScrollbar] = useState(false);
 
-  const filteredData = data.filter((item) =>
-    Object.values(item).some(
-      (value) =>
-        typeof value === "string" &&
-        value.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const result = await fetchData(currentPage, debouncedSearchTerm);
+      setData(result.data);
+      setTotalItems(result.totalItems);
+      setCurrentPage(result.currentPage);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentPage, debouncedSearchTerm, fetchData]);
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleNavigation = (href: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    setTimeout(() => {
+      router.push(href);
+    }, 50);
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 7;
+
+    // Create unique, stable keys for ellipsis
+    const leftEllipsisKey = "ellipsis-left";
+    const rightEllipsisKey = "ellipsis-right";
+    const ellipsisElement = (key: string) => (
+      <span key={key} className="text-black text-lg">
+        ...
+      </span>
+    );
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(
+          <Button
+            key={`page-${i}`}
+            variant={i === currentPage ? "default" : "outline"}
+            size="sm"
+            onClick={() => handlePageChange(i)}
+            className={`bg-white border-gray-200 text-gray-600 ${
+              i === currentPage ? "bg-primary text-white" : ""
+            }`}
+          >
+            {i}
+          </Button>
+        );
+      }
+    } else {
+      buttons.push(
+        <Button
+          key="page-1"
+          variant={1 === currentPage ? "default" : "outline"}
+          size="sm"
+          onClick={() => handlePageChange(1)}
+          className={`bg-white border-gray-200 text-gray-600 ${
+            1 === currentPage ? "bg-primary text-white" : ""
+          }`}
+        >
+          1
+        </Button>
+      );
+
+      if (currentPage > 3) {
+        buttons.push(ellipsisElement(leftEllipsisKey));
+      }
+
+      const start = Math.max(2, currentPage - 2);
+      const end = Math.min(totalPages - 1, currentPage + 2);
+
+      for (let i = start; i <= end; i++) {
+        buttons.push(
+          <Button
+            key={`page-${i}`}
+            variant={i === currentPage ? "default" : "outline"}
+            size="sm"
+            onClick={() => handlePageChange(i)}
+            className={`bg-white border-gray-200 text-gray-600 ${
+              i === currentPage ? "bg-primary text-white" : ""
+            }`}
+          >
+            {i}
+          </Button>
+        );
+      }
+
+      if (currentPage < totalPages - 2) {
+        buttons.push(ellipsisElement(rightEllipsisKey));
+      }
+
+      buttons.push(
+        <Button
+          key={`page-${totalPages}`}
+          variant={totalPages === currentPage ? "default" : "outline"}
+          size="sm"
+          onClick={() => handlePageChange(totalPages)}
+          className={`bg-white border-gray-200 text-gray-600 ${
+            totalPages === currentPage ? "bg-primary text-white" : ""
+          }`}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    return buttons;
+  };
+
+  useEffect(() => {
+    const checkForScrollbar = () => {
+      if (tableContainerRef.current) {
+        const { scrollWidth, clientWidth } = tableContainerRef.current;
+        setShowScrollbar(scrollWidth > clientWidth);
+      }
+    };
+
+    checkForScrollbar();
+    window.addEventListener("resize", checkForScrollbar);
+
+    return () => {
+      window.removeEventListener("resize", checkForScrollbar);
+    };
+  }, [data]);
 
   return (
     <Card className={cn("mt-6", className)}>
@@ -81,75 +227,112 @@ export function DataTable<T>({
                 placeholder="Search"
                 className="w-[300px] pl-8"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearch}
               />
             </div>
             {viewAllLink && (
-              <Link href={viewAllLink}>
-                <Button
-                  variant="link"
-                  className="text-white-600 font-bold bg-primary hover:no-underline"
-                >
-                  <PlusIcon className="mr-2 h-4 w-4" />
-                  {addButtonTitle}
-                </Button>
-              </Link>
+              <Button
+                variant="link"
+                className="text-white font-bold bg-primary hover:no-underline"
+                onClick={(e) => handleNavigation(viewAllLink, e)}
+              >
+                <PlusIcon className="mr-2 h-4 w-4" />
+                {addButtonTitle}
+              </Button>
+            )}
+            {data.length > 0 && startingUrl && user === ADMIN && (
+              <ExcelExportButton
+                data={data}
+                fileName={title}
+                sheetName={title}
+                onExportComplete={() => console.log("Export completed!")}
+                onError={(error) => console.error("Export failed:", error)}
+                className="bg-primary"
+                url={startingUrl}
+              />
             )}
           </div>
         </CardHeader>
       )}
+
       <CardContent>
-        <Table className="w-full bg-white">
-          <TableHeader className="hover:bg-gray-50 transition-colors text-background">
-            <TableRow>
-              {showCheckbox && (
-                <TableHead className="w-12">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300"
-                  />
-                </TableHead>
-              )}
-              {columns.map((column) => (
-                <TableHead
-                  key={column.header}
-                  className="font-semibold text-[#64748b]"
-                >
-                  {column.header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedData.map((item, index) => (
-              <TableRow
-                key={index}
-                className="hover:bg-gray-50 transition-colors text-background "
-              >
+        <div
+          ref={tableContainerRef}
+          className={cn(
+            "w-full",
+            showScrollbar ? "overflow-x-auto" : "overflow-x-hidden"
+          )}
+        >
+          <Table className="w-full bg-white">
+            <TableHeader className="hover:bg-gray-50 transition-colors text-background">
+              <TableRow>
                 {showCheckbox && (
-                  <TableCell>
+                  <TableHead className="w-12">
                     <input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300"
                     />
-                  </TableCell>
+                  </TableHead>
                 )}
                 {columns.map((column) => (
-                  <TableCell key={column.header} className="max-w-[200px]">
-                    {column.cell
-                      ? column.cell(item)
-                      : (item[column.accessorKey] as React.ReactNode)}
-                  </TableCell>
+                  <TableHead
+                    key={column.header}
+                    className="font-semibold text-[#64748b]"
+                  >
+                    {column.header}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length + (showCheckbox ? 1 : 0)}>
+                    <p className="p-3 text-black">Loading...</p>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                data?.map((item, index) => (
+                  <TableRow
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors text-background"
+                  >
+                    {showCheckbox && (
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300"
+                        />
+                      </TableCell>
+                    )}
+                    {columns.map((column) => (
+                      <TableCell key={column.header} className="text-black">
+                        <div
+                          className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap capitalize"
+                          title={String(item[column.accessorKey])}
+                        >
+                          {column.cell
+                            ? column.cell(item)
+                            : String(item[column.accessorKey]).length > 30
+                            ? `${String(item[column.accessorKey]).slice(
+                                0,
+                                30
+                              )}...`
+                            : (item[column.accessorKey] as React.ReactNode)}
+                        </div>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-700">
-            Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-            {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
-            {filteredData.length} entries
+            Showing {totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}{" "}
+            to {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
+            {totalItems} entries
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -161,19 +344,7 @@ export function DataTable<T>({
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={page === currentPage ? "default" : "outline"}
-                size="sm"
-                onClick={() => handlePageChange(page)}
-                className={`bg-white  border-gray-200 text-gray-600 ${
-                  page === currentPage ? "bg-primary text-white" : ""
-                }`}
-              >
-                {page}
-              </Button>
-            ))}
+            {renderPaginationButtons()}
             <Button
               variant="outline"
               size="sm"

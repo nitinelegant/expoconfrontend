@@ -92,8 +92,9 @@ export default function ApprovalChanges() {
       if (message) {
         toast({
           title: `${isApproved ? "Approve" : "Rejection"} Successful`,
-          description: `You have successfully ${isApproved ? "approved" : "reject"
-            } the key contact.`,
+          description: `You have successfully ${
+            isApproved ? "approved" : "reject"
+          } the key contact.`,
           duration: 1500,
           variant: isApproved ? "success" : "error",
         });
@@ -231,7 +232,7 @@ export default function ApprovalChanges() {
                   : venue?.adminStatus === "rejected"
                   ? "bg-red-50 text-red-600"
                   : "bg-yellow-100 text-yellow-600"
-                }`}
+              }`}
             >
               {venue?.adminStatus}
             </Badge>

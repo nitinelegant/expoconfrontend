@@ -25,8 +25,12 @@ import BackButton from "@/components/BackButton";
 import { useSegments } from "@/hooks/useSegments";
 import { approvalApi } from "@/api/approvalApi";
 import { useRouter } from "next/navigation";
-import { getStatusColor, getStatusText, ValuesToShow } from "@/utils/common";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  convertToIndianDate,
+  getStatusColor,
+  getStatusText,
+  ValuesToShow,
+} from "@/utils/common";
 import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
@@ -35,10 +39,10 @@ const displayNames: Record<string, string> = {
   expo_fullname: "Full Name",
   expo_shortname: "Short Name",
   year_id: "Year",
-  month_id: "Month",
+  month_id: "Months",
   expo_sd: "Start Date",
   expo_ed: "End Date",
-  fee_id: "Fees",
+  fee_id: "Fees(₹)",
   expo_city: "City",
   state_id: "State",
   venue_id: "Venue",
@@ -166,8 +170,15 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <p className="text-black capitalize">
-              {new Date(value).toLocaleDateString()}
+              {convertToIndianDate(value)}
             </p>
+          </div>
+        );
+      case "fee_id":
+        return (
+          <div className="space-y-2" key={key}>
+            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <p className="text-black capitalize">{value}</p>
           </div>
         );
       case "expo_ed":
@@ -176,7 +187,7 @@ export default function ApprovalChanges() {
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
             <p className="text-black capitalize">
-              {new Date(value).toLocaleDateString()}
+              {convertToIndianDate(value)}
             </p>
           </div>
         );
@@ -247,7 +258,13 @@ export default function ApprovalChanges() {
         return (
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
-            <Checkbox id="featured" checked={value} />
+            <p
+              className={`${
+                value ? "text-green-600" : "text-red-600"
+              } capitalize`}
+            >
+              {value ? "Yes" : "No"}
+            </p>
           </div>
         );
 

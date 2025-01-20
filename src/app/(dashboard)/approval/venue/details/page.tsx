@@ -26,7 +26,6 @@ import {
   isValidGoogleMapLink,
   ValuesToShow,
 } from "@/utils/common";
-import { Checkbox } from "@/components/ui/checkbox";
 import StaffInformation from "@/components/staffInformationCard";
 
 const displayNames: Record<string, string> = {
@@ -179,11 +178,18 @@ export default function ApprovalChanges() {
             />
           </div>
         );
+
       case "venue_featured":
         return (
           <div className="space-y-2" key={key}>
             <h6 className=" text-gray-500 font-bold ">{label}</h6>
-            <Checkbox id="featured" checked={value} />
+            <p
+              className={`${
+                value ? "text-green-600" : "text-red-600"
+              } capitalize`}
+            >
+              {value ? "Yes" : "No"}
+            </p>
           </div>
         );
 

@@ -76,3 +76,21 @@ export function formatDateTime(isoString: string): string {
 
   return `${formattedDate} at ${formattedTime}`;
 }
+
+export function convertToIndianDate(isoDateString: string): string {
+  // Parse the ISO date string into a Date object
+  const date = new Date(isoDateString);
+
+  // Check for invalid date
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid ISO date string");
+  }
+
+  // Extract the day, month, and year components
+  const day = date.getDate().toString().padStart(2, "0"); // Ensures two-digit format
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+  const year = date.getFullYear();
+
+  // Return the formatted date in DD-MM-YYYY format
+  return `${day}-${month}-${year}`;
+}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Trash2, SquarePen } from "lucide-react";
@@ -7,9 +7,11 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  CompanyProps,
   ConferenceDeleteResponse,
   ConferenceListResponse,
   ConferenceProps,
+  VenueProps,
 } from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import formatDateToYear from "@/utils/common";
@@ -26,6 +28,22 @@ const Conference = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [rerenderData, setRerenderData] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [venues, setVenues] = useState<VenueProps[]>([]);
+  const [companies, setCompanies] = useState<CompanyProps[]>([]);
+
+  useEffect(() => {
+    const fetchCompany = async () => {
+      try {
+        const { venues: myVenue } = await listApi.fetchVenues();
+        const { companies: myCompanies } = await listApi.fetchCompanies();
+        setVenues(myVenue);
+        setCompanies(myCompanies);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchCompany();
+  }, [rerenderData]);
 
   const fetchData = useCallback(
     async (page: number, searchTerm: string) => {
@@ -61,7 +79,18 @@ const Conference = () => {
   };
 
   const columns: Column<ConferenceProps>[] = [
-    { header: "Name", accessorKey: "con_shortname" },
+    { header: "Conference Name", accessorKey: "con_shortname" },
+    {
+      header: "Conference Type",
+      accessorKey: "con_type_id",
+      cell: (item) => {
+        return (
+          <span className="capitalize">
+            {data?.con_type_id?.find((x) => x._id === item?.con_type_id)?.name}
+          </span>
+        );
+      },
+    },
     {
       header: "Start Date",
       accessorKey: "con_sd",
@@ -80,18 +109,40 @@ const Conference = () => {
         );
       },
     },
-    { header: "City", accessorKey: "con_city" },
     {
-      header: "State",
-      accessorKey: "state_id",
-      cell: (state) => {
+      header: "Venue",
+      accessorKey: "venue_id",
+      cell: (item) => {
         return (
           <span className="capitalize">
-            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
+            {venues?.find((x) => x._id === item?.venue_id)?.venue_name}
           </span>
         );
       },
     },
+    {
+      header: "Organizer Name",
+      accessorKey: "company_id",
+      cell: (item) => {
+        return (
+          <span className="capitalize">
+            {companies?.find((x) => x._id === item?.company_id)?.company_name}
+          </span>
+        );
+      },
+    },
+    // { header: "City", accessorKey: "con_city" },
+    // {
+    //   header: "State",
+    //   accessorKey: "state_id",
+    //   cell: (state) => {
+    //     return (
+    //       <span className="capitalize">
+    //         {data?.state_id?.find((x) => x._id === state.state_id)?.name}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       header: "Status",
       accessorKey: "status",

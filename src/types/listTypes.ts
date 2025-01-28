@@ -92,6 +92,24 @@ export interface KeyContactListResponse {
   currentPage: number;
   totalPages: number;
 }
+export interface DashboardDataProps {
+  totalExhibitions: number;
+  pendingExhibitions: number;
+  totalConferences: number;
+  pendingConferences: number;
+  totalVenues: number;
+  pendingVenues: number;
+  totalAssociations: number;
+  pendingAssociations: number;
+  totalCompanies: number;
+  pendingCompanies: number;
+  totalKeyContacts: number;
+  pendingKeyContacts: number;
+}
+export interface DashboardDataResponse {
+  message: string;
+  data: DashboardDataProps;
+}
 
 interface KeyContact {
   _id: string;
@@ -104,10 +122,10 @@ interface KeyContact {
   contact_association_id: string;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
-
   status: string;
   adminStatus: string;
   changes: Changes;
+  note: string;
 }
 interface Changes {
   date: string;
@@ -302,6 +320,10 @@ export interface ApproveResponse {
 export interface CompanySingleResponse {
   message: string;
   company: CompanyDetailsProps;
+}
+export interface StaffSingleResponse {
+  message: string;
+  staff: StaffProps;
 }
 
 export interface CompanyDetailsProps {

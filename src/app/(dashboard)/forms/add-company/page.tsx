@@ -53,11 +53,11 @@ const CompanyForm = () => {
       password: "",
     },
     validationSchema: Yup.object({
-      companyName: Yup.string().required("Company Name is required"),
+      companyName: Yup.string().trim().required("Company Name is required"),
       companyType: Yup.string().required("Company Type is required"),
-      city: Yup.string().required("City is required"),
+      city: Yup.string().trim().required("City is required"),
       state: Yup.string().required("State is required"),
-      address: Yup.string().required("Address is required"),
+      address: Yup.string().trim().required("Address is required"),
       phone: Yup.string().matches(
         /^\d{10}$/,
         "Phone number must be exactly 10 digits"

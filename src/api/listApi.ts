@@ -9,6 +9,7 @@ import {
   ConferenceDeleteResponse,
   ConferenceListResponse,
   ConferenceSingleResponse,
+  DashboardDataResponse,
   DeleteApiResponse,
   ExhibitionSingleResponse,
   ExhibitionsListResponse,
@@ -34,6 +35,16 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
+  getDashboard: async (): Promise<DashboardDataResponse> => {
+    try {
+      const response = await axiosInstance.get<DashboardDataResponse>(
+        "/dashboard"
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
   getKeyContactById: async (id: string): Promise<KeyContactSingleResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactSingleResponse>(
@@ -44,7 +55,9 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getAdminKeyContactById: async (id: string): Promise<KeyContactSingleResponse> => {
+  getAdminKeyContactById: async (
+    id: string
+  ): Promise<KeyContactSingleResponse> => {
     try {
       const response = await axiosInstance.get<KeyContactSingleResponse>(
         `/keycontact/approval/${id}`
@@ -104,7 +117,9 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getAdminConferenceById: async (id: string): Promise<ConferenceSingleResponse> => {
+  getAdminConferenceById: async (
+    id: string
+  ): Promise<ConferenceSingleResponse> => {
     try {
       const response = await axiosInstance.get<ConferenceSingleResponse>(
         `/conference/approval/${id}`
@@ -124,7 +139,9 @@ export const listApi = {
       throw new Error(`Error while fetching data ${error}`);
     }
   },
-  getAdminExhibitionById: async (id: string): Promise<ExhibitionSingleResponse> => {
+  getAdminExhibitionById: async (
+    id: string
+  ): Promise<ExhibitionSingleResponse> => {
     try {
       const response = await axiosInstance.get<ExhibitionSingleResponse>(
         `/exhibition/approval/${id}`

@@ -184,7 +184,7 @@ export default function ApprovalChanges() {
       default:
         return (
           <div className="space-y-2" key={key}>
-            <h6 className=" text-gray-500 font-bold ">{label}</h6>
+            <h6 className=" text-gray-500 font-bold capitalize ">{label}</h6>
             <p className="text-black capitalize break-words overflow-wrap-anywhere">
               {value}
             </p>

@@ -1,28 +1,34 @@
-import { Wallet } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { OverviewProps } from "@/types/sidebar";
 
 export function Overview({ overviewSection }: OverviewProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid  grid-rows-4 grid-flow-col max-w-2xl gap-4">
       {overviewSection?.map((item) => (
-        <Card key={item.name}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              {item.name}
-            </CardTitle>
-            <Wallet className="h-4 w-4 text-gray-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black">{item.count}</div>
-            {/* <div className="flex items-center space-x-2">
-             <span className="text-xs text-green-600">+12.8%</span>
-             <span className="text-xs text-gray-500">
-               +$118.8 than last month
-             </span>
-           </div> */}
-          </CardContent>
-        </Card>
+        <div key={item.name} className="max-w-[300px]">
+          <h1 className="text-2xl font-semibold mb-4 text-black ">
+            {item.name}
+          </h1>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div className="flex flex-col">
+                <div className="text-sm font-medium text-black">Active</div>
+                <div className="text-2xl font-bold text-black">
+                  {item.active}
+                </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <CardTitle className="text-sm font-medium text-black">
+                  Pending
+                </CardTitle>
+                <div className="text-2xl font-bold text-black">
+                  {item.pending}
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+        </div>
       ))}
     </div>
   );

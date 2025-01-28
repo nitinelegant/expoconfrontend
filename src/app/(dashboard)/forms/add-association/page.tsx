@@ -48,10 +48,12 @@ const AssociationForm = () => {
       website: Yup.string()
         .url("Must be a valid URL")
         .required("Website is required"),
-      associationName: Yup.string().required("Association Name is required"),
-      city: Yup.string().required("City is required"),
+      associationName: Yup.string()
+        .trim()
+        .required("Association Name is required"),
+      city: Yup.string().trim().required("City is required"),
       state: Yup.string().required("State is required"),
-      address: Yup.string().required("Address is required"),
+      address: Yup.string().trim().required("Address is required"),
       associationType: Yup.string().required("Type is required"),
     }),
     onSubmit: async (values) => {

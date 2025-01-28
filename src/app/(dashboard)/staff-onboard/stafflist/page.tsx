@@ -2,10 +2,10 @@
 import React, { useCallback, useState } from "react";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
 import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
+import { Trash2, SquarePen } from "lucide-react";
 import {
   VenueDeleteResponse,
   StaffListResponse,
@@ -14,8 +14,10 @@ import {
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN } from "@/constants/auth";
+import { useRouter } from "next/navigation";
 
 const Staff = () => {
+  const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -57,17 +59,17 @@ const Staff = () => {
     {
       header: "Status",
       accessorKey: "user_status",
-      cell: (venue) => (
+      cell: (item) => (
         <span
           className={`capitalize inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-            venue.user_status === "active"
+            item?.user_status === "active"
               ? "bg-green-100 text-green-600"
-              : venue.user_status === "rejected"
+              : item?.user_status === "rejected"
               ? "bg-red-50 text-red-600"
               : "bg-yellow-100 text-yellow-600"
           }`}
         >
-          {venue.user_status}
+          {item?.user_status}
         </span>
       ),
     },
@@ -77,6 +79,13 @@ const Staff = () => {
       cell: (cellItem) => {
         return (
           <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push(`/staff-onboard?id=${cellItem._id}`)}
+            >
+              <SquarePen />
+            </Button>
             <Button
               variant="ghost"
               size="icon"

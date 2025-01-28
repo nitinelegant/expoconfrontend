@@ -69,43 +69,24 @@ const ExhibitonForm = () => {
     },
     validationSchema: Yup.object({
       eventType: Yup.string().required("Event Type is required"),
-      eventFullName: Yup.string().required("Event Full Name is required"),
-      eventShortName: Yup.string().required("Event Short Name is required"),
-      year: Yup.string()
-        .required("Year is required")
-        .test("future-year", "Cannot select past year", (value) => {
-          if (!value) return true;
-          return parseInt(value) >= today.getFullYear();
-        }),
-      month: Yup.string()
-        .required("Month is required")
-        .test("future-month", "Cannot select past month", function (value) {
-          if (!value || !this.parent.year) return true;
+      eventFullName: Yup.string()
+        .trim()
+        .required("Event Full Name is required"),
+      eventShortName: Yup.string()
+        .trim()
+        .required("Event Short Name is required"),
+      year: Yup.string().required("Year is required"),
 
-          const selectedYear = parseInt(this.parent.year);
-          const currentYear = today.getFullYear();
-          const selectedMonth = parseInt(value);
-          const currentMonth = today.getMonth() + 1; // Adding 1 since months array is 1-based
+      month: Yup.string().required("Month is required"),
 
-          if (selectedYear > currentYear) return true;
-          if (selectedYear === currentYear) {
-            return selectedMonth >= currentMonth;
-          }
-          return false;
-        }),
       startDate: Yup.date()
         .required("Start Date is required")
         .test("valid-date-range", "Invalid date selection", function (value) {
           if (!value || !this.parent.year || !this.parent.month) return true;
 
           const selectedDate = new Date(value);
-          const selectedYear = parseInt(this.parent.year);
-          const selectedMonth = parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
-
-          // Check if date is in past
-          if (selectedDate < today) {
-            return this.createError({ message: "Cannot select past date" });
-          }
+          const selectedYear = Number.parseInt(this.parent.year);
+          const selectedMonth = Number.parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
 
           // Check if date matches selected year and month
           if (selectedDate.getFullYear() !== selectedYear) {
@@ -136,19 +117,14 @@ const ExhibitonForm = () => {
 
           const endDate = new Date(value);
           const startDate = new Date(this.parent.startDate);
-          const selectedYear = parseInt(this.parent.year);
-          const selectedMonth = parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
+          const selectedYear = Number.parseInt(this.parent.year);
+          const selectedMonth = Number.parseInt(this.parent.month) - 1; // Subtract 1 for 0-based month
 
           // Check if end date is before start date
           if (endDate < startDate) {
             return this.createError({
               message: "End date must be after start date",
             });
-          }
-
-          // Check if date is in past
-          if (endDate < today) {
-            return this.createError({ message: "Cannot select past date" });
           }
 
           // Check if date matches selected year and month
@@ -170,8 +146,8 @@ const ExhibitonForm = () => {
         /^(0?[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/,
         "Invalid time format. Use HH:MM AM/PM"
       ),
-      entryFees: Yup.number().required("Entry Fees is required"),
-      city: Yup.string().required("City is required"),
+      entryFees: Yup.string().trim().required("Entry Fees is required"),
+      city: Yup.string().trim().required("City is required"),
       state: Yup.string().required("State is required"),
       venue: Yup.string().required("Venue is required"),
       website: Yup.string()
@@ -210,9 +186,9 @@ const ExhibitonForm = () => {
         } = values;
         const payload = {
           year_id: data?.year_id
-            .find((x) => parseInt(x.name) === parseInt(year))
+            .find((x) => Number.parseInt(x.name) === Number.parseInt(year))
             ?._id.toString(),
-          fee_id: parseInt(entryFees),
+          fee_id: Number.parseInt(entryFees),
           con_city: city,
           state_id: state,
           venue_id: venue,
@@ -222,7 +198,7 @@ const ExhibitonForm = () => {
           expo_shortname: eventShortName,
           expo_sd: startDate,
           expo_ed: endDate,
-          month_id: parseInt(month),
+          month_id: Number.parseInt(month),
           expo_time: timings,
           expo_city: city,
           expo_website: website,
@@ -353,7 +329,11 @@ const ExhibitonForm = () => {
   const getMaxDateForMonth = (year: string, month: string) => {
     if (!year || !month) return undefined;
 
-    const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+    const lastDay = new Date(
+      Number.parseInt(year),
+      Number.parseInt(month),
+      0
+    ).getDate();
     return `${year}-${String(month).padStart(2, "0")}-${String(
       lastDay
     ).padStart(2, "0")}`;
@@ -545,25 +525,13 @@ const ExhibitonForm = () => {
                       : ""
                   }
                   onChange={(e) => {
-                    const selectedDate = new Date(e.target.value);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    if (selectedDate >= today) {
-                      formik.setFieldValue("startDate", e.target.value);
-                    } else {
-                      formik.setFieldValue(
-                        "startDate",
-                        today.toISOString().split("T")[0]
-                      );
-                    }
+                    formik.setFieldValue("startDate", e.target.value);
                   }}
                   className={cn(
                     formik.touched.startDate &&
                       formik.errors.startDate &&
                       "border-red-500"
                   )}
-                  min={new Date().toISOString().split("T")[0]}
                   max={
                     formik.values.year && formik.values.month
                       ? getMaxDateForMonth(
@@ -601,10 +569,6 @@ const ExhibitonForm = () => {
                       formik.errors.endDate &&
                       "border-red-500"
                   )}
-                  min={
-                    formik.values.startDate ||
-                    new Date().toISOString().split("T")[0]
-                  }
                   max={
                     formik.values.year && formik.values.month
                       ? getMaxDateForMonth(
@@ -630,35 +594,10 @@ const ExhibitonForm = () => {
                 touched={formik.touched.timings}
                 tabIndex={8}
               />
-              {/* <div className="space-y-2">
-                <Label htmlFor="timings">Timings (₹)</Label>
-                <Input
-                  type="time"
-                  id="timings"
-                  tabIndex={8}
-                  value={formik.values.timings}
-                  onChange={(e) => {
-                    formik.setFieldValue("timings", e.target.value);
-                  }}
-                  className={
-                    formik.touched.timings && formik.errors.timings
-                      ? "border-red-500"
-                      : ""
-                  }
-                />
-                {formik.touched.timings && formik.errors.timings && (
-                  <p className="text-sm text-red-600">
-                    {formik.errors.timings}
-                  </p>
-                )}
-              </div> */}
-
-              {/* <TimeSelector formik={formik} timeOptions={timeOptions} /> */}
-
               <div className="space-y-2">
                 <Label htmlFor="entryFees">Entry Fees* (₹)</Label>
                 <Input
-                  type="number"
+                  type="text"
                   id="entryFees"
                   tabIndex={9}
                   value={formik.values.entryFees}
@@ -801,7 +740,7 @@ const ExhibitonForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="segment">Exhibition Type</Label>
+                <Label htmlFor="segment">Segment Type</Label>
                 <Select
                   onValueChange={(value) =>
                     formik.setFieldValue("exhibitionType", value)
@@ -820,7 +759,7 @@ const ExhibitonForm = () => {
                     <SelectValue placeholder="Select exhibition type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {data?.con_segment_id?.map((item) => (
+                    {data?.expo_segment_id?.map((item) => (
                       <SelectItem
                         key={item._id}
                         value={item._id.toString()}

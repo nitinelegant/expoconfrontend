@@ -23,6 +23,7 @@ import {
   ExhibitionSingleResponse,
   ExhibitionsListResponse,
   KeyContactSingleResponse,
+  StaffSingleResponse,
   VenueSingleResponse,
 } from "@/types/listTypes";
 
@@ -119,6 +120,21 @@ export const createFormApi = {
     }
   },
 
+  updateStaff: async (
+    id: string,
+    credentials: AddStaffCredentials
+  ): Promise<AddStaffResponseProps> => {
+    try {
+      const response = await axiosInstance.put<AddStaffResponseProps>(
+        `/staff/${id}`,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while adding company ${error}`);
+    }
+  },
+
   updateKeyContact: async (
     id: string,
     credentials: AddKeyContactCredentials
@@ -158,6 +174,16 @@ export const createFormApi = {
     try {
       const response = await axiosInstance.get<CompanySingleResponse>(
         `/company/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error while fetching data ${error}`);
+    }
+  },
+  getStaff: async (id: string): Promise<StaffSingleResponse> => {
+    try {
+      const response = await axiosInstance.get<StaffSingleResponse>(
+        `/staff/${id}`
       );
       return response.data;
     } catch (error) {

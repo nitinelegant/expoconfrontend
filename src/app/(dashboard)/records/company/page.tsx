@@ -53,9 +53,21 @@ const Company = () => {
   );
   const columns: Column<CompanyProps>[] = [
     { header: "Company Name", accessorKey: "company_name" },
-    { header: "City", accessorKey: "company_city" },
-    { header: "Address", accessorKey: "company_address" },
-    { header: "Website", accessorKey: "company_website" },
+    {
+      header: "Company Type",
+      accessorKey: "company_type_id",
+      cell: (item) => {
+        return (
+          <span className="capitalize">
+            {
+              data?.company_type_id?.find(
+                (x) => x._id === item?.company_type_id
+              )?.name
+            }
+          </span>
+        );
+      },
+    },
     {
       header: "State",
       accessorKey: "state_id",
@@ -67,6 +79,11 @@ const Company = () => {
         );
       },
     },
+    { header: "Website", accessorKey: "company_website" },
+
+    // { header: "City", accessorKey: "company_city" },
+    // { header: "Address", accessorKey: "company_address" },
+
     {
       header: "Status",
       accessorKey: "status",

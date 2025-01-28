@@ -23,6 +23,7 @@ import { useSegments } from "@/hooks/useSegments";
 import CompanySearch from "@/components/CompanySearch";
 import AssociationSearch from "@/components/AssociationSearch";
 import VenueSearch from "@/components/VenueSearch";
+import { Textarea } from "@/components/ui/textarea";
 
 const KeyContactForm = () => {
   const { data } = useSegments();
@@ -44,9 +45,10 @@ const KeyContactForm = () => {
       company: "",
       venue: "",
       association: "",
+      note: "",
     },
     validationSchema: Yup.object({
-      fullName: Yup.string().required("Full Name is required"),
+      fullName: Yup.string().trim().required("Full Name is required"),
       mobile: Yup.string().matches(
         /^\d{10}$/,
         "Mobile number must be 10 digits"
@@ -56,12 +58,21 @@ const KeyContactForm = () => {
       company: Yup.string(),
       venue: Yup.string(),
       association: Yup.string(),
+      note: Yup.string().trim(),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const { fullName, mobile, email, state, company, venue, association } =
-          values;
+        const {
+          fullName,
+          mobile,
+          email,
+          state,
+          company,
+          venue,
+          association,
+          note,
+        } = values;
         const payload = {
           contact_name: fullName,
           contact_mobile: mobile,
@@ -70,6 +81,7 @@ const KeyContactForm = () => {
           contact_organizer_id: company,
           contact_venue_id: venue,
           contact_association_id: association,
+          note,
         };
         if (isEditMode) {
           const response = await createFormApi.updateKeyContact(
@@ -143,7 +155,6 @@ const KeyContactForm = () => {
           const { keyContact } = await createFormApi.getKeyContact(
             keyContactId as string
           );
-          console.log("contactData", keyContact);
           formik.setValues({
             fullName: keyContact?.contact_name,
             mobile: keyContact?.contact_mobile,
@@ -152,6 +163,7 @@ const KeyContactForm = () => {
             company: keyContact?.contact_organizer_id,
             venue: keyContact?.contact_venue_id,
             association: keyContact?.contact_association_id,
+            note: keyContact?.note,
           });
         }
       } catch (error) {
@@ -322,6 +334,24 @@ const KeyContactForm = () => {
                   label="Association"
                   placeholder="Select association"
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="note" className="text-gray-900">
+                  Add Note
+                </Label>
+                <Textarea
+                  id="note"
+                  tabIndex={5}
+                  {...formik.getFieldProps("note")}
+                  className={
+                    formik.touched.note && formik.errors.note
+                      ? "border-red-500 text-black"
+                      : " text-black"
+                  }
+                />
+                {formik.touched.note && formik.errors.note && (
+                  <p className="text-sm text-red-600">{formik.errors.note}</p>
+                )}
               </div>
             </div>
 

@@ -17,7 +17,8 @@ export interface MenuSection {
 }
 export interface userSection {
   name: string;
-  count: number;
+  active: number;
+  pending: number;
 }
 export interface OverviewProps {
   overviewSection: userSection[];

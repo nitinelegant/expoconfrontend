@@ -7,32 +7,39 @@ import { withAuth } from "@/utils/withAuth";
 import { listApi } from "@/api/listApi";
 import { useToast } from "@/hooks/use-toast";
 import {
+  AssociationProps,
   CompanyProps,
   KeyContactDeleteResponse,
   KeyContactListResponse,
   KeyContactProps,
+  VenueProps,
 } from "@/types/listTypes";
 import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ADMIN, STAFF } from "@/constants/auth";
-import { useSegments } from "@/hooks/useSegments";
 
 const KeyContact = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { data } = useSegments();
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [rerenderData, setRerenderData] = useState(false);
   const [companies, setCompanies] = useState<CompanyProps[]>([]);
+  const [venues, setVenues] = useState<VenueProps[]>([]);
+  const [associations, setAssociations] = useState<AssociationProps[]>([]);
 
   useEffect(() => {
     const fetchCompany = async () => {
       try {
         const { companies } = await listApi.fetchCompanies();
+        const { venues: myVenue } = await listApi.fetchVenues();
+        const { associations: myAssociations } =
+          await listApi.fetchAssociation();
         setCompanies(companies);
+        setVenues(myVenue);
+        setAssociations(myAssociations);
       } catch (error) {
         console.log(error);
       }
@@ -71,7 +78,7 @@ const KeyContact = () => {
   };
 
   const columns: Column<KeyContactProps>[] = [
-    { header: "Name", accessorKey: "contact_name" },
+    { header: "Full Name", accessorKey: "contact_name" },
     { header: "Mobile", accessorKey: "contact_mobile" },
     { header: "Email", accessorKey: "contact_email" },
 
@@ -89,18 +96,43 @@ const KeyContact = () => {
         );
       },
     },
-
     {
-      header: "State",
-      accessorKey: "state_id",
-      cell: (state) => {
+      header: "Venue",
+      accessorKey: "contact_venue_id",
+      cell: (item) => {
         return (
           <span className="capitalize">
-            {data?.state_id?.find((x) => x._id === state.state_id)?.name}
+            {venues?.find((x) => x._id === item.contact_venue_id)?.venue_name}
           </span>
         );
       },
     },
+    {
+      header: "Association",
+      accessorKey: "contact_association_id",
+      cell: (item) => {
+        return (
+          <span className="capitalize">
+            {
+              associations?.find((x) => x._id === item?.contact_association_id)
+                ?.association_name
+            }
+          </span>
+        );
+      },
+    },
+
+    // {
+    //   header: "State",
+    //   accessorKey: "state_id",
+    //   cell: (state) => {
+    //     return (
+    //       <span className="capitalize">
+    //         {data?.state_id?.find((x) => x._id === state.state_id)?.name}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       header: "Status",
       accessorKey: "status",

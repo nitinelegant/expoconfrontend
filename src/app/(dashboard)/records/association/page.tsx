@@ -59,9 +59,6 @@ const Association = () => {
   );
   const columns: Column<AssociationProps>[] = [
     { header: "Association Name", accessorKey: "association_name" },
-    { header: "City", accessorKey: "association_city" },
-    { header: "Address", accessorKey: "association_address" },
-    { header: "Website", accessorKey: "association_website" },
     {
       header: "State",
       accessorKey: "state_id",
@@ -73,6 +70,27 @@ const Association = () => {
         );
       },
     },
+    { header: "Website", accessorKey: "association_website" },
+    {
+      header: "Association Type",
+      accessorKey: "state_id",
+      cell: (item) => {
+        return (
+          <span className="capitalize">
+            {
+              data?.association_type_id?.find(
+                (x) => x._id === item?.association_type_id
+              )?.name
+            }
+          </span>
+        );
+      },
+    },
+    // { header: "Association Type", accessorKey: "association_name" },
+
+    // { header: "City", accessorKey: "association_city" },
+    // { header: "Address", accessorKey: "association_address" },
+
     {
       header: "Status",
       accessorKey: "status",

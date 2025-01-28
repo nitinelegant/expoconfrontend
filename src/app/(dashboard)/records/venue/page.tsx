@@ -55,9 +55,6 @@ const Venue = () => {
   );
   const columns: Column<VenueProps>[] = [
     { header: "Venue Name", accessorKey: "venue_name" },
-    { header: "City", accessorKey: "venue_city" },
-    { header: "Address", accessorKey: "venue_address" },
-    { header: "Website", accessorKey: "venue_website" },
     {
       header: "State",
       accessorKey: "state_id",
@@ -69,6 +66,10 @@ const Venue = () => {
         );
       },
     },
+    { header: "Website", accessorKey: "venue_website" },
+    // { header: "City", accessorKey: "venue_city" },
+    // { header: "Address", accessorKey: "venue_address" },
+
     {
       header: "Status",
       accessorKey: "status",

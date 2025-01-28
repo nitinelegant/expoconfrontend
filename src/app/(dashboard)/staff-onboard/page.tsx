@@ -18,6 +18,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createFormApi } from "@/api/createFormApi";
 import { useEffect, useState } from "react";
 import { Loader } from "@/components/ui/loader";
+import { Switch } from "@/components/ui/switch";
+import { Eye, EyeOff } from "lucide-react";
 
 const StaffOnBoardForm = () => {
   const router = useRouter();
@@ -27,41 +29,60 @@ const StaffOnBoardForm = () => {
   const staffId = searchParams.get("id");
   const isEditMode = Boolean(staffId);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [isActive, setIsActive] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      // prefix: "",
       name: "",
       email: "",
       password: "",
+      isActive: true,
     },
     validationSchema: Yup.object({
-      // prefix: Yup.string().required("Prefix is required"),
       name: Yup.string()
         .min(2, "Name is too short")
         .max(50, "Name is too long")
         .required("Name is required"),
       email: Yup.string().email("Invalid email").required("Email is required"),
-      password: Yup.string()
-        .min(8, "Password must be at least 8 characters")
-        .required("Password is required"),
+      password: Yup.string().when([], {
+        is: () => !isEditMode,
+        then: (schema) =>
+          schema
+            .min(8, "Password must be at least 8 characters")
+            .required("Password is required"),
+        otherwise: (schema) =>
+          schema.min(8, "Password must be at least 8 characters").notRequired(),
+      }),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const { name, email, password } = values;
+        const { name, email, password, isActive } = values;
         const payload = {
           user_fullname: name,
           user_email: email,
-          user_password: password,
-          // user_prefix: prefix,
+          user_status: isActive ? "active" : "inactive",
         };
-        const response = await createFormApi.addStaff(payload);
+
+        if (!isEditMode || (isEditMode && password)) {
+          payload.user_password = password;
+        }
+        let response;
+        if (isEditMode) {
+          response = await createFormApi.updateStaff(
+            staffId as string,
+            payload
+          );
+        } else {
+          response = await createFormApi.addStaff(payload);
+        }
         if (response) {
           toast({
-            title: "Staff Added Successfully!",
-            description:
-              "The staff has been added successfully. You can view it in the staff table.",
+            title: `Staff ${isEditMode ? "Updated" : "Added"} Successfully!`,
+            description: `The staff has been ${
+              isEditMode ? "updated" : "added"
+            } successfully. You can view it in the staff table.`,
             duration: 3000,
             variant: "success",
           });
@@ -70,13 +91,19 @@ const StaffOnBoardForm = () => {
       } catch (error) {
         console.log("error", JSON.stringify(error));
         toast({
-          title: "Add Staff Failed",
-          description:
-            "Failed to add Staff. Make user the user is not already registered or try again later.",
+          title: `${isEditMode ? "Update" : "Add"} Staff Failed`,
+          description: `Failed to ${isEditMode ? "update" : "add"} Staff. ${
+            isEditMode
+              ? "Please try again later."
+              : "Make sure the user is not already registered or try again later."
+          }`,
           duration: 2500,
           variant: "error",
         });
-        console.error("Error submitting form:", error);
+        console.error(
+          `Error ${isEditMode ? "updating" : "submitting"} form:`,
+          error
+        );
       } finally {
         setIsLoading(false);
       }
@@ -89,13 +116,15 @@ const StaffOnBoardForm = () => {
         setInitialLoading(true);
         if (isEditMode && staffId) {
           // Fetch staff data and set form values
-          // const staffData = await createFormApi.getStaff(staffId);
-          // formik.setValues({
-          //   prefix: staffData.user_prefix,
-          //   name: staffData.user_fullname,
-          //   email: staffData.user_email,
-          //   password: staffData.user_password,
-          // });
+          const { staff } = await createFormApi.getStaff(staffId as string);
+          console.log("staff", staff);
+          formik.setValues({
+            name: staff?.user_fullname,
+            email: staff?.user_email,
+          });
+          const isActive = staff?.user_status === "active" ? true : false;
+          setIsActive(isActive);
+          formik.setFieldValue("isActive", isActive);
         }
       } catch (error) {
         console.error("Error initializing data:", error);
@@ -207,25 +236,61 @@ const StaffOnBoardForm = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter staff password"
-                    {...formik.getFieldProps("password")}
-                    className={
-                      formik.touched.password && formik.errors.password
-                        ? "border-red-500"
-                        : ""
-                    }
-                  />
+                <div className="space-y-2 relative">
+                  <Label htmlFor="password">
+                    Password{" "}
+                    {!isEditMode && <span className="text-red-500">*</span>}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder={
+                        isEditMode
+                          ? "Enter new password (optional)"
+                          : "Enter staff password"
+                      }
+                      {...formik.getFieldProps("password")}
+                      className={
+                        formik.touched.password && formik.errors.password
+                          ? "border-red-500 pr-10"
+                          : "pr-10"
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                   {formik.touched.password && formik.errors.password && (
                     <p className="text-sm text-red-500">
                       {formik.errors.password}
                     </p>
                   )}
                 </div>
+
+                {isEditMode && (
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="isActive"
+                      checked={isActive}
+                      onCheckedChange={(checked) => {
+                        setIsActive(checked);
+                        formik.setFieldValue("isActive", checked);
+                      }}
+                    />
+                    <Label htmlFor="isActive">
+                      {isActive ? "Active" : "InActive"}
+                    </Label>
+                  </div>
+                )}
 
                 <Button
                   type="submit"

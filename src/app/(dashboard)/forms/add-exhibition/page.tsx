@@ -188,7 +188,7 @@ const ExhibitonForm = () => {
           year_id: data?.year_id
             .find((x) => Number.parseInt(x.name) === Number.parseInt(year))
             ?._id.toString(),
-          fee_id: Number.parseInt(entryFees),
+          fee_id: entryFees,
           con_city: city,
           state_id: state,
           venue_id: venue,

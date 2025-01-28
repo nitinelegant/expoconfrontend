@@ -195,7 +195,7 @@ const ConferenceForm = () => {
             (x) => parseInt(x.name) === parseInt(year)
           )?._id,
           con_time: timings,
-          fee_id: parseInt(entryFees),
+          fee_id: entryFees,
           con_city: city,
           state_id: state,
           venue_id: venue,

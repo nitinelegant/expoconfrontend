@@ -3,7 +3,7 @@ import { OverviewProps } from "@/types/sidebar";
 
 export function Overview({ overviewSection }: OverviewProps) {
   return (
-    <div className="grid  grid-rows-4 grid-flow-col max-w-2xl gap-4">
+    <div className="grid  grid-rows-3 grid-flow-col max-w-2xl gap-4">
       {overviewSection?.map((item) => (
         <div key={item.name} className="max-w-[300px]">
           <h1 className="text-2xl font-semibold mb-4 text-black ">
